@@ -8,3 +8,4 @@ package-lock.json
 scratch/
 docs/*.docx
 supabase/.temp/
+docs/implementation/*.md
