@@ -7,3 +7,4 @@ package-lock.json
 *.docx
 scratch/
 docs/*.docx
+supabase/.temp/
