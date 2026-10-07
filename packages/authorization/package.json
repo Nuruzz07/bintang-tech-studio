@@ -1,12 +1,24 @@
 {
   "name": "@bintang/authorization",
   "version": "0.1.0",
-  "private": true,
-  "description": "Bintang Tech Studio — Authorization and Entitlement Package (Placeholder for M04)",
+  "type": "module",
+  "description": "Bintang Tech Studio — Authorization, RBAC, and Entitlement Foundation",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "dependencies": {
+    "@bintang/shared": "^0.1.0",
+    "@bintang/tenancy": "^0.1.0"
+  },
   "scripts": {
-    "build": "node -e \"process.exit(0)\"",
-    "typecheck": "node -e \"process.exit(0)\"",
-    "test": "node -e \"process.exit(0)\"",
-    "lint": "node -e \"process.exit(0)\""
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "vitest run",
+    "lint": "eslint src"
   }
 }
