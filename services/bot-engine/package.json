@@ -1,0 +1,12 @@
+{
+  "name": "@bintang/service-bot-engine",
+  "version": "0.1.0",
+  "private": true,
+  "description": "bintang-bot: Telegram and Channel Messaging Daemon (Placeholder for M11)",
+  "scripts": {
+    "build": "node -e \"process.exit(0)\"",
+    "typecheck": "node -e \"process.exit(0)\"",
+    "test": "node -e \"process.exit(0)\"",
+    "lint": "node -e \"process.exit(0)\""
+  }
+}

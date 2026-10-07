@@ -1,0 +1,12 @@
+{
+  "name": "@bintang/billing",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Bintang Tech Studio — Subscription and Billing Package (Placeholder for M13)",
+  "scripts": {
+    "build": "node -e \"process.exit(0)\"",
+    "typecheck": "node -e \"process.exit(0)\"",
+    "test": "node -e \"process.exit(0)\"",
+    "lint": "node -e \"process.exit(0)\""
+  }
+}

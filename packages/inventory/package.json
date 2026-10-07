@@ -1,0 +1,12 @@
+{
+  "name": "@bintang/inventory",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Bintang Tech Studio — Concurrency-Safe Inventory Contracts (Placeholder for M06)",
+  "scripts": {
+    "build": "node -e \"process.exit(0)\"",
+    "typecheck": "node -e \"process.exit(0)\"",
+    "test": "node -e \"process.exit(0)\"",
+    "lint": "node -e \"process.exit(0)\""
+  }
+}

@@ -1,0 +1,58 @@
+name: CI Foundation
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    name: Lint, Typecheck, Test, Security & Build
+    runs-on: ubuntu-latest
+    steps:
+      - name: 1. Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: 2. Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'npm'
+
+      - name: 3. Install Dependencies
+        run: npm ci
+
+      - name: 4. Check Formatting
+        run: npm run format:check
+
+      - name: 5. Execute Linter
+        run: npm run lint
+
+      - name: 6. Execute TypeScript Typecheck
+        run: npm run typecheck
+
+      - name: 7. Execute Unit & Contract Tests
+        run: npm run test
+
+      - name: 8. Secret & Security Pattern Scan
+        run: |
+          echo "Scanning for potential committed secrets or private keys..."
+          if grep -rnE --exclude-dir={node_modules,.git,dist} "BEGIN (RSA|EC|OPENSSH|PGP) PRIVATE KEY" .; then
+            echo "ERROR: Private key pattern detected!"
+            exit 1
+          fi
+          if grep -rnE --exclude-dir={node_modules,.git,dist} "bot[0-9]{8,10}:[a-zA-Z0-9_-]{35}" .; then
+            echo "ERROR: Live Telegram bot token pattern detected!"
+            exit 1
+          fi
+          echo "Secret scan passed."
+
+      - name: 9. Execute Build
+        run: npm run build

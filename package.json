@@ -1,0 +1,30 @@
+{
+  "name": "bintang-tech-studio",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Bintang Tech Studio — Modular Monolith Platform",
+  "packageManager": "npm@11.19.0",
+  "workspaces": [
+    "apps/*",
+    "services/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "build": "turbo run build",
+    "lint": "eslint packages apps services --no-error-on-unmatched-pattern",
+    "typecheck": "turbo run typecheck",
+    "test": "turbo run test",
+    "format": "prettier --write .",
+    "format:check": "prettier --check ."
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.20.0",
+    "eslint": "^9.20.0",
+    "prettier": "^3.5.0",
+    "turbo": "^2.4.0",
+    "typescript": "^5.7.0",
+    "typescript-eslint": "^8.24.0",
+    "vitest": "^3.0.0"
+  }
+}

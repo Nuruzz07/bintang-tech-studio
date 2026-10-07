@@ -1,0 +1,12 @@
+{
+  "name": "@bintang/service-api",
+  "version": "0.1.0",
+  "private": true,
+  "description": "bintang-api: Public and Application REST API Service (Placeholder for M03+)",
+  "scripts": {
+    "build": "node -e \"process.exit(0)\"",
+    "typecheck": "node -e \"process.exit(0)\"",
+    "test": "node -e \"process.exit(0)\"",
+    "lint": "node -e \"process.exit(0)\""
+  }
+}

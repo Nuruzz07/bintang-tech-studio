@@ -1,0 +1,23 @@
+{
+  "name": "@bintang/observability",
+  "version": "0.1.0",
+  "type": "module",
+  "description": "Bintang Tech Studio — Structured Observability Contracts and Types",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "dependencies": {
+    "@bintang/shared": "^0.1.0"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "vitest run",
+    "lint": "eslint src"
+  }
+}
