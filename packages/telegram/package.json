@@ -1,9 +1,8 @@
 {
-  "name": "@bintang/seller-dashboard",
+  "name": "@bintang/telegram",
   "version": "0.1.0",
   "type": "module",
-  "private": true,
-  "description": "Bintang Tech Studio — Multi-Tenant Seller Dashboard Application & Control Center",
+  "description": "Bintang Tech Studio — Multi-Tenant Telegram Channel Engine",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "exports": {
@@ -15,13 +14,13 @@
   "dependencies": {
     "@bintang/authorization": "^0.1.0",
     "@bintang/commerce": "^0.1.0",
+    "@bintang/customer-store": "^0.1.0",
     "@bintang/fulfillment": "^0.1.0",
     "@bintang/inventory": "^0.1.0",
     "@bintang/observability": "^0.1.0",
     "@bintang/orders": "^0.1.0",
     "@bintang/payments": "^0.1.0",
     "@bintang/shared": "^0.1.0",
-    "@bintang/telegram": "^0.1.0",
     "@bintang/tenancy": "^0.1.0"
   },
   "devDependencies": {
