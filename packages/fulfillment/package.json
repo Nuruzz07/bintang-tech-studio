@@ -1,12 +1,30 @@
 {
   "name": "@bintang/fulfillment",
   "version": "0.1.0",
-  "private": true,
-  "description": "Bintang Tech Studio — Fulfillment Strategies and Delivery Contracts (Placeholder for M09)",
+  "type": "module",
+  "description": "Bintang Tech Studio — Fulfillment Foundation, Delivery Adapters, and Lifecycle",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "dependencies": {
+    "@bintang/authorization": "^0.1.0",
+    "@bintang/commerce": "^0.1.0",
+    "@bintang/inventory": "^0.1.0",
+    "@bintang/observability": "^0.1.0",
+    "@bintang/orders": "^0.1.0",
+    "@bintang/payments": "^0.1.0",
+    "@bintang/shared": "^0.1.0",
+    "@bintang/tenancy": "^0.1.0"
+  },
   "scripts": {
-    "build": "node -e \"process.exit(0)\"",
-    "typecheck": "node -e \"process.exit(0)\"",
-    "test": "node -e \"process.exit(0)\"",
-    "lint": "node -e \"process.exit(0)\""
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "vitest run",
+    "lint": "eslint src"
   }
 }
