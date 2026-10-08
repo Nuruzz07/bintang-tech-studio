@@ -1,12 +1,36 @@
 {
   "name": "@bintang/customer-store",
   "version": "0.1.0",
+  "type": "module",
   "private": true,
-  "description": "Customer Store / Mini App frontend (Placeholder for M10)",
+  "description": "Bintang Tech Studio — Customer Storefront & Commerce Migration Foundation",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "dependencies": {
+    "@bintang/authorization": "^0.1.0",
+    "@bintang/commerce": "^0.1.0",
+    "@bintang/fulfillment": "^0.1.0",
+    "@bintang/inventory": "^0.1.0",
+    "@bintang/observability": "^0.1.0",
+    "@bintang/orders": "^0.1.0",
+    "@bintang/payments": "^0.1.0",
+    "@bintang/shared": "^0.1.0",
+    "@bintang/tenancy": "^0.1.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.7.0",
+    "vitest": "^3.0.0"
+  },
   "scripts": {
-    "build": "node -e \"process.exit(0)\"",
-    "typecheck": "node -e \"process.exit(0)\"",
-    "test": "node -e \"process.exit(0)\"",
-    "lint": "node -e \"process.exit(0)\""
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "vitest run",
+    "lint": "eslint src"
   }
 }
