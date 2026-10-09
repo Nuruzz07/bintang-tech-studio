@@ -20,6 +20,8 @@ CREATE TEMP TABLE IF NOT EXISTS hardening_test_results (
     message TEXT NOT NULL
 );
 
+TRUNCATE hardening_test_results;
+
 DO $$
 DECLARE
     v_store_id UUID := 'a1111111-1111-1111-1111-111111111111'::uuid;
@@ -56,44 +58,55 @@ BEGIN
     PERFORM set_config('request.jwt.claim.role', 'service_role', true);
     PERFORM set_config('request.jwt.claim.sub', '', true);
 
+    -- Clean up previous test artifacts to ensure idempotency and repeatability
+    DELETE FROM public.fulfillment_items WHERE fulfillment_id IN (SELECT id FROM public.fulfillments WHERE store_id IN (v_store_id, v_store_b_id));
+    DELETE FROM public.fulfillments WHERE store_id IN (v_store_id, v_store_b_id);
+    DELETE FROM public.voucher_redemptions WHERE voucher_id IN (v_voucher_valid_id, v_voucher_expired_id, v_voucher_high_min_id, v_voucher_limit_id);
+    DELETE FROM public.order_items WHERE order_id IN (SELECT id FROM public.orders WHERE store_id IN (v_store_id, v_store_b_id));
+    DELETE FROM public.orders WHERE store_id IN (v_store_id, v_store_b_id);
+    DELETE FROM public.idempotency_records WHERE store_id IN (v_store_id, v_store_b_id) OR idempotency_key LIKE 'idem_%';
+    DELETE FROM public.app_sessions WHERE store_id IN (v_store_id, v_store_b_id) OR token_hash = 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855';
+    DELETE FROM public.jobs WHERE queue_name = 'default' AND job_type = 'SEND_NOTIFICATION' AND payload->>'recipient' = 'customer@example.com';
+
+    -- Ensure test auth users exist in auth.users (trigger on_auth_user_created populates public.profiles)
+    INSERT INTO auth.users (id, instance_id, aud, role, email, encrypted_password, email_confirmed_at, raw_app_meta_data, raw_user_meta_data, created_at, updated_at)
+    VALUES
+        (v_user_id, '00000000-0000-0000-0000-000000000000', 'authenticated', 'authenticated', 'test_user_a_m15@bintang.test', 'encrypted', now(), '{"provider":"email"}', '{"full_name":"User A"}', now(), now()),
+        (v_user_b_id, '00000000-0000-0000-0000-000000000000', 'authenticated', 'authenticated', 'test_user_b_m15@bintang.test', 'encrypted', now(), '{"provider":"email"}', '{"full_name":"User B"}', now(), now()),
+        (v_user_unaffiliated_id, '00000000-0000-0000-0000-000000000000', 'authenticated', 'authenticated', 'test_unaffil_m15@bintang.test', 'encrypted', now(), '{"provider":"email"}', '{"full_name":"Unaffiliated"}', now(), now()),
+        (v_staff_id, '00000000-0000-0000-0000-000000000000', 'authenticated', 'authenticated', 'test_staff_a_m15@bintang.test', 'encrypted', now(), '{"provider":"email"}', '{"full_name":"Staff A"}', now(), now())
+    ON CONFLICT (id) DO NOTHING;
+
+    -- Ensure profiles exist (fallback in case trigger did not run)
+    INSERT INTO public.profiles (id, full_name, platform_role, status)
+    VALUES
+        (v_user_id, 'User A', 'USER', 'ACTIVE'),
+        (v_user_b_id, 'User B', 'USER', 'ACTIVE'),
+        (v_user_unaffiliated_id, 'Unaffiliated', 'USER', 'ACTIVE'),
+        (v_staff_id, 'Staff A', 'USER', 'ACTIVE')
+    ON CONFLICT (id) DO NOTHING;
+
     -- Ensure Store A and Store B exist
-    INSERT INTO public.stores (id, name, slug, status)
-    VALUES (v_store_id, 'Store A', 'store-a', 'ACTIVE')
+    INSERT INTO public.stores (id, owner_user_id, name, slug, status)
+    VALUES (v_store_id, v_user_id, 'Store A', 'store-a', 'ACTIVE')
     ON CONFLICT (id) DO UPDATE SET status = 'ACTIVE';
 
-    INSERT INTO public.stores (id, name, slug, status)
-    VALUES (v_store_b_id, 'Store B', 'store-b', 'ACTIVE')
+    INSERT INTO public.stores (id, owner_user_id, name, slug, status)
+    VALUES (v_store_b_id, v_user_b_id, 'Store B', 'store-b', 'ACTIVE')
     ON CONFLICT (id) DO UPDATE SET status = 'ACTIVE';
-
-    -- Ensure profiles exist
-    INSERT INTO public.profiles (id, email, full_name, role)
-    VALUES (v_user_id, 'user_a@example.com', 'User A', 'STORE_OWNER')
-    ON CONFLICT (id) DO NOTHING;
-
-    INSERT INTO public.profiles (id, email, full_name, role)
-    VALUES (v_user_b_id, 'user_b@example.com', 'User B', 'STORE_OWNER')
-    ON CONFLICT (id) DO NOTHING;
-
-    INSERT INTO public.profiles (id, email, full_name, role)
-    VALUES (v_user_unaffiliated_id, 'unaffil@example.com', 'Unaffiliated', 'STORE_STAFF')
-    ON CONFLICT (id) DO NOTHING;
-
-    INSERT INTO public.profiles (id, email, full_name, role)
-    VALUES (v_staff_id, 'staff_a@example.com', 'Staff A', 'STORE_STAFF')
-    ON CONFLICT (id) DO NOTHING;
 
     -- Ensure store memberships
     INSERT INTO public.store_members (id, store_id, user_id, role, status)
     VALUES (gen_random_uuid(), v_store_id, v_user_id, 'STORE_OWNER', 'ACTIVE')
-    ON CONFLICT DO NOTHING;
+    ON CONFLICT (store_id, user_id) DO UPDATE SET role = 'STORE_OWNER', status = 'ACTIVE';
 
     INSERT INTO public.store_members (id, store_id, user_id, role, status)
     VALUES (gen_random_uuid(), v_store_id, v_staff_id, 'STORE_STAFF', 'ACTIVE')
-    ON CONFLICT DO NOTHING;
+    ON CONFLICT (store_id, user_id) DO UPDATE SET role = 'STORE_STAFF', status = 'ACTIVE';
 
     INSERT INTO public.store_members (id, store_id, user_id, role, status)
     VALUES (gen_random_uuid(), v_store_b_id, v_user_b_id, 'STORE_OWNER', 'ACTIVE')
-    ON CONFLICT DO NOTHING;
+    ON CONFLICT (store_id, user_id) DO UPDATE SET role = 'STORE_OWNER', status = 'ACTIVE';
 
     -- Ensure test customer exists
     INSERT INTO public.customers (id, store_id, name, email)
@@ -103,7 +116,7 @@ BEGIN
     -- Ensure test vouchers exist
     INSERT INTO public.vouchers (id, store_id, code, discount_type, discount_value, minimum_purchase, status, starts_at, expires_at)
     VALUES (v_voucher_valid_id, v_store_id, 'PROMO2000', 'FIXED', 2000.00, 5000.00, 'ACTIVE', timezone('utc'::text, now()) - interval '1 hour', timezone('utc'::text, now()) + interval '1 day')
-    ON CONFLICT (id) DO UPDATE SET status = 'ACTIVE', starts_at = timezone('utc'::text, now()) - interval '1 hour', expires_at = timezone('utc'::text, now()) + interval '1 day';
+    ON CONFLICT (id) DO UPDATE SET status = 'ACTIVE', starts_at = timezone('utc'::text, now()) - interval '1 hour', expires_at = timezone('utc'::text, now()) + interval '1 day', used_count = 0;
 
     INSERT INTO public.vouchers (id, store_id, code, discount_type, discount_value, minimum_purchase, status, starts_at, expires_at)
     VALUES (v_voucher_expired_id, v_store_id, 'EXPIRED50', 'FIXED', 1000.00, 0.00, 'EXPIRED', timezone('utc'::text, now()) - interval '2 days', timezone('utc'::text, now()) - interval '1 day')
@@ -1138,6 +1151,7 @@ BEGIN
     VALUES ('SECURITY_REGRESSION', 'Case K: STORE_STAFF permitted on rpc_create_order_atomic', NOT v_err_caught, 'Staff possesses orders.update');
 
     -- Case L: Authenticated user attempting to insert idempotency record with store_id IS NULL -> Blocked by RLS
+    EXECUTE 'SET LOCAL ROLE authenticated';
     PERFORM set_config('request.jwt.claim.role', 'authenticated', true);
     PERFORM set_config('request.jwt.claim.sub', v_user_id::text, true);
     v_err_caught := false;
@@ -1160,10 +1174,12 @@ BEGIN
     EXCEPTION WHEN OTHERS THEN
         v_err_caught := true;
     END;
+    EXECUTE 'RESET ROLE';
     INSERT INTO hardening_test_results (category, test_name, passed, message)
     VALUES ('SECURITY_REGRESSION', 'Case L: Authenticated user cannot insert idempotency with store_id NULL', v_err_caught, 'RLS policy restricts store_id IS NOT NULL');
 
     -- Case M: Authenticated user attempting to insert idempotency record with internal scope (billing) -> Blocked by RLS
+    EXECUTE 'SET LOCAL ROLE authenticated';
     PERFORM set_config('request.jwt.claim.role', 'authenticated', true);
     PERFORM set_config('request.jwt.claim.sub', v_user_id::text, true);
     v_err_caught := false;
@@ -1186,12 +1202,19 @@ BEGIN
     EXCEPTION WHEN OTHERS THEN
         v_err_caught := true;
     END;
+    EXECUTE 'RESET ROLE';
     INSERT INTO hardening_test_results (category, test_name, passed, message)
     VALUES ('SECURITY_REGRESSION', 'Case M: Authenticated user cannot insert idempotency with scope billing', v_err_caught, 'RLS policy restricts internal scopes');
 
 END $$;
 
 SELECT category, test_name, passed, message FROM hardening_test_results ORDER BY id;
+
+SELECT
+    count(*)::int as total_tests,
+    count(*) FILTER (WHERE passed)::int as passed_tests,
+    count(*) FILTER (WHERE NOT passed)::int as failed_tests
+FROM hardening_test_results;
 
 -- ==============================================================================
 -- STRICT TEST ASSERTION RUNNER (NON-ZERO EXIT CODE ON ANY TEST FAILURE)
