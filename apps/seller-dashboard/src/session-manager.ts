@@ -25,6 +25,12 @@ import {
   StoreSwitchUnauthorizedError,
 } from './errors.js';
 
+export interface ISellerSessionStore {
+  get(token: string): Promise<SellerSession | null>;
+  set(token: string, session: SellerSession): Promise<void>;
+  delete(token: string): Promise<void>;
+}
+
 export class SellerSessionManager {
   private readonly sessions = new Map<string, SellerSession>();
   private readonly sessionTtlMs = 24 * 60 * 60 * 1000; // 24 hours
@@ -32,6 +38,7 @@ export class SellerSessionManager {
   constructor(
     private readonly storeRepository: StoreRepository,
     private readonly memberRepository: StoreMemberRepository,
+    private readonly sessionStore?: ISellerSessionStore | undefined,
   ) {}
 
   /**
@@ -90,6 +97,9 @@ export class SellerSessionManager {
     };
 
     this.sessions.set(sessionToken, session);
+    if (this.sessionStore) {
+      await this.sessionStore.set(sessionToken, session);
+    }
     return session;
   }
 
@@ -101,13 +111,22 @@ export class SellerSessionManager {
     sessionToken: string,
     targetStoreId: string,
   ): Promise<SellerSession> {
-    const existing = this.sessions.get(sessionToken);
+    let existing = this.sessions.get(sessionToken);
+    if (!existing && this.sessionStore) {
+      existing = (await this.sessionStore.get(sessionToken)) ?? undefined;
+      if (existing) {
+        this.sessions.set(sessionToken, existing);
+      }
+    }
     if (!existing) {
       throw new SellerUnauthenticatedError('Sesi tidak valid atau telah kedaluwarsa.');
     }
 
     if (new Date() > new Date(existing.expiresAt)) {
       this.sessions.delete(sessionToken);
+      if (this.sessionStore) {
+        await this.sessionStore.delete(sessionToken);
+      }
       throw new SellerUnauthenticatedError('Sesi telah kedaluwarsa.');
     }
 
@@ -137,6 +156,9 @@ export class SellerSessionManager {
     };
 
     this.sessions.set(sessionToken, updatedSession);
+    if (this.sessionStore) {
+      await this.sessionStore.set(sessionToken, updatedSession);
+    }
     return updatedSession;
   }
 
@@ -145,13 +167,22 @@ export class SellerSessionManager {
    * Throws if session is missing, expired, or membership was revoked.
    */
   public async resolveActiveContext(sessionToken: string): Promise<ActiveSellerStoreContext> {
-    const session = this.sessions.get(sessionToken);
+    let session = this.sessions.get(sessionToken);
+    if (!session && this.sessionStore) {
+      session = (await this.sessionStore.get(sessionToken)) ?? undefined;
+      if (session) {
+        this.sessions.set(sessionToken, session);
+      }
+    }
     if (!session) {
       throw new SellerUnauthenticatedError('Sesi tidak ditemukan atau tidak valid.');
     }
 
     if (new Date() > new Date(session.expiresAt)) {
       this.sessions.delete(sessionToken);
+      if (this.sessionStore) {
+        await this.sessionStore.delete(sessionToken);
+      }
       throw new SellerUnauthenticatedError('Sesi telah kedaluwarsa.');
     }
 
@@ -204,6 +235,9 @@ export class SellerSessionManager {
    */
   public async revokeSession(sessionToken: string): Promise<void> {
     this.sessions.delete(sessionToken);
+    if (this.sessionStore) {
+      await this.sessionStore.delete(sessionToken);
+    }
   }
 
   /**

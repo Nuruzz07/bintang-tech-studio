@@ -2,11 +2,25 @@
   "name": "@bintang/service-worker",
   "version": "0.1.0",
   "private": true,
-  "description": "bintang-worker: Asynchronous Job and Outbox Processor (Placeholder for M09)",
+  "type": "module",
+  "description": "Bintang Tech Studio — Background Job & Outbox Worker Service",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "dependencies": {
+    "@bintang/database": "^0.1.0",
+    "@bintang/observability": "^0.1.0",
+    "@bintang/shared": "^0.1.0"
+  },
   "scripts": {
-    "build": "node -e \"process.exit(0)\"",
-    "typecheck": "node -e \"process.exit(0)\"",
-    "test": "node -e \"process.exit(0)\"",
-    "lint": "node -e \"process.exit(0)\""
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "vitest run",
+    "lint": "eslint src"
   }
 }

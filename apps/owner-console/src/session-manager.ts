@@ -19,10 +19,19 @@ export interface CreatePlatformSessionParams {
   readonly ttlMs?: number | undefined;
 }
 
+export interface IPlatformSessionStore {
+  get(token: string): Promise<PlatformSession | null>;
+  set(token: string, session: PlatformSession): Promise<void>;
+  delete(token: string): Promise<void>;
+}
+
 export class OwnerConsoleSessionManager {
   private sessions = new Map<string, PlatformSession>();
 
-  constructor(private readonly defaultTtlMs = 8 * 60 * 60 * 1000) {} // 8 hours default
+  constructor(
+    private readonly defaultTtlMs = 8 * 60 * 60 * 1000,
+    private readonly sessionStore?: IPlatformSessionStore | undefined,
+  ) {} // 8 hours default
 
   /**
    * Creates an authenticated platform session.
@@ -49,6 +58,9 @@ export class OwnerConsoleSessionManager {
     };
 
     this.sessions.set(token, session);
+    if (this.sessionStore) {
+      await this.sessionStore.set(token, session);
+    }
     return session;
   }
 
@@ -60,7 +72,13 @@ export class OwnerConsoleSessionManager {
       throw new PlatformAccessDeniedError('Token sesi Owner Console tidak valid.');
     }
 
-    const session = this.sessions.get(token);
+    let session = this.sessions.get(token);
+    if (!session && this.sessionStore) {
+      session = (await this.sessionStore.get(token)) ?? undefined;
+      if (session) {
+        this.sessions.set(token, session);
+      }
+    }
     if (!session) {
       throw new PlatformAccessDeniedError(
         'Sesi Owner Console tidak ditemukan atau telah kedaluwarsa.',
@@ -69,6 +87,9 @@ export class OwnerConsoleSessionManager {
 
     if (new Date(session.expiresAt).getTime() < Date.now()) {
       this.sessions.delete(token);
+      if (this.sessionStore) {
+        await this.sessionStore.delete(token);
+      }
       throw new PlatformAccessDeniedError('Sesi Owner Console telah kedaluwarsa.');
     }
 

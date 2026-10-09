@@ -119,8 +119,16 @@ export class StoreContextResolver {
  * Customer Session Manager.
  * Issues and validates session tokens, binding each customer strictly to a verified store context.
  */
+export interface ICustomerSessionStore {
+  get(token: string): Promise<CustomerSession | null>;
+  set(token: string, session: CustomerSession): Promise<void>;
+  delete(token: string): Promise<void>;
+}
+
 export class CustomerSessionManager {
   private readonly sessions = new Map<string, CustomerSession>();
+
+  constructor(private readonly sessionStore?: ICustomerSessionStore | undefined) {}
 
   /**
    * Creates an authenticated customer session.
@@ -150,6 +158,43 @@ export class CustomerSessionManager {
     };
 
     this.sessions.set(sessionToken, session);
+    if (this.sessionStore) {
+      void this.sessionStore.set(sessionToken, session);
+    }
+    return session;
+  }
+
+  /**
+   * Asynchronously creates an authenticated customer session, awaiting durable persistence.
+   */
+  public async createSessionAsync(input: {
+    storeId: string;
+    customerId: string;
+    customerName?: string | undefined;
+    customerEmail?: string | undefined;
+    customerPhone?: string | undefined;
+    ttlSeconds?: number | undefined;
+  }): Promise<CustomerSession> {
+    const sessionToken = `csess_${Math.random().toString(36).slice(2)}_${Date.now().toString(36)}`;
+    const now = new Date();
+    const ttl = input.ttlSeconds ?? 86400 * 7; // 7 days default
+    const expiresAt = new Date(now.getTime() + ttl * 1000).toISOString();
+
+    const session: CustomerSession = {
+      sessionToken,
+      storeId: input.storeId,
+      customerId: input.customerId,
+      customerName: input.customerName,
+      customerEmail: input.customerEmail,
+      customerPhone: input.customerPhone,
+      createdAt: now.toISOString(),
+      expiresAt,
+    };
+
+    this.sessions.set(sessionToken, session);
+    if (this.sessionStore) {
+      await this.sessionStore.set(sessionToken, session);
+    }
     return session;
   }
 
@@ -169,6 +214,48 @@ export class CustomerSessionManager {
     const now = new Date().toISOString();
     if (session.expiresAt < now) {
       this.sessions.delete(sessionToken);
+      if (this.sessionStore) {
+        void this.sessionStore.delete(sessionToken);
+      }
+      throw new CustomerSessionError('Customer session has expired');
+    }
+
+    if (session.storeId !== expectedStoreId) {
+      throw new CustomerAccessDeniedError('Customer session belongs to a different store');
+    }
+
+    return session;
+  }
+
+  /**
+   * Asynchronously resolves session, fetching from durable store if not present in memory.
+   */
+  public async resolveSessionAsync(
+    sessionToken: string,
+    expectedStoreId: string,
+  ): Promise<CustomerSession> {
+    if (!sessionToken || typeof sessionToken !== 'string') {
+      throw new CustomerSessionError('Missing customer session token');
+    }
+
+    let session = this.sessions.get(sessionToken);
+    if (!session && this.sessionStore) {
+      session = (await this.sessionStore.get(sessionToken)) ?? undefined;
+      if (session) {
+        this.sessions.set(sessionToken, session);
+      }
+    }
+
+    if (!session) {
+      throw new CustomerSessionError('Invalid customer session token');
+    }
+
+    const now = new Date().toISOString();
+    if (session.expiresAt < now) {
+      this.sessions.delete(sessionToken);
+      if (this.sessionStore) {
+        await this.sessionStore.delete(sessionToken);
+      }
       throw new CustomerSessionError('Customer session has expired');
     }
 

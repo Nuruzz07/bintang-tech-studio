@@ -1,0 +1,35 @@
+{
+  "name": "@bintang/database",
+  "version": "0.1.0",
+  "type": "module",
+  "private": true,
+  "description": "Bintang Tech Studio — Supabase / PostgreSQL Production Persistence Layer",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "dependencies": {
+    "@bintang/commerce": "^0.1.0",
+    "@bintang/fulfillment": "^0.1.0",
+    "@bintang/inventory": "^0.1.0",
+    "@bintang/observability": "^0.1.0",
+    "@bintang/orders": "^0.1.0",
+    "@bintang/payments": "^0.1.0",
+    "@bintang/shared": "^0.1.0",
+    "@bintang/tenancy": "^0.1.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.7.0",
+    "vitest": "^3.0.0"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "vitest run --no-file-parallelism",
+    "lint": "eslint src"
+  }
+}
