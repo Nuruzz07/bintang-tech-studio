@@ -19,24 +19,39 @@ Bintang Tech Studio is structured as a **Modular Monolith ("Monorepo v1")** engi
 
 ---
 
-## Current Status: M01 — Repository Foundation
+## Current Status: M15 - Production Pilot Hardening (Staging-Verified & Committed)
 
-| Component                     | Status                | Notes                                                                      |
-| ----------------------------- | --------------------- | -------------------------------------------------------------------------- |
-| **Monorepo Foundation**       | **IMPLEMENTED**       | npm workspaces, Turborepo, TypeScript strict, ESLint, Prettier, Vitest, CI |
-| **Foundational Packages**     | **IMPLEMENTED**       | `@bintang/shared`, `@bintang/tenancy`, `@bintang/observability`            |
-| **Database & Migrations**     | **PLANNED (M02)**     | No database connection or schema applied during M01                        |
-| **Identity & Tenancy Engine** | **PLANNED (M03)**     | Store Context types defined; persistence planned for M03                   |
-| **Commerce & Domain Engines** | **PLANNED (M04–M09)** | Packages scaffolded as architectural boundaries                            |
-| **Customer Store Migration**  | **PLANNED (M10)**     | Incremental strangler migration from Template 01                           |
-| **Bot Engine & Channels**     | **PLANNED (M11)**     | Server-side Bot Engine daemon                                              |
-| **Seller Dashboard**          | **PLANNED (M12)**     | Authenticated portal for store management                                  |
-| **Billing & Onboarding**      | **PLANNED (M13)**     | Multi-tenant billing, quotas, and subscriptions                            |
-| **Owner Console**             | **PLANNED (M14)**     | Platform-level superadmin management                                       |
-| **Production Pilot**          | **PLANNED (M15)**     | Pilot with 1–3 controlled sellers                                          |
+**Current Baseline Commit:** `ce9e71e9c235b8bc15d5beedbffa2d2c07e320e8` (`main`)
+**Staging Supabase Target:** `vaaixneyotrilqfkulqw` (41/41 SQL assertion suite passed)
+**Production Supabase Target:** `nowyzlyruzlokiejvtne` (Change-controlled, untouched)
+
+### Platform State & Readiness Matrix
+
+| Milestone / Subsystem | Domain / Code | Vitest (In-Memory) | Staging DB (Supabase) | Production Deployed | Notes & Actual Evidence |
+| :--- | :---: | :---: | :---: | :---: | :--- |
+| **M01: Monorepo Foundation** | Implemented | PASS | N/A (Tooling) | NO | Turborepo, TypeScript strict, shared packages, CI foundation |
+| **M02: Database & Migrations** | Implemented | PASS (SQL) | PASS (41 assertions) | NO | 32 tables, RLS policies, composite FKs (`00001`, `00002`, `00003`) |
+| **M03: Identity & Tenancy** | Implemented | PASS | PASS (RLS policies) | NO | `@bintang/tenancy`, Store Context, cross-tenant isolation |
+| **M04: Authorization (RBAC)** | Implemented | PASS | PASS (RLS policies) | NO | `@bintang/authorization`, permission matrices, role gates |
+| **M05: Catalog & Commerce** | Implemented | PASS | PASS (Schema) | NO | `@bintang/commerce`, products, categories, digital items |
+| **M06: Inventory Management** | Implemented | PASS | PASS (Triggers/RPC) | NO | `@bintang/inventory`, stock reservations, non-negative checks |
+| **M07: Orders & Lifecycle** | Implemented | PASS | PASS (`rpc_create_order`) | NO | `@bintang/orders`, state machine, snapshotting, voucher checks |
+| **M08: Payment Abstraction** | Partial (Mock only) | PASS | PASS (Schema) | NO | `@bintang/payments`, sandbox mock adapter; live gateway pending |
+| **M09: Digital Fulfillment** | Implemented | PASS | PASS (`rpc_claim_job`) | NO | `@bintang/fulfillment`, serial key delivery, status sync |
+| **M10: Customer Storefront** | Partial (UI + Mocks) | PASS | NO (Not deployed) | NO | `apps/customer-store`, view models, cart logic, tokens |
+| **M11: Bot & Messaging Engine**| Partial (Lib only) | PASS | N/A | NO | `@bintang/telegram`, command/callback router; daemon pending |
+| **M12: Seller Dashboard** | Partial (UI + Mocks) | PASS | NO (Not deployed) | NO | `apps/seller-dashboard`, backoffice logic, session manager |
+| **M13: Billing & Onboarding** | Partial (Domain only)| PASS | PASS (Schema) | NO | `packages/billing`, plans, quotas; DB repo pending |
+| **M14: Owner Console** | Partial (UI + Mocks) | PASS | NO (Not deployed) | NO | `apps/owner-console`, tenant oversight, audit logs |
+| **M15: Pilot Hardening** | Implemented | PASS (34 tasks + E2E) | PASS (41 tests) | NO | Atomic RPCs, partial idempotency indexes, durable sessions |
 
 > [!IMPORTANT]
-> **No business logic, database migrations, or production external integrations are active in M01.**
+> **Production Boundary Notice:**
+> 1. **Staging Validation != Production Deployed:** Milestone M15 is committed to `origin/main` and validated against isolated Supabase staging (`vaaixneyotrilqfkulqw`), proving schema durability, RLS isolation, and transactional atomicity at the PostgreSQL level. However, Supabase production (`nowyzlyruzlokiejvtne`) remains completely untouched under strict change control.
+> 2. **In-Memory Domain Tests != Network E2E:** Vitest suites (including `tests/e2e/pilot-acceptance.test.ts`) validate cross-package domain orchestration using in-memory repositories and mock adapters. They do **not** invoke live network PostgreSQL, Supabase Auth GoTrue, or live payment gateways.
+> 3. **External Production Integrations Pending:** Passing test suites proves internal software contracts; it does **not** prove that external third-party production services (live payment gateway credentials, live Telegram bot webhook, production DNS/domain cutover) are operational.
+> 4. **Business Roadmap Alignment:** The business phase roadmap (Phase 0 - 16) remains active and unmodified. The technical repository milestones (M01 - M15) represent engineering stabilization gates preparing the foundation for Phase 3 Production Pilot.
+> 5. **Pilot Status:** The production pilot slice is architecturally hardened and verified on staging, but operational pilot traffic has **not** yet been activated. See [Production Pilot Gap Register](file:///c:/BOT_WEB/Bintang-Tech-Project/docs/implementation/PRODUCTION_PILOT_GAP_REGISTER.md) for required release gates.
 
 ---
 
