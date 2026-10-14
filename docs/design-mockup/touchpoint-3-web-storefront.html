@@ -1,0 +1,596 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>3. Website Customer (Storefront) — Bintang Store</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      body {
+        font-family: 'Plus Jakarta Sans', sans-serif;
+        background-color: #0e1015;
+        color: #ffffff;
+        -webkit-font-smoothing: antialiased;
+      }
+    </style>
+  </head>
+  <body
+    class="p-6 md:p-10 bg-[#0E1015] min-h-screen flex flex-col justify-center items-center space-y-8"
+  >
+    <!-- HEADER SLIDE -->
+    <div class="w-full max-w-6xl text-left space-y-1">
+      <h1 class="text-2xl md:text-3xl font-extrabold text-white tracking-tight">
+        3. Website Customer (Storefront)
+      </h1>
+      <p class="text-xs md:text-sm text-stone-400">
+        Tampilan toko online yang profesional dan minimalis.
+      </p>
+    </div>
+
+    <!-- STOREFRONT BROWSER CANVAS -->
+    <div
+      class="w-full max-w-6xl bg-[#F8F9FA] rounded-2xl shadow-2xl border border-stone-800 overflow-hidden flex flex-col text-[#1E293B] relative"
+    >
+      <!-- SUBTLE BACKGROUND WATERMARK SILHOUETTE ACROSS STOREFRONT -->
+      <div
+        class="absolute right-4 bottom-20 w-[420px] h-[420px] opacity-[0.025] pointer-events-none select-none z-0"
+      >
+        <svg
+          viewBox="0 0 120 120"
+          fill="none"
+          class="w-full h-full text-stone-900"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <line
+            x1="8"
+            y1="60"
+            x2="112"
+            y2="60"
+            stroke="currentColor"
+            stroke-width="3"
+            stroke-linecap="round"
+          />
+          <path
+            d="M28 50 L60 14 L92 50"
+            stroke="currentColor"
+            stroke-width="6"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          />
+          <path
+            d="M28 70 L60 106 L92 70"
+            stroke="currentColor"
+            stroke-width="6"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          />
+          <polygon points="60,36 78,60 60,84 42,60" fill="currentColor" />
+          <path
+            d="M60 42 C60 54 52 60 46 60 C52 60 60 66 60 78 C60 66 68 60 74 60 C68 60 60 54 60 42 Z"
+            fill="currentColor"
+          />
+        </svg>
+      </div>
+
+      <!-- GLOBAL NAVIGATION HEADER -->
+      <header
+        class="bg-white border-b border-gray-200 sticky top-0 z-40 px-6 py-4 flex items-center justify-between"
+      >
+        <!-- Brand Logo -->
+        <div class="flex items-center gap-3">
+          <div
+            class="w-9 h-9 rounded-xl bg-[#1C1917] p-1 flex items-center justify-center shadow-xs border border-stone-800"
+          >
+            <svg
+              viewBox="0 0 120 120"
+              fill="none"
+              class="w-full h-full"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <line
+                x1="8"
+                y1="60"
+                x2="112"
+                y2="60"
+                stroke="#E7E5E4"
+                stroke-width="2"
+                stroke-linecap="round"
+              />
+              <line
+                x1="30"
+                y1="60"
+                x2="90"
+                y2="60"
+                stroke="#E8A359"
+                stroke-width="2.5"
+                stroke-linecap="round"
+              />
+              <path
+                d="M28 50 L60 14 L92 50"
+                stroke="#1C1917"
+                stroke-width="5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                fill="none"
+              />
+              <path
+                d="M28 70 L60 106 L92 70"
+                stroke="#9C532B"
+                stroke-width="5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                fill="none"
+              />
+              <polygon points="60,36 78,60 60,84 42,60" fill="#1C1917" />
+              <path
+                d="M60 42 C60 54 52 60 46 60 C52 60 60 66 60 78 C60 66 68 60 74 60 C68 60 60 54 60 42 Z"
+                fill="#E8A359"
+              />
+              <circle cx="60" cy="60" r="2" fill="#FAF8F5" />
+            </svg>
+          </div>
+          <span class="font-bold text-base text-gray-900 tracking-tight">Bintang Store</span>
+        </div>
+
+        <!-- Navigation Links -->
+        <nav class="hidden md:flex items-center gap-7 text-xs font-semibold text-gray-600">
+          <a href="#beranda" class="text-gray-900 hover:text-[#D95338] transition">Beranda</a>
+          <a href="#produk" class="text-gray-900 hover:text-[#D95338] transition">Produk</a>
+          <a href="#kategori" class="text-gray-900 hover:text-[#D95338] transition">Kategori</a>
+          <a href="#cara-beli" class="text-gray-900 hover:text-[#D95338] transition">Cara Beli</a>
+          <a href="#testimoni" class="text-gray-900 hover:text-[#D95338] transition">Testimoni</a>
+        </nav>
+
+        <!-- Utility & Actions -->
+        <div class="flex items-center gap-4">
+          <button class="text-gray-700 hover:text-gray-900" aria-label="Cari">
+            <svg
+              class="w-4 h-4"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+              />
+            </svg>
+          </button>
+          <button class="text-gray-700 hover:text-gray-900 relative" aria-label="Keranjang">
+            <svg
+              class="w-4 h-4"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"
+              />
+            </svg>
+            <span
+              class="absolute -top-1 -right-1 w-3.5 h-3.5 bg-rose-600 text-white rounded-full text-[8px] flex items-center justify-center font-bold"
+              >0</span
+            >
+          </button>
+          <button
+            class="px-5 py-2 rounded-full bg-[#D95338] hover:bg-[#c2452c] text-white text-xs font-bold transition shadow-xs"
+          >
+            Masuk
+          </button>
+        </div>
+      </header>
+
+      <!-- MAIN BODY -->
+      <main class="p-6 md:p-8 space-y-8 flex-1">
+        <!-- HERO SECTION -->
+        <section
+          class="bg-[#15161B] text-white rounded-2xl overflow-hidden shadow-xl border border-stone-800 grid grid-cols-1 lg:grid-cols-12 items-stretch relative"
+        >
+          <!-- OFFICIAL BINTANG LOGO SILHOUETTE WATERMARK -->
+          <div
+            class="absolute right-1/4 top-1/2 -translate-y-1/2 w-96 h-96 opacity-[0.06] pointer-events-none select-none z-0"
+          >
+            <svg
+              viewBox="0 0 120 120"
+              fill="none"
+              class="w-full h-full text-white"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <line
+                x1="8"
+                y1="60"
+                x2="112"
+                y2="60"
+                stroke="currentColor"
+                stroke-width="3"
+                stroke-linecap="round"
+              />
+              <path
+                d="M28 50 L60 14 L92 50"
+                stroke="currentColor"
+                stroke-width="6"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+              <path
+                d="M28 70 L60 106 L92 70"
+                stroke="currentColor"
+                stroke-width="6"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+              <polygon points="60,36 78,60 60,84 42,60" fill="currentColor" />
+              <path
+                d="M60 42 C60 54 52 60 46 60 C52 60 60 66 60 78 C60 66 68 60 74 60 C68 60 60 54 60 42 Z"
+                fill="currentColor"
+              />
+            </svg>
+          </div>
+          <!-- Left Text & CTA Column -->
+          <div class="lg:col-span-7 p-8 sm:p-12 flex flex-col justify-center space-y-4">
+            <div
+              class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full border border-amber-600/40 bg-stone-900/60 text-[10px] font-bold text-amber-400 w-fit"
+            >
+              <span>✦</span>
+              <span>TEMPLATE PREMIUM</span>
+            </div>
+
+            <h2 class="text-3xl sm:text-4xl font-extrabold tracking-tight text-white leading-tight">
+              Solusi Digital<br />
+              Untuk Bisnis Modern
+            </h2>
+
+            <p class="text-xs sm:text-sm text-stone-300 max-w-md leading-relaxed">
+              Template, desain, dan tools premium untuk membantu bisnis digital kamu berkembang.
+            </p>
+
+            <div class="pt-3 flex flex-wrap items-center gap-3">
+              <a
+                href="#produk"
+                class="px-6 py-2.5 rounded-full bg-[#D95338] hover:bg-[#c2452c] text-white text-xs font-bold transition shadow-md shadow-[#D95338]/30"
+              >
+                Lihat Produk
+              </a>
+              <a
+                href="#cara-beli"
+                class="px-5 py-2.5 rounded-full border border-stone-600 hover:border-white text-white text-xs font-semibold hover:bg-white/5 transition"
+              >
+                Cara Beli
+              </a>
+            </div>
+          </div>
+
+          <!-- Right Visual Mockup Scene (Modern Workspace with Tablet & Plant) -->
+          <div
+            class="lg:col-span-5 bg-gradient-to-tr from-[#1E2028] via-[#2D2A26] to-[#1E1C1A] p-6 flex items-center justify-center relative overflow-hidden"
+          >
+            <div
+              class="w-full max-w-xs bg-stone-900/90 rounded-2xl p-4 border border-stone-700 shadow-2xl space-y-3 backdrop-blur-sm"
+            >
+              <div
+                class="flex items-center justify-between pb-2 border-b border-stone-800 text-[10px]"
+              >
+                <span class="text-stone-400">bintangstore.id</span>
+                <span class="text-emerald-400 font-medium">● Katalog Terbuka</span>
+              </div>
+              <div
+                class="h-28 rounded-xl bg-gradient-to-tr from-[#D95338]/30 to-amber-600/20 border border-stone-700 flex flex-col justify-end p-3"
+              >
+                <span class="text-xs font-extrabold text-white">Canva & Notion OS</span>
+                <span class="text-[9px] text-amber-300">Siap Pakai & Bergaransi</span>
+              </div>
+              <div class="flex justify-between items-center text-[10px] text-stone-400 pt-1">
+                <span>Akses Instan</span>
+                <span class="font-bold text-white">QRIS Terverifikasi</span>
+              </div>
+            </div>
+            <div
+              class="absolute -right-10 -bottom-10 w-44 h-44 bg-amber-500/10 rounded-full blur-3xl pointer-events-none"
+            ></div>
+          </div>
+        </section>
+
+        <!-- VALUE PROPOSITION / TRUST STRIP (4 SHIELD ICONS) -->
+        <section class="bg-white rounded-xl border border-gray-200/80 p-4 shadow-xs">
+          <div
+            class="grid grid-cols-2 md:grid-cols-4 gap-4 divide-y md:divide-y-0 md:divide-x divide-gray-100"
+          >
+            <!-- Item 1: Shield Star -->
+            <div class="flex items-center gap-3 px-3 pt-2 md:pt-0">
+              <div
+                class="w-10 h-10 rounded-xl bg-[#FDF2F0] text-[#D95338] flex items-center justify-center shrink-0"
+              >
+                <svg
+                  class="w-5 h-5"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.8"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"
+                  />
+                </svg>
+              </div>
+              <div>
+                <h4 class="font-bold text-xs text-gray-900">Produk Berkualitas</h4>
+                <p class="text-[11px] text-gray-500">Pilihan terbaik</p>
+              </div>
+            </div>
+
+            <!-- Item 2: Shield Lightning -->
+            <div class="flex items-center gap-3 px-3 pt-2 md:pt-0">
+              <div
+                class="w-10 h-10 rounded-xl bg-[#FDF2F0] text-[#D95338] flex items-center justify-center shrink-0"
+              >
+                <svg
+                  class="w-5 h-5"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.8"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M12 2l8 4v6c0 5.55-3.84 10.74-8 12-4.16-1.26-8-6.45-8-12V6l8-4zm-1 6v4h2v-4h-2zm0 6v2h2v-2h-2z"
+                  />
+                </svg>
+              </div>
+              <div>
+                <h4 class="font-bold text-xs text-gray-900">Akses Instan</h4>
+                <p class="text-[11px] text-gray-500">Langsung setelah bayar</p>
+              </div>
+            </div>
+
+            <!-- Item 3: Shield Checkmark / Lock -->
+            <div class="flex items-center gap-3 px-3 pt-2 md:pt-0">
+              <div
+                class="w-10 h-10 rounded-xl bg-[#FDF2F0] text-[#D95338] flex items-center justify-center shrink-0"
+              >
+                <svg
+                  class="w-5 h-5"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.8"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
+                  />
+                </svg>
+              </div>
+              <div>
+                <h4 class="font-bold text-xs text-gray-900">Aman & Terpercaya</h4>
+                <p class="text-[11px] text-gray-500">Ribuan pelanggan</p>
+              </div>
+            </div>
+
+            <!-- Item 4: Shield Support -->
+            <div class="flex items-center gap-3 px-3 pt-2 md:pt-0">
+              <div
+                class="w-10 h-10 rounded-xl bg-[#FDF2F0] text-[#D95338] flex items-center justify-center shrink-0"
+              >
+                <svg
+                  class="w-5 h-5"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.8"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192l-3.536 3.536M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-5 0a4 4 0 11-8 0 4 4 0 018 0z"
+                  />
+                </svg>
+              </div>
+              <div>
+                <h4 class="font-bold text-xs text-gray-900">Support 24/7</h4>
+                <p class="text-[11px] text-gray-500">Siap membantu</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- KATEGORI PRODUK -->
+        <section class="space-y-4">
+          <div class="flex items-center justify-between">
+            <h3 class="text-base font-extrabold text-gray-900">Kategori Produk</h3>
+            <a
+              href="#kategori"
+              class="text-xs font-bold text-[#D95338] hover:underline flex items-center gap-1"
+            >
+              Lihat Semua →
+            </a>
+          </div>
+
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+            <!-- 1. Template -->
+            <div
+              class="bg-white rounded-xl border border-gray-200/90 p-3 hover:shadow-md transition cursor-pointer group space-y-2"
+            >
+              <div
+                class="h-28 rounded-lg bg-orange-50 border border-orange-100 flex items-center justify-center font-bold text-[#D95338] text-sm group-hover:scale-[1.02] transition-transform"
+              >
+                TEMPLATE
+              </div>
+              <div>
+                <h4 class="font-bold text-xs text-gray-900">Template</h4>
+                <p class="text-[11px] text-gray-500">Canva & desain</p>
+              </div>
+            </div>
+
+            <!-- 2. Ebook -->
+            <div
+              class="bg-white rounded-xl border border-gray-200/90 p-3 hover:shadow-md transition cursor-pointer group space-y-2"
+            >
+              <div
+                class="h-28 rounded-lg bg-blue-50 border border-blue-100 flex items-center justify-center font-bold text-blue-600 text-sm group-hover:scale-[1.02] transition-transform"
+              >
+                EBOOK
+              </div>
+              <div>
+                <h4 class="font-bold text-xs text-gray-900">Ebook</h4>
+                <p class="text-[11px] text-gray-500">Panduan digital</p>
+              </div>
+            </div>
+
+            <!-- 3. Tools -->
+            <div
+              class="bg-white rounded-xl border border-gray-200/90 p-3 hover:shadow-md transition cursor-pointer group space-y-2"
+            >
+              <div
+                class="h-28 rounded-lg bg-stone-100 border border-stone-200 flex items-center justify-center font-bold text-gray-800 text-sm group-hover:scale-[1.02] transition-transform"
+              >
+                TOOLS
+              </div>
+              <div>
+                <h4 class="font-bold text-xs text-gray-900">Tools</h4>
+                <p class="text-[11px] text-gray-500">Untuk produktivitas</p>
+              </div>
+            </div>
+
+            <!-- 4. Konten -->
+            <div
+              class="bg-white rounded-xl border border-gray-200/90 p-3 hover:shadow-md transition cursor-pointer group space-y-2"
+            >
+              <div
+                class="h-28 rounded-lg bg-emerald-50 border border-emerald-100 flex items-center justify-center font-bold text-emerald-600 text-sm group-hover:scale-[1.02] transition-transform"
+              >
+                KONTEN
+              </div>
+              <div>
+                <h4 class="font-bold text-xs text-gray-900">Konten</h4>
+                <p class="text-[11px] text-gray-500">Video, foto, audio</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- PRODUK TERBARU (EXACT TITLES, DISCOUNT BADGES & PRICES) -->
+        <section class="space-y-4 pb-4">
+          <div class="flex items-center justify-between">
+            <h3 class="text-base font-extrabold text-gray-900">Produk Terbaru</h3>
+            <a
+              href="#produk"
+              class="text-xs font-bold text-[#D95338] hover:underline flex items-center gap-1"
+            >
+              Lihat Semua →
+            </a>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <!-- Card 1: Canva Marketing Bundle (-30%, Rp 49.000 / Rp 99.000) -->
+            <div
+              class="bg-white rounded-xl border border-gray-200/90 p-3.5 flex flex-col justify-between hover:shadow-md transition group space-y-2"
+            >
+              <div class="space-y-2">
+                <div
+                  class="h-32 rounded-lg bg-orange-50/70 border border-orange-100 p-3 relative flex items-center justify-center overflow-hidden"
+                >
+                  <span
+                    class="absolute top-2 right-2 px-2 py-0.5 rounded-full bg-[#D95338] text-white text-[10px] font-bold"
+                    >-30%</span
+                  >
+                  <span class="font-bold text-xs text-[#D95338]">CANVA BUNDLE</span>
+                </div>
+                <h4
+                  class="font-bold text-xs text-gray-900 group-hover:text-[#D95338] transition-colors leading-snug"
+                >
+                  Canva Template Bundle Marketing
+                </h4>
+              </div>
+              <div class="pt-2 border-t border-gray-100 flex items-baseline">
+                <span class="text-sm font-extrabold text-gray-900">Rp 49.000</span>
+                <span class="text-[10px] text-gray-400 line-through ml-2">Rp 99.000</span>
+              </div>
+            </div>
+
+            <!-- Card 2: Notion Planner (-20%, Rp 39.000) -->
+            <div
+              class="bg-white rounded-xl border border-gray-200/90 p-3.5 flex flex-col justify-between hover:shadow-md transition group space-y-2"
+            >
+              <div class="space-y-2">
+                <div
+                  class="h-32 rounded-lg bg-stone-100/70 border border-stone-200 p-3 relative flex items-center justify-center overflow-hidden"
+                >
+                  <span
+                    class="absolute top-2 right-2 px-2 py-0.5 rounded-full bg-[#D95338] text-white text-[10px] font-bold"
+                    >-20%</span
+                  >
+                  <span class="font-bold text-xs text-gray-800">NOTION PLANNER</span>
+                </div>
+                <h4
+                  class="font-bold text-xs text-gray-900 group-hover:text-[#D95338] transition-colors leading-snug"
+                >
+                  Notion Planner Untuk Produktivitas
+                </h4>
+              </div>
+              <div class="pt-2 border-t border-gray-100 flex items-baseline">
+                <span class="text-sm font-extrabold text-gray-900">Rp 39.000</span>
+              </div>
+            </div>
+
+            <!-- Card 3: Ebook Digital Marketing (Rp 29.000) -->
+            <div
+              class="bg-white rounded-xl border border-gray-200/90 p-3.5 flex flex-col justify-between hover:shadow-md transition group space-y-2"
+            >
+              <div class="space-y-2">
+                <div
+                  class="h-32 rounded-lg bg-blue-50/70 border border-blue-100 p-3 relative flex items-center justify-center overflow-hidden"
+                >
+                  <span class="font-bold text-xs text-blue-600">EBOOK ADS</span>
+                </div>
+                <h4
+                  class="font-bold text-xs text-gray-900 group-hover:text-[#D95338] transition-colors leading-snug"
+                >
+                  Ebook Digital Marketing
+                </h4>
+              </div>
+              <div class="pt-2 border-t border-gray-100 flex items-baseline">
+                <span class="text-sm font-extrabold text-gray-900">Rp 29.000</span>
+              </div>
+            </div>
+
+            <!-- Card 4: Template Instagram Aesthetic (Rp 49.000) -->
+            <div
+              class="bg-white rounded-xl border border-gray-200/90 p-3.5 flex flex-col justify-between hover:shadow-md transition group space-y-2"
+            >
+              <div class="space-y-2">
+                <div
+                  class="h-32 rounded-lg bg-emerald-50/70 border border-emerald-100 p-3 relative flex items-center justify-center overflow-hidden"
+                >
+                  <span class="font-bold text-xs text-emerald-600">INSTAGRAM AESTHETIC</span>
+                </div>
+                <h4
+                  class="font-bold text-xs text-gray-900 group-hover:text-[#D95338] transition-colors leading-snug"
+                >
+                  Template Instagram Aesthetic
+                </h4>
+              </div>
+              <div class="pt-2 border-t border-gray-100 flex items-baseline">
+                <span class="text-sm font-extrabold text-gray-900">Rp 49.000</span>
+              </div>
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+  </body>
+</html>

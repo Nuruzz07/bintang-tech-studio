@@ -27,26 +27,27 @@ Bintang Tech Studio is structured as a **Modular Monolith ("Monorepo v1")** engi
 
 ### Platform State & Readiness Matrix
 
-| Milestone / Subsystem | Domain / Code | Vitest (In-Memory) | Staging DB (Supabase) | Production Deployed | Notes & Actual Evidence |
-| :--- | :---: | :---: | :---: | :---: | :--- |
-| **M01: Monorepo Foundation** | Implemented | PASS | N/A (Tooling) | NO | Turborepo, TypeScript strict, shared packages, CI foundation |
-| **M02: Database & Migrations** | Implemented | PASS (SQL) | PASS (41 assertions) | NO | 32 tables, RLS policies, composite FKs (`00001`, `00002`, `00003`) |
-| **M03: Identity & Tenancy** | Implemented | PASS | PASS (RLS policies) | NO | `@bintang/tenancy`, Store Context, cross-tenant isolation |
-| **M04: Authorization (RBAC)** | Implemented | PASS | PASS (RLS policies) | NO | `@bintang/authorization`, permission matrices, role gates |
-| **M05: Catalog & Commerce** | Implemented | PASS | PASS (Schema) | NO | `@bintang/commerce`, products, categories, digital items |
-| **M06: Inventory Management** | Implemented | PASS | PASS (Triggers/RPC) | NO | `@bintang/inventory`, stock reservations, non-negative checks |
-| **M07: Orders & Lifecycle** | Implemented | PASS | PASS (`rpc_create_order`) | NO | `@bintang/orders`, state machine, snapshotting, voucher checks |
-| **M08: Payment Abstraction** | Partial (Mock only) | PASS | PASS (Schema) | NO | `@bintang/payments`, sandbox mock adapter; live gateway pending |
-| **M09: Digital Fulfillment** | Implemented | PASS | PASS (`rpc_claim_job`) | NO | `@bintang/fulfillment`, serial key delivery, status sync |
-| **M10: Customer Storefront** | Partial (UI + Mocks) | PASS | NO (Not deployed) | NO | `apps/customer-store`, view models, cart logic, tokens |
-| **M11: Bot & Messaging Engine**| Partial (Lib only) | PASS | N/A | NO | `@bintang/telegram`, command/callback router; daemon pending |
-| **M12: Seller Dashboard** | Partial (UI + Mocks) | PASS | NO (Not deployed) | NO | `apps/seller-dashboard`, backoffice logic, session manager |
-| **M13: Billing & Onboarding** | Partial (Domain only)| PASS | PASS (Schema) | NO | `packages/billing`, plans, quotas; DB repo pending |
-| **M14: Owner Console** | Partial (UI + Mocks) | PASS | NO (Not deployed) | NO | `apps/owner-console`, tenant oversight, audit logs |
-| **M15: Pilot Hardening** | Implemented | PASS (34 tasks + E2E) | PASS (41 tests) | NO | Atomic RPCs, partial idempotency indexes, durable sessions |
+| Milestone / Subsystem           |     Domain / Code     |  Vitest (In-Memory)   |   Staging DB (Supabase)   | Production Deployed | Notes & Actual Evidence                                            |
+| :------------------------------ | :-------------------: | :-------------------: | :-----------------------: | :-----------------: | :----------------------------------------------------------------- |
+| **M01: Monorepo Foundation**    |      Implemented      |         PASS          |       N/A (Tooling)       |         NO          | Turborepo, TypeScript strict, shared packages, CI foundation       |
+| **M02: Database & Migrations**  |      Implemented      |      PASS (SQL)       |   PASS (41 assertions)    |         NO          | 32 tables, RLS policies, composite FKs (`00001`, `00002`, `00003`) |
+| **M03: Identity & Tenancy**     |      Implemented      |         PASS          |    PASS (RLS policies)    |         NO          | `@bintang/tenancy`, Store Context, cross-tenant isolation          |
+| **M04: Authorization (RBAC)**   |      Implemented      |         PASS          |    PASS (RLS policies)    |         NO          | `@bintang/authorization`, permission matrices, role gates          |
+| **M05: Catalog & Commerce**     |      Implemented      |         PASS          |       PASS (Schema)       |         NO          | `@bintang/commerce`, products, categories, digital items           |
+| **M06: Inventory Management**   |      Implemented      |         PASS          |    PASS (Triggers/RPC)    |         NO          | `@bintang/inventory`, stock reservations, non-negative checks      |
+| **M07: Orders & Lifecycle**     |      Implemented      |         PASS          | PASS (`rpc_create_order`) |         NO          | `@bintang/orders`, state machine, snapshotting, voucher checks     |
+| **M08: Payment Abstraction**    |  Partial (Mock only)  |         PASS          |       PASS (Schema)       |         NO          | `@bintang/payments`, sandbox mock adapter; live gateway pending    |
+| **M09: Digital Fulfillment**    |      Implemented      |         PASS          |  PASS (`rpc_claim_job`)   |         NO          | `@bintang/fulfillment`, serial key delivery, status sync           |
+| **M10: Customer Storefront**    | Partial (UI + Mocks)  |         PASS          |     NO (Not deployed)     |         NO          | `apps/customer-store`, view models, cart logic, tokens             |
+| **M11: Bot & Messaging Engine** |  Partial (Lib only)   |         PASS          |            N/A            |         NO          | `@bintang/telegram`, command/callback router; daemon pending       |
+| **M12: Seller Dashboard**       | Partial (UI + Mocks)  |         PASS          |     NO (Not deployed)     |         NO          | `apps/seller-dashboard`, backoffice logic, session manager         |
+| **M13: Billing & Onboarding**   | Partial (Domain only) |         PASS          |       PASS (Schema)       |         NO          | `packages/billing`, plans, quotas; DB repo pending                 |
+| **M14: Owner Console**          | Partial (UI + Mocks)  |         PASS          |     NO (Not deployed)     |         NO          | `apps/owner-console`, tenant oversight, audit logs                 |
+| **M15: Pilot Hardening**        |      Implemented      | PASS (34 tasks + E2E) |      PASS (41 tests)      |         NO          | Atomic RPCs, partial idempotency indexes, durable sessions         |
 
 > [!IMPORTANT]
 > **Production Boundary Notice:**
+>
 > 1. **Staging Validation != Production Deployed:** Milestone M15 is committed to `origin/main` and validated against isolated Supabase staging (`vaaixneyotrilqfkulqw`), proving schema durability, RLS isolation, and transactional atomicity at the PostgreSQL level. However, Supabase production (`nowyzlyruzlokiejvtne`) remains completely untouched under strict change control.
 > 2. **In-Memory Domain Tests != Network E2E:** Vitest suites (including `tests/e2e/pilot-acceptance.test.ts`) validate cross-package domain orchestration using in-memory repositories and mock adapters. They do **not** invoke live network PostgreSQL, Supabase Auth GoTrue, or live payment gateways.
 > 3. **External Production Integrations Pending:** Passing test suites proves internal software contracts; it does **not** prove that external third-party production services (live payment gateway credentials, live Telegram bot webhook, production DNS/domain cutover) are operational.

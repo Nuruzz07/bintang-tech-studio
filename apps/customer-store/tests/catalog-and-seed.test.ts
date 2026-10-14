@@ -1,6 +1,14 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { createCustomerStoreTestHarness, CustomerStoreTestHarness } from './test-helpers.js';
 import { seedTemplate01Catalog } from '../src/index.js';
+import { TEMPLATE_01_PRODUCTS } from '../src/catalog-seed.js';
+
+it('ships no real-looking credentials or delivery tokens in the public catalog seed', () => {
+  expect(TEMPLATE_01_PRODUCTS.length).toBe(36);
+  expect(
+    TEMPLATE_01_PRODUCTS.every((product) => product.credentialSecret === 'SIMULATED_DELIVERY_ONLY'),
+  ).toBe(true);
+});
 
 describe('Customer Store — Catalog & Template 01 Seed (M05 / M06 Integration)', () => {
   let harness: CustomerStoreTestHarness;

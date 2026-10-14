@@ -1,0 +1,729 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Bintang Tech Studio — Master Visual Blueprint</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      body {
+        font-family: 'Plus Jakarta Sans', sans-serif;
+        background-color: #0b0d11;
+        color: #e2e8f0;
+        -webkit-font-smoothing: antialiased;
+      }
+    </style>
+  </head>
+  <body class="p-8 sm:p-12 bg-[#0B0D11] min-h-screen space-y-10">
+    <!-- COLLAGE HEADER -->
+    <header class="text-center max-w-4xl mx-auto space-y-3 pb-6 border-b border-stone-800 relative">
+      <div class="flex justify-center">
+        <div class="w-12 h-12 rounded-2xl bg-[#1C1917] p-1.5 shadow-lg border border-stone-700">
+          <svg
+            viewBox="0 0 120 120"
+            fill="none"
+            class="w-full h-full"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <line
+              x1="8"
+              y1="60"
+              x2="112"
+              y2="60"
+              stroke="#E7E5E4"
+              stroke-width="2"
+              stroke-linecap="round"
+            />
+            <line
+              x1="30"
+              y1="60"
+              x2="90"
+              y2="60"
+              stroke="#E8A359"
+              stroke-width="2.5"
+              stroke-linecap="round"
+            />
+            <path
+              d="M28 50 L60 14 L92 50"
+              stroke="#1C1917"
+              stroke-width="5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              fill="none"
+            />
+            <path
+              d="M28 70 L60 106 L92 70"
+              stroke="#9C532B"
+              stroke-width="5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              fill="none"
+            />
+            <polygon points="60,36 78,60 60,84 42,60" fill="#1C1917" />
+            <path
+              d="M60 42 C60 54 52 60 46 60 C52 60 60 66 60 78 C60 66 68 60 74 60 C68 60 60 54 60 42 Z"
+              fill="#E8A359"
+            />
+            <circle cx="60" cy="60" r="2" fill="#FAF8F5" />
+          </svg>
+        </div>
+      </div>
+      <div
+        class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#D95338]/15 border border-[#D95338]/30 text-[#D95338] text-xs font-bold tracking-wide"
+      >
+        <span>EKOSISTEM DIGITAL COMMERCE RESMI</span>
+      </div>
+      <h1 class="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">
+        Bintang Tech Studio — Master Visual Blueprint
+      </h1>
+      <p class="text-xs sm:text-sm text-stone-400">
+        Implementasi persis 1:1 seluruh touchpoint: Telegram Mini App, Seller Admin, Customer
+        Storefront, Platform Owner, Telegram Bot, dan WhatsApp Bot.
+      </p>
+    </header>
+
+    <!-- 6 FRAMES GRID (2 ROWS × 3 COLUMNS) -->
+    <div class="max-w-[1700px] mx-auto grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
+      <!-- ======================================================== -->
+      <!-- FRAME 1: WEBAPP TELEGRAM (MINI APP) -->
+      <!-- ======================================================== -->
+      <div class="bg-[#14161B] border border-stone-800 rounded-2xl p-5 space-y-4 shadow-xl">
+        <div class="border-b border-stone-800 pb-3">
+          <span class="text-[11px] font-bold text-[#D95338] font-mono">1. WEBAPP TELEGRAM</span>
+          <h2 class="text-sm font-bold text-white">WebApp Telegram (Mini App)</h2>
+          <p class="text-[11px] text-stone-400">
+            Toko dalam Telegram, pengalaman belanja yang cepat dan modern.
+          </p>
+        </div>
+
+        <!-- EMBEDDED TELEGRAM VIEW -->
+        <div
+          class="bg-[#F8F9FA] rounded-[28px] p-2.5 border-[4px] border-stone-700 text-[#1E293B] shadow-inner space-y-3 max-w-[340px] mx-auto"
+        >
+          <!-- App bar -->
+          <div
+            class="bg-[#18191E] text-white px-3 py-2 flex items-center justify-between text-xs rounded-t-[20px]"
+          >
+            <span class="text-[#2AABEE] text-[11px] font-semibold">‹ Back</span>
+            <div class="text-center leading-tight">
+              <div class="font-bold text-white text-xs">Bintang Store</div>
+              <div class="text-[9px] text-[#2AABEE] font-mono">bot</div>
+            </div>
+            <span class="text-stone-400 text-xs">⋮</span>
+          </div>
+
+          <!-- Mini Hero Card -->
+          <div
+            class="bg-[#1C1A17] text-white p-3.5 rounded-xl space-y-1 relative overflow-hidden border border-amber-900/40"
+          >
+            <span
+              class="inline-block px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-300 text-[8px] font-bold"
+              >✦ TEMPLATE PREMIUM</span
+            >
+            <div class="text-xs font-bold">Template Premium Untuk Bisnis Digital</div>
+            <p class="text-[10px] text-stone-300">
+              Solusi lengkap untuk desain, konten, dan alat bisnis digital kamu.
+            </p>
+          </div>
+
+          <!-- 5 Category Pills -->
+          <div class="grid grid-cols-5 gap-1 text-center text-[9px] py-0.5">
+            <div class="flex flex-col items-center gap-0.5">
+              <span
+                class="w-8 h-8 rounded-lg bg-[#D95338] text-white flex items-center justify-center font-bold"
+                >🏠</span
+              >
+              <span class="text-[#D95338] font-bold">Semua</span>
+            </div>
+            <div class="flex flex-col items-center gap-0.5">
+              <span
+                class="w-8 h-8 rounded-lg bg-white border border-gray-200 text-gray-700 flex items-center justify-center"
+                >📄</span
+              >
+              <span class="text-gray-600">Template</span>
+            </div>
+            <div class="flex flex-col items-center gap-0.5">
+              <span
+                class="w-8 h-8 rounded-lg bg-white border border-gray-200 text-gray-700 flex items-center justify-center"
+                >✏️</span
+              >
+              <span class="text-gray-600">Desain</span>
+            </div>
+            <div class="flex flex-col items-center gap-0.5">
+              <span
+                class="w-8 h-8 rounded-lg bg-white border border-gray-200 text-gray-700 flex items-center justify-center"
+                >🎀</span
+              >
+              <span class="text-gray-600">Konten</span>
+            </div>
+            <div class="flex flex-col items-center gap-0.5">
+              <span
+                class="w-8 h-8 rounded-lg bg-white border border-gray-200 text-gray-700 flex items-center justify-center"
+                >🔧</span
+              >
+              <span class="text-gray-600">Tools</span>
+            </div>
+          </div>
+
+          <!-- 2 Column Products -->
+          <div class="grid grid-cols-2 gap-2">
+            <div class="bg-white p-2 rounded-xl border border-gray-200 space-y-1">
+              <div
+                class="h-16 rounded bg-orange-50 flex items-center justify-center font-bold text-[#D95338] text-[10px]"
+              >
+                CV BUNDLE
+              </div>
+              <div class="font-bold text-[10px] text-gray-900 line-clamp-1">
+                Canva Template Bundle Marketing
+              </div>
+              <div class="text-[11px] font-extrabold text-[#D95338]">Rp 49.000</div>
+              <button
+                class="w-full py-1 rounded-full bg-[#D95338] text-white text-[10px] font-bold"
+              >
+                Beli
+              </button>
+            </div>
+            <div class="bg-white p-2 rounded-xl border border-gray-200 space-y-1">
+              <div
+                class="h-16 rounded bg-stone-100 flex items-center justify-center font-bold text-gray-800 text-[10px]"
+              >
+                NOTION OS
+              </div>
+              <div class="font-bold text-[10px] text-gray-900 line-clamp-1">
+                Notion Planner Untuk Produktivitas
+              </div>
+              <div class="text-[11px] font-extrabold text-[#D95338]">Rp 39.000</div>
+              <button
+                class="w-full py-1 rounded-full bg-[#D95338] text-white text-[10px] font-bold"
+              >
+                Beli
+              </button>
+            </div>
+          </div>
+
+          <!-- 5-Tab Bottom Dock -->
+          <div
+            class="bg-white border-t border-gray-200 px-2 py-1.5 flex items-center justify-between text-[9px] text-gray-400 rounded-b-[20px]"
+          >
+            <span class="text-[#D95338] font-bold">Beranda</span>
+            <span>Kategori</span>
+            <span>Keranjang (2)</span>
+            <span>Pesanan</span>
+            <span>Akun</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ======================================================== -->
+      <!-- FRAME 2: DASHBOARD ADMIN (SELLER) -->
+      <!-- ======================================================== -->
+      <div class="bg-[#14161B] border border-stone-800 rounded-2xl p-5 space-y-4 shadow-xl">
+        <div class="border-b border-stone-800 pb-3">
+          <span class="text-[11px] font-bold text-[#D95338] font-mono">2. DASHBOARD SELLER</span>
+          <h2 class="text-sm font-bold text-white">Dashboard Admin (Seller)</h2>
+          <p class="text-[11px] text-stone-400">
+            Kelola produk, pesanan, pelanggan, dan operasional toko.
+          </p>
+        </div>
+
+        <!-- EMBEDDED SELLER WORKSPACE -->
+        <div
+          class="bg-white rounded-xl border border-gray-200 overflow-hidden text-[#1E293B] shadow-sm flex min-h-[460px]"
+        >
+          <!-- Micro Dark Sidebar -->
+          <div class="w-28 bg-[#14151A] p-2 space-y-3 shrink-0 text-stone-300 text-[10px]">
+            <div class="font-bold text-white flex items-center gap-1.5 text-[11px]">
+              <div
+                class="w-3.5 h-3.5 rounded bg-amber-500/20 text-amber-400 flex items-center justify-center text-[8px]"
+              >
+                ★
+              </div>
+              <span class="truncate">Bintang Studio</span>
+            </div>
+            <div class="bg-[#1C1D24] p-1.5 rounded text-[9px] text-stone-300">
+              <div class="font-bold text-white">Toko Saya</div>
+              <div class="text-stone-500 font-mono">seller</div>
+            </div>
+            <div class="space-y-0.5">
+              <div class="px-2 py-1 rounded bg-[#D95338] text-white font-bold">Dashboard</div>
+              <div class="px-2 py-1 text-stone-400">Produk</div>
+              <div class="px-2 py-1 text-stone-400">Pesanan</div>
+              <div class="px-2 py-1 text-stone-400">Pelanggan</div>
+              <div class="px-2 py-1 text-stone-400">Stok</div>
+            </div>
+          </div>
+
+          <!-- Dashboard Body -->
+          <div class="flex-1 p-3 bg-[#F8F9FA] space-y-3 overflow-hidden">
+            <div class="flex items-center justify-between text-xs font-bold text-gray-900">
+              <span>Dashboard</span>
+              <span
+                class="text-[10px] font-normal text-gray-500 bg-white border border-gray-200 px-2 py-0.5 rounded"
+                >7 hari terakhir ▾</span
+              >
+            </div>
+
+            <!-- 4 KPI Metrics Mini -->
+            <div class="grid grid-cols-2 gap-2">
+              <div class="bg-white p-2 rounded-lg border border-gray-200">
+                <div class="text-[9px] text-gray-400 flex justify-between">
+                  Total Penjualan <span class="text-emerald-600 font-bold">▲ +12%</span>
+                </div>
+                <div class="text-xs font-bold text-gray-900 mt-0.5">Rp 2.450.000</div>
+              </div>
+              <div class="bg-white p-2 rounded-lg border border-gray-200">
+                <div class="text-[9px] text-gray-400 flex justify-between">
+                  Pesanan <span class="text-emerald-600 font-bold">▲ +20%</span>
+                </div>
+                <div class="text-xs font-bold text-gray-900 mt-0.5">48</div>
+              </div>
+              <div class="bg-white p-2 rounded-lg border border-gray-200">
+                <div class="text-[9px] text-gray-400 flex justify-between">
+                  Pelanggan <span class="text-emerald-600 font-bold">▲ +8%</span>
+                </div>
+                <div class="text-xs font-bold text-gray-900 mt-0.5">35</div>
+              </div>
+              <div class="bg-white p-2 rounded-lg border border-gray-200">
+                <div class="text-[9px] text-gray-400 flex justify-between">
+                  Produk Terjual <span class="text-emerald-600 font-bold">▲ +15%</span>
+                </div>
+                <div class="text-xs font-bold text-gray-900 mt-0.5">73</div>
+              </div>
+            </div>
+
+            <!-- Spline Chart Mini -->
+            <div class="bg-white p-2 rounded-lg border border-gray-200 space-y-1">
+              <div class="text-[10px] font-bold text-gray-800">Grafik Penjualan</div>
+              <svg viewBox="0 0 300 80" class="w-full h-16">
+                <path
+                  d="M 10 65 Q 60 50 100 35 T 180 30 T 240 15 T 290 10 L 290 75 L 10 75 Z"
+                  fill="#D95338"
+                  fill-opacity="0.15"
+                />
+                <path
+                  d="M 10 65 Q 60 50 100 35 T 180 30 T 240 15 T 290 10"
+                  fill="none"
+                  stroke="#D95338"
+                  stroke-width="2"
+                />
+              </svg>
+            </div>
+
+            <!-- Mini Orders Table (Exact 5 rows) -->
+            <div class="bg-white rounded-lg border border-gray-200 overflow-hidden text-[9px]">
+              <div class="p-1.5 bg-gray-50 border-b border-gray-200 font-bold flex justify-between">
+                <span>Pesanan Terbaru</span>
+                <span class="text-[#D95338]">Lihat Semua ›</span>
+              </div>
+              <div class="p-1.5 space-y-1 text-gray-700">
+                <div class="flex justify-between items-center py-0.5 border-b border-gray-100">
+                  <span class="font-mono">#INV-0012</span>
+                  <span class="font-medium">Andi Pratama</span>
+                  <span class="px-1.5 py-0.2 rounded bg-emerald-50 text-emerald-700 font-bold"
+                    >✓ Selesai</span
+                  >
+                </div>
+                <div class="flex justify-between items-center py-0.5 border-b border-gray-100">
+                  <span class="font-mono">#INV-0011</span>
+                  <span class="font-medium">Siti Aminah</span>
+                  <span class="px-1.5 py-0.2 rounded bg-amber-50 text-amber-700 font-bold"
+                    >↻ Diproses</span
+                  >
+                </div>
+                <div class="flex justify-between items-center py-0.5">
+                  <span class="font-mono">#INV-0010</span>
+                  <span class="font-medium">Budi Santoso</span>
+                  <span class="px-1.5 py-0.2 rounded bg-emerald-50 text-emerald-700 font-bold"
+                    >✓ Selesai</span
+                  >
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ======================================================== -->
+      <!-- FRAME 3: WEBSITE CUSTOMER (STOREFRONT) -->
+      <!-- ======================================================== -->
+      <div class="bg-[#14161B] border border-stone-800 rounded-2xl p-5 space-y-4 shadow-xl">
+        <div class="border-b border-stone-800 pb-3">
+          <span class="text-[11px] font-bold text-[#D95338] font-mono">3. WEB STOREFRONT</span>
+          <h2 class="text-sm font-bold text-white">Website Customer (Storefront)</h2>
+          <p class="text-[11px] text-stone-400">
+            Tampilan toko online yang profesional dan minimalis.
+          </p>
+        </div>
+
+        <!-- EMBEDDED STOREFRONT PREVIEW -->
+        <div
+          class="bg-[#F8F9FA] rounded-xl border border-gray-200 overflow-hidden text-[#1E293B] shadow-sm space-y-3 p-3"
+        >
+          <!-- Header -->
+          <div
+            class="bg-white border-b border-gray-200 px-3 py-2 rounded-lg flex items-center justify-between text-xs"
+          >
+            <div class="flex items-center gap-1.5 font-bold text-gray-900">
+              <div
+                class="w-4 h-4 rounded bg-[#18191E] text-[#D95338] flex items-center justify-center text-[9px]"
+              >
+                <svg
+                  class="w-2.5 h-2.5"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2.5"
+                >
+                  <polygon
+                    points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"
+                  />
+                </svg>
+              </div>
+              <span>Bintang Store</span>
+            </div>
+            <div class="flex items-center gap-3 text-[10px] text-gray-500 font-medium">
+              <span class="text-[#D95338] font-bold">Beranda</span>
+              <span>Produk</span>
+              <span>Kategori</span>
+            </div>
+            <span class="px-2.5 py-0.5 rounded-full bg-[#D95338] text-white text-[10px] font-bold"
+              >Masuk</span
+            >
+          </div>
+
+          <!-- Dark Hero Card -->
+          <div class="bg-[#15161B] text-white p-4 rounded-xl space-y-2 relative overflow-hidden">
+            <span
+              class="inline-block px-2 py-0.5 rounded-full border border-amber-500/30 text-[8px] font-bold text-amber-400"
+              >✦ TEMPLATE PREMIUM</span
+            >
+            <div class="text-sm font-extrabold leading-tight">
+              Solusi Digital<br />Untuk Bisnis Modern
+            </div>
+            <p class="text-[10px] text-stone-300">
+              Template, desain, dan tools premium untuk membantu bisnis digital kamu berkembang.
+            </p>
+            <div class="flex items-center gap-2 pt-1">
+              <span class="px-3 py-1 rounded-full bg-[#D95338] text-white text-[9px] font-bold"
+                >Lihat Produk</span
+              >
+              <span class="px-2.5 py-1 rounded-full border border-white/30 text-white text-[9px]"
+                >Cara Beli</span
+              >
+            </div>
+          </div>
+
+          <!-- 4 Column Value Strip -->
+          <div
+            class="bg-white rounded-lg border border-gray-200 p-2 grid grid-cols-4 gap-1 text-center text-[8px] text-gray-600 font-semibold"
+          >
+            <div>Produk Berkualitas</div>
+            <div>Akses Instan</div>
+            <div>Aman & Terpercaya</div>
+            <div>Support 24/7</div>
+          </div>
+
+          <!-- Category Grid -->
+          <div class="grid grid-cols-4 gap-1.5 text-center text-[9px] font-bold text-gray-800">
+            <div class="bg-white p-2 rounded-lg border border-gray-200">Template</div>
+            <div class="bg-white p-2 rounded-lg border border-gray-200">Ebook</div>
+            <div class="bg-white p-2 rounded-lg border border-gray-200">Tools</div>
+            <div class="bg-white p-2 rounded-lg border border-gray-200">Konten</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ======================================================== -->
+      <!-- FRAME 4: DASHBOARD OWNER (PLATFORM) -->
+      <!-- ======================================================== -->
+      <div class="bg-[#14161B] border border-stone-800 rounded-2xl p-5 space-y-4 shadow-xl">
+        <div class="border-b border-stone-800 pb-3">
+          <span class="text-[11px] font-bold text-[#D95338] font-mono">4. OWNER CONSOLE</span>
+          <h2 class="text-sm font-bold text-white">Dashboard Owner (Platform)</h2>
+          <p class="text-[11px] text-stone-400">
+            Pantau semua toko, pelanggan, revenue, dan pertumbuhan bisnis.
+          </p>
+        </div>
+
+        <!-- EMBEDDED OWNER WORKSPACE -->
+        <div
+          class="bg-white rounded-xl border border-gray-200 overflow-hidden text-[#1E293B] shadow-sm p-3.5 space-y-3"
+        >
+          <div
+            class="flex items-center justify-between text-xs font-bold text-gray-900 border-b border-gray-100 pb-2"
+          >
+            <span>Dashboard Platform</span>
+            <span class="text-[9px] font-mono text-gray-500">1-31 Okt 2026 ▾</span>
+          </div>
+
+          <!-- 4 Platform KPI -->
+          <div class="grid grid-cols-4 gap-1.5 text-[9px]">
+            <div class="bg-gray-50 p-1.5 rounded border border-gray-200 text-center">
+              <div class="text-gray-400 text-[8px]">Total Toko</div>
+              <div class="font-extrabold text-xs text-gray-900">124</div>
+            </div>
+            <div class="bg-gray-50 p-1.5 rounded border border-gray-200 text-center">
+              <div class="text-gray-400 text-[8px]">Pengguna</div>
+              <div class="font-extrabold text-xs text-gray-900">892</div>
+            </div>
+            <div class="bg-gray-50 p-1.5 rounded border border-gray-200 text-center">
+              <div class="text-gray-400 text-[8px]">Recurring Rev</div>
+              <div class="font-extrabold text-[10px] text-gray-900">6.25M</div>
+            </div>
+            <div class="bg-gray-50 p-1.5 rounded border border-gray-200 text-center">
+              <div class="text-gray-400 text-[8px]">Toko Aktif</div>
+              <div class="font-extrabold text-xs text-emerald-600">98</div>
+            </div>
+          </div>
+
+          <!-- Growth Chart & Donut Row -->
+          <div class="grid grid-cols-2 gap-2 text-[9px]">
+            <!-- Growth Chart -->
+            <div class="bg-gray-50 p-2 rounded-lg border border-gray-200 space-y-1">
+              <div class="font-bold text-gray-800 text-[10px]">Pertumbuhan Toko</div>
+              <svg viewBox="0 0 150 50" class="w-full h-12">
+                <path
+                  d="M 5 40 Q 40 35 75 25 T 145 10"
+                  fill="none"
+                  stroke="#0284C7"
+                  stroke-width="2"
+                />
+                <path
+                  d="M 5 45 Q 40 40 75 35 T 145 25"
+                  fill="none"
+                  stroke="#D95338"
+                  stroke-width="1.5"
+                  stroke-dasharray="2 2"
+                />
+              </svg>
+            </div>
+
+            <!-- Donut Package -->
+            <div
+              class="bg-gray-50 p-2 rounded-lg border border-gray-200 flex flex-col justify-between"
+            >
+              <div class="font-bold text-gray-800 text-[10px]">Distribusi Paket</div>
+              <div class="text-[9px] space-y-0.5">
+                <div class="flex justify-between text-gray-600">
+                  <span>Starter</span> <b class="text-[#64748B]">55%</b>
+                </div>
+                <div class="flex justify-between text-gray-600">
+                  <span>Pro</span> <b class="text-emerald-600">34%</b>
+                </div>
+                <div class="flex justify-between text-gray-600">
+                  <span>Business</span> <b class="text-[#D95338]">11%</b>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Latest Stores Mini Table -->
+          <div class="border border-gray-200 rounded-lg overflow-hidden text-[9px]">
+            <div class="bg-gray-100 p-1 font-bold text-gray-700">Toko Terbaru</div>
+            <div class="divide-y divide-gray-100 p-1">
+              <div class="flex justify-between py-0.5">
+                <span>Kreatif Digital</span> <span class="text-emerald-600 font-bold">Aktif</span>
+              </div>
+              <div class="flex justify-between py-0.5">
+                <span>Template Hub</span> <span class="text-emerald-600 font-bold">Aktif</span>
+              </div>
+              <div class="flex justify-between py-0.5">
+                <span>Digital Store</span> <span class="text-amber-600 font-bold">Pending</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ======================================================== -->
+      <!-- FRAME 5: BOT TELEGRAM (CHAT) -->
+      <!-- ======================================================== -->
+      <div class="bg-[#14161B] border border-stone-800 rounded-2xl p-5 space-y-4 shadow-xl">
+        <div class="border-b border-stone-800 pb-3">
+          <span class="text-[11px] font-bold text-[#D95338] font-mono">5. BOT TELEGRAM</span>
+          <h2 class="text-sm font-bold text-white">Bot Telegram (Chat)</h2>
+          <p class="text-[11px] text-stone-400">
+            Interaksi pembeli melalui chat yang simple dan informatif.
+          </p>
+        </div>
+
+        <!-- EMBEDDED TELEGRAM CHAT VIEW -->
+        <div
+          class="bg-[#0E1621] text-white rounded-[24px] p-2.5 border-[4px] border-stone-700 space-y-2.5 max-w-[340px] mx-auto min-h-[460px] flex flex-col justify-between"
+        >
+          <!-- Top bar -->
+          <div
+            class="bg-[#17212B] p-2 rounded-t-xl flex items-center justify-between text-xs border-b border-stone-800"
+          >
+            <div class="flex items-center gap-2">
+              <span class="text-[#2AABEE]">‹</span>
+              <div
+                class="w-5 h-5 rounded-full bg-[#D95338] text-white font-bold text-[9px] flex items-center justify-center"
+              >
+                B
+              </div>
+              <span class="font-bold text-xs">Bintang Store</span>
+            </div>
+            <span class="text-stone-400">⋮</span>
+          </div>
+
+          <!-- Chat messages -->
+          <div class="space-y-2 text-[10px] flex-1">
+            <div
+              class="bg-[#182533] p-2 rounded-xl rounded-tl-sm max-w-[240px] space-y-1 text-stone-200"
+            >
+              <p>
+                Halo! 👋<br />Selamat datang di <b>Bintang Store!</b><br /><br />Kami menyediakan
+                berbagai produk digital premium untuk kebutuhan bisnis kamu.<br /><br />Silakan
+                pilih menu di bawah ini:
+              </p>
+              <div class="text-[8px] text-stone-500 text-right">14:22</div>
+            </div>
+
+            <!-- Inline buttons grid -->
+            <div class="grid grid-cols-2 gap-1 max-w-[240px]">
+              <span
+                class="py-1 px-1.5 rounded bg-[#2B394A] text-[#64B5F6] text-center font-semibold text-[9px]"
+                >🛒 Lihat Katalog</span
+              >
+              <span
+                class="py-1 px-1.5 rounded bg-[#2B394A] text-[#64B5F6] text-center font-semibold text-[9px]"
+                >📦 Cek Pesanan</span
+              >
+              <span
+                class="py-1 px-1.5 rounded bg-[#2B394A] text-[#64B5F6] text-center font-semibold text-[9px]"
+                >🎟️ Gunakan Voucher</span
+              >
+              <span
+                class="py-1 px-1.5 rounded bg-[#2B394A] text-[#64B5F6] text-center font-semibold text-[9px]"
+                >💬 Bantuan</span
+              >
+            </div>
+
+            <div class="flex justify-end">
+              <div class="bg-[#2B5278] text-white px-2.5 py-1 rounded-xl rounded-tr-sm text-[10px]">
+                Lihat katalog <span class="text-[8px] text-cyan-200 ml-1">14:22 ✓✓</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Input Bar -->
+          <div
+            class="bg-[#17212B] p-2 rounded-b-xl flex items-center justify-between text-[10px] text-stone-400 border-t border-stone-800"
+          >
+            <span>Message...</span>
+            <svg
+              class="w-3.5 h-3.5 text-stone-400"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"
+              />
+            </svg>
+          </div>
+        </div>
+      </div>
+
+      <!-- ======================================================== -->
+      <!-- FRAME 6: BOT WHATSAPP (CHAT) -->
+      <!-- ======================================================== -->
+      <div class="bg-[#14161B] border border-stone-800 rounded-2xl p-5 space-y-4 shadow-xl">
+        <div class="border-b border-stone-800 pb-3">
+          <span class="text-[11px] font-bold text-[#D95338] font-mono">6. BOT WHATSAPP</span>
+          <h2 class="text-sm font-bold text-white">Bot WhatsApp (Chat)</h2>
+          <p class="text-[11px] text-stone-400">
+            Layanan melalui WhatsApp dengan pengalaman yang familiar.
+          </p>
+        </div>
+
+        <!-- EMBEDDED WHATSAPP CHAT VIEW -->
+        <div
+          class="bg-[#ECE5DD] rounded-[24px] p-2.5 border-[4px] border-stone-700 space-y-2.5 max-w-[340px] mx-auto min-h-[460px] flex flex-col justify-between text-[#1E293B]"
+        >
+          <!-- Top bar -->
+          <div
+            class="bg-[#075E54] text-white p-2 rounded-t-xl flex items-center justify-between text-xs"
+          >
+            <div class="flex items-center gap-2">
+              <span>←</span>
+              <div
+                class="w-6 h-6 rounded-full bg-stone-900 border border-amber-400 flex items-center justify-center text-amber-300 font-bold text-[9px]"
+              >
+                ⭐
+              </div>
+              <div class="leading-tight">
+                <div class="font-bold text-[11px]">Bintang Store</div>
+                <div class="text-[8px] text-emerald-200">Business Account</div>
+              </div>
+            </div>
+            <span>⋮</span>
+          </div>
+
+          <!-- Chat messages -->
+          <div class="space-y-2 text-[10px] flex-1">
+            <div class="bg-white p-2 rounded-xl rounded-tl-sm max-w-[240px] space-y-1 shadow-xs">
+              <p>
+                Halo! 👋<br />Terima kasih sudah menghubungi <b>Bintang Store</b>.<br /><br />
+                Kami menyediakan produk digital premium untuk kebutuhan bisnis kamu.<br /><br />
+                Silakan pilih menu berikut:<br />
+                1. Lihat Katalog<br />
+                2. Cek Pesanan<br />
+                3. Gunakan Voucher<br />
+                4. Bantuan<br /><br />
+                Ketik nomor menu yang kamu pilih.
+              </p>
+              <div class="text-[8px] text-gray-400 text-right">14:25</div>
+            </div>
+
+            <div class="flex justify-end">
+              <div
+                class="bg-[#DCF8C6] px-3 py-1 rounded-xl rounded-tr-sm text-[10px] font-bold flex items-center gap-1 shadow-xs"
+              >
+                <span>1</span>
+                <span class="text-[8px] text-blue-500 font-normal">14:26 ✓✓</span>
+              </div>
+            </div>
+
+            <div class="bg-white p-2 rounded-xl rounded-tl-sm max-w-[240px] space-y-1 shadow-xs">
+              <p>
+                Berikut kategori produk kami:<br />
+                1. Template<br />2. Ebook<br />3. Tools<br />4. Konten<br />5. Produk Populer
+              </p>
+              <div class="text-[8px] text-gray-400 text-right">14:26</div>
+            </div>
+          </div>
+
+          <!-- Input Bar -->
+          <div
+            class="bg-[#F0F0F0] p-1.5 rounded-b-xl flex items-center justify-between text-[10px] text-gray-500"
+          >
+            <span>☺ Ketik pesan...</span>
+            <div
+              class="w-6 h-6 rounded-full bg-[#128C7E] text-white flex items-center justify-center text-[8px]"
+            >
+              🎤
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- BOTTOM FOOTER -->
+    <footer class="text-center text-xs text-stone-500 pt-6 border-t border-stone-800">
+      <p>
+        Bintang Tech Studio © 2026. Blueprint resmi diselaraskan 1:1 dengan acuan desain Nuruzz.
+      </p>
+    </footer>
+  </body>
+</html>

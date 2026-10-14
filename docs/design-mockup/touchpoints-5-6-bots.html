@@ -1,0 +1,383 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>5 & 6. Bot Telegram & WhatsApp — Bintang Store</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      body {
+        font-family: 'Plus Jakarta Sans', sans-serif;
+        background-color: #0e1015;
+        color: #ffffff;
+        -webkit-font-smoothing: antialiased;
+      }
+    </style>
+  </head>
+  <body
+    class="p-6 md:p-10 bg-[#0E1015] min-h-screen flex flex-col justify-center items-center space-y-8"
+  >
+    <!-- DUAL CONVERSATIONAL SHOWCASE -->
+    <div
+      class="w-full max-w-5xl grid grid-cols-1 md:grid-cols-2 gap-8 items-start justify-items-center"
+    >
+      <!-- ============================================== -->
+      <!-- 5. BOT TELEGRAM (CHAT) -->
+      <!-- ============================================== -->
+      <div class="w-full max-w-[360px] space-y-3">
+        <!-- Title Header -->
+        <div class="space-y-1">
+          <h2 class="text-xl font-extrabold text-white tracking-tight">5. Bot Telegram (Chat)</h2>
+          <p class="text-xs text-stone-400">
+            Interaksi pembeli melalui chat yang simple dan informatif.
+          </p>
+        </div>
+
+        <!-- Smartphone Frame -->
+        <div
+          class="w-full bg-[#121318] rounded-[44px] p-3 shadow-2xl border-[5px] border-stone-800 flex flex-col h-[700px] overflow-hidden text-[#1E293B] relative"
+        >
+          <!-- Floating App Icon Overlay -->
+          <div
+            class="absolute top-4 right-5 w-8 h-8 rounded-full bg-[#2AABEE] text-white flex items-center justify-center text-sm shadow-md z-30"
+          >
+            <svg class="w-4 h-4 fill-white" viewBox="0 0 24 24">
+              <path
+                d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69a.2.2 0 00-.05-.18c-.06-.05-.14-.03-.21-.02-.09.02-1.49.95-4.22 2.79-.4.27-.76.41-1.08.4-.36-.01-1.04-.2-1.55-.37-.63-.2-1.12-.31-1.08-.66.02-.18.27-.36.74-.55 2.92-1.27 4.86-2.11 5.83-2.51 2.78-1.16 3.35-1.36 3.73-1.36.08 0 .27.02.39.12.1.08.13.19.14.27-.01.06.01.24 0 .38z"
+              />
+            </svg>
+          </div>
+
+          <!-- Telegram Inner Screen -->
+          <div
+            class="w-full h-full bg-[#0E1621] rounded-[34px] overflow-hidden flex flex-col justify-between text-white relative"
+          >
+            <!-- App Header -->
+            <div class="bg-[#17212B] pt-2 pb-2.5 px-4 shrink-0 border-b border-stone-800 space-y-1">
+              <div class="flex items-center justify-between text-[10px] text-stone-400">
+                <span>9:31</span>
+                <div class="w-16 h-3.5 bg-black rounded-full mx-auto"></div>
+                <span>5G 100%</span>
+              </div>
+              <div class="flex items-center justify-between pt-1">
+                <span class="text-[#2AABEE] text-xs font-semibold">‹ Back</span>
+                <div class="text-center leading-tight">
+                  <div class="font-bold text-xs text-white">Bintang Store</div>
+                  <div class="text-[9px] text-[#2AABEE] font-mono">bot</div>
+                </div>
+                <div
+                  class="w-6 h-6 rounded-full bg-[#D95338] text-white flex items-center justify-center font-bold text-[10px]"
+                >
+                  B
+                </div>
+              </div>
+            </div>
+
+            <!-- Chat Area (Blue Patterned Wallpaper) -->
+            <div class="flex-1 overflow-y-auto p-3 space-y-3 bg-[#0E1621] text-xs">
+              <!-- Message 1 (Bot Incoming) -->
+              <div
+                class="bg-[#182533] p-3 rounded-2xl rounded-tl-sm max-w-[270px] space-y-1.5 text-stone-200 shadow-sm border border-stone-700/40"
+              >
+                <p>Halo! 👋<br />Selamat datang di <b>Bintang Store!</b></p>
+                <p class="text-[11px] text-stone-300">
+                  Kami menyediakan berbagai produk digital premium untuk kebutuhan bisnis kamu.
+                </p>
+                <p class="text-[11px]">Silakan pilih menu di bawah ini:</p>
+                <div class="text-[9px] text-stone-400 text-right">14:22</div>
+              </div>
+
+              <!-- Inline Buttons Grid 1 (2x2) -->
+              <div class="grid grid-cols-2 gap-1.5 max-w-[270px]">
+                <button
+                  class="py-2 px-2 rounded-xl bg-[#2B394A] text-[#64B5F6] text-center font-semibold text-[11px] hover:bg-[#34465b] transition"
+                >
+                  🛒 Lihat Katalog
+                </button>
+                <button
+                  class="py-2 px-2 rounded-xl bg-[#2B394A] text-[#64B5F6] text-center font-semibold text-[11px] hover:bg-[#34465b] transition"
+                >
+                  📦 Cek Pesanan
+                </button>
+                <button
+                  class="py-2 px-2 rounded-xl bg-[#2B394A] text-[#64B5F6] text-center font-semibold text-[11px] hover:bg-[#34465b] transition"
+                >
+                  🎟️ Gunakan Voucher
+                </button>
+                <button
+                  class="py-2 px-2 rounded-xl bg-[#2B394A] text-[#64B5F6] text-center font-semibold text-[11px] hover:bg-[#34465b] transition"
+                >
+                  💬 Bantuan
+                </button>
+              </div>
+
+              <!-- Message 2 (User Outgoing) -->
+              <div class="flex justify-end">
+                <div
+                  class="bg-[#2B5278] text-white px-3 py-1.5 rounded-2xl rounded-tr-sm text-xs shadow-xs"
+                >
+                  Lihat katalog <span class="text-[9px] text-cyan-200 ml-1">14:22 ✓✓</span>
+                </div>
+              </div>
+
+              <!-- Message 3 (Bot Incoming) -->
+              <div
+                class="bg-[#182533] p-2.5 rounded-2xl rounded-tl-sm max-w-[270px] space-y-1 text-stone-200 shadow-sm border border-stone-700/40"
+              >
+                <p class="text-[11px]">Berikut kategori produk kami:</p>
+                <div class="text-[9px] text-stone-400 text-right">14:22</div>
+              </div>
+
+              <!-- Inline Buttons Grid 2 (6 items, 2 cols x 3 rows) -->
+              <div class="grid grid-cols-2 gap-1.5 max-w-[270px]">
+                <button
+                  class="py-1.5 px-2 rounded-xl bg-[#2B394A] text-[#64B5F6] text-center font-semibold text-[10px]"
+                >
+                  📁 Semua Produk
+                </button>
+                <button
+                  class="py-1.5 px-2 rounded-xl bg-[#2B394A] text-[#64B5F6] text-center font-semibold text-[10px]"
+                >
+                  🎨 Template
+                </button>
+                <button
+                  class="py-1.5 px-2 rounded-xl bg-[#2B394A] text-[#64B5F6] text-center font-semibold text-[10px]"
+                >
+                  📘 Ebook
+                </button>
+                <button
+                  class="py-1.5 px-2 rounded-xl bg-[#2B394A] text-[#64B5F6] text-center font-semibold text-[10px]"
+                >
+                  🛠️ Tools
+                </button>
+                <button
+                  class="py-1.5 px-2 rounded-xl bg-[#2B394A] text-[#64B5F6] text-center font-semibold text-[10px]"
+                >
+                  🖼️ Konten
+                </button>
+                <button
+                  class="py-1.5 px-2 rounded-xl bg-[#2B394A] text-[#64B5F6] text-center font-semibold text-[10px]"
+                >
+                  🚀 Produk Populer
+                </button>
+              </div>
+            </div>
+
+            <!-- Bottom Input Bar -->
+            <div
+              class="bg-[#17212B] p-2.5 rounded-b-[34px] flex items-center justify-between text-xs text-stone-400 border-t border-stone-800"
+            >
+              <svg
+                class="w-4 h-4 text-stone-400"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"
+                />
+              </svg>
+              <span class="flex-1 px-3 text-stone-500 text-[11px]">Message...</span>
+              <svg
+                class="w-4 h-4 text-stone-400"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"
+                />
+              </svg>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============================================== -->
+      <!-- 6. BOT WHATSAPP (CHAT) -->
+      <!-- ============================================== -->
+      <div class="w-full max-w-[360px] space-y-3">
+        <!-- Title Header -->
+        <div class="space-y-1">
+          <h2 class="text-xl font-extrabold text-white tracking-tight">6. Bot WhatsApp (Chat)</h2>
+          <p class="text-xs text-stone-400">
+            Layanan melalui WhatsApp dengan pengalaman yang familiar.
+          </p>
+        </div>
+
+        <!-- Smartphone Frame -->
+        <div
+          class="w-full bg-[#121318] rounded-[44px] p-3 shadow-2xl border-[5px] border-stone-800 flex flex-col h-[700px] overflow-hidden text-[#1E293B] relative"
+        >
+          <!-- Floating App Icon Overlay -->
+          <div
+            class="absolute top-4 right-5 w-8 h-8 rounded-full bg-[#25D366] text-white flex items-center justify-center text-sm shadow-md z-30"
+          >
+            <svg class="w-4 h-4 fill-white" viewBox="0 0 24 24">
+              <path
+                d="M12.04 2c-5.46 0-9.91 4.45-9.91 9.91 0 1.75.46 3.45 1.32 4.95L2.05 22l5.25-1.38c1.45.79 3.08 1.21 4.74 1.21 5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.816 9.816 0 0012.04 2zm5.82 14.07c-.24.68-1.2 1.26-1.65 1.33-.45.07-.9.12-2.97-.73-2.49-1.02-4.1-3.56-4.22-3.73-.12-.17-1.01-1.34-1.01-2.57 0-1.22.64-1.82.87-2.07.23-.25.5-.31.67-.31.17 0 .34 0 .49.01.15.01.36-.06.56.43.21.5.71 1.74.77 1.87.06.13.1.28.02.45-.09.17-.13.28-.26.43-.13.15-.27.34-.39.46-.13.13-.26.27-.11.53.15.26.67 1.1 1.43 1.78.98.87 1.8 1.14 2.06 1.27.26.13.41.11.57-.06.15-.18.67-.78.85-1.05.18-.26.36-.22.61-.13.25.09 1.58.74 1.85.88.27.13.45.2.52.31.06.12.06.69-.18 1.37z"
+              />
+            </svg>
+          </div>
+
+          <!-- WhatsApp Inner Screen -->
+          <div
+            class="w-full h-full bg-[#ECE5DD] rounded-[34px] overflow-hidden flex flex-col justify-between text-[#1E293B] relative"
+          >
+            <!-- WhatsApp Top Bar (#075E54) -->
+            <div class="bg-[#075E54] text-white pt-2 pb-2.5 px-3 shrink-0 space-y-1">
+              <div class="flex items-center justify-between text-[10px] text-emerald-200">
+                <span>9:31</span>
+                <div class="w-16 h-3.5 bg-black/40 rounded-full mx-auto"></div>
+                <span>5G 100%</span>
+              </div>
+              <div class="flex items-center justify-between pt-1">
+                <div class="flex items-center gap-2">
+                  <span>←</span>
+                  <div
+                    class="w-6 h-6 rounded-full bg-[#1C1917] p-0.5 border border-amber-400/80 flex items-center justify-center shrink-0"
+                  >
+                    <svg
+                      viewBox="0 0 120 120"
+                      fill="none"
+                      class="w-full h-full"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <line
+                        x1="8"
+                        y1="60"
+                        x2="112"
+                        y2="60"
+                        stroke="#E7E5E4"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                      />
+                      <line
+                        x1="30"
+                        y1="60"
+                        x2="90"
+                        y2="60"
+                        stroke="#E8A359"
+                        stroke-width="2.5"
+                        stroke-linecap="round"
+                      />
+                      <path
+                        d="M28 50 L60 14 L92 50"
+                        stroke="#1C1917"
+                        stroke-width="5"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        fill="none"
+                      />
+                      <path
+                        d="M28 70 L60 106 L92 70"
+                        stroke="#9C532B"
+                        stroke-width="5"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        fill="none"
+                      />
+                      <polygon points="60,36 78,60 60,84 42,60" fill="#1C1917" />
+                      <path
+                        d="M60 42 C60 54 52 60 46 60 C52 60 60 66 60 78 C60 66 68 60 74 60 C68 60 60 54 60 42 Z"
+                        fill="#E8A359"
+                      />
+                      <circle cx="60" cy="60" r="2" fill="#FAF8F5" />
+                    </svg>
+                  </div>
+                  <div class="leading-tight">
+                    <div class="font-bold text-xs">Bintang Store</div>
+                    <div class="text-[9px] text-emerald-200">Business Account</div>
+                  </div>
+                </div>
+                <div class="flex items-center gap-3 text-xs">
+                  <span>📹</span>
+                  <span>📞</span>
+                  <span>⋮</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Chat Area (Light Beige Wallpaper) -->
+            <div class="flex-1 overflow-y-auto p-3 space-y-2.5 text-xs">
+              <!-- Message 1 (Incoming Bot Block) -->
+              <div
+                class="bg-white p-3 rounded-2xl rounded-tl-sm max-w-[270px] space-y-2 shadow-xs text-gray-800"
+              >
+                <p>Halo! 👋<br />Terima kasih sudah menghubungi <b>Bintang Store</b>.</p>
+                <p class="text-[11px] text-gray-600">
+                  Kami menyediakan produk digital premium untuk kebutuhan bisnis kamu.
+                </p>
+                <p class="text-[11px]">Silakan pilih menu berikut:</p>
+                <div class="text-[11px] font-medium space-y-0.5 pl-1 text-gray-900">
+                  <div>1. Lihat Katalog</div>
+                  <div>2. Cek Pesanan</div>
+                  <div>3. Gunakan Voucher</div>
+                  <div>4. Bantuan</div>
+                </div>
+                <p class="text-[11px] text-gray-500 pt-1">Ketik nomor menu yang kamu pilih.</p>
+                <div class="text-[9px] text-gray-400 text-right">14:25</div>
+              </div>
+
+              <!-- Message 2 (User Outgoing "1") -->
+              <div class="flex justify-end">
+                <div
+                  class="bg-[#DCF8C6] px-3 py-1 rounded-2xl rounded-tr-sm text-xs font-bold flex items-center gap-1.5 shadow-xs text-gray-900"
+                >
+                  <span>1</span>
+                  <span class="text-[9px] text-blue-500 font-normal">14:26 ✓✓</span>
+                </div>
+              </div>
+
+              <!-- Message 3 (Incoming Bot Category Breakdown) -->
+              <div
+                class="bg-white p-3 rounded-2xl rounded-tl-sm max-w-[270px] space-y-1.5 shadow-xs text-gray-800"
+              >
+                <p class="text-[11px] font-medium">Berikut kategori produk kami:</p>
+                <div class="text-[11px] space-y-0.5 pl-1 text-gray-900 font-medium">
+                  <div>1. Template</div>
+                  <div>2. Ebook</div>
+                  <div>3. Tools</div>
+                  <div>4. Konten</div>
+                  <div>5. Produk Populer</div>
+                </div>
+                <p class="text-[11px] text-gray-500 pt-1 flex items-center gap-1">
+                  <span>🔗</span> Ketik nomor kategori yang kamu pilih.
+                </p>
+                <div class="text-[9px] text-gray-400 text-right">14:26</div>
+              </div>
+            </div>
+
+            <!-- Bottom WhatsApp Input Bar -->
+            <div class="bg-[#F0F0F0] p-2 rounded-b-[34px] flex items-center gap-2 text-xs">
+              <span class="text-gray-500 text-sm">☺</span>
+              <div
+                class="flex-1 bg-white px-3 py-1.5 rounded-full flex items-center justify-between border border-gray-200"
+              >
+                <span class="text-gray-400 text-[11px]">Ketik pesan</span>
+                <span class="text-gray-400 text-xs">📎</span>
+              </div>
+              <div
+                class="w-8 h-8 rounded-full bg-[#128C7E] text-white flex items-center justify-center text-xs shadow-xs"
+              >
+                🎤
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

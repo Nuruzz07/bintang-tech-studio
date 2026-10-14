@@ -1,0 +1,745 @@
+<!doctype html>
+<html lang="id" class="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Bintang Store — Digital Commerce Storefront</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <script>
+      tailwind.config = {
+        darkMode: 'class',
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+              mono: ['"JetBrains Mono"', 'monospace'],
+            },
+            colors: {
+              obsidian: {
+                950: '#09090b',
+                900: '#121215',
+                850: '#18181c',
+                800: '#222227',
+                700: '#2e2e36',
+              },
+              ember: {
+                400: '#fb923c',
+                500: '#f97316',
+                600: '#ea580c',
+                700: '#c2410c',
+              },
+              gold: {
+                400: '#fbbf24',
+                500: '#f59e0b',
+                600: '#d97706',
+              },
+            },
+          },
+        },
+      };
+    </script>
+    <style>
+      body {
+        background-color: #09090b;
+        color: #fafaf9;
+        font-family: 'Plus Jakarta Sans', sans-serif;
+        -webkit-font-smoothing: antialiased;
+      }
+      .custom-scrollbar::-webkit-scrollbar {
+        height: 4px;
+        width: 4px;
+      }
+      .custom-scrollbar::-webkit-scrollbar-thumb {
+        background: #2e2e36;
+        border-radius: 4px;
+      }
+    </style>
+  </head>
+  <body
+    class="min-h-screen bg-obsidian-950 text-stone-100 flex flex-col selection:bg-ember-600 selection:text-white"
+  >
+    <!-- TOP BAR: OPERATIONAL STATUS -->
+    <div class="bg-obsidian-900 border-b border-obsidian-800/80 px-4 py-2 text-xs text-stone-400">
+      <div class="max-w-6xl mx-auto flex items-center justify-between">
+        <div class="flex items-center gap-2">
+          <span class="inline-block w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+          <span class="font-medium text-stone-300">Sistem Pengiriman Otomatis Aktif</span>
+          <span class="text-stone-600 hidden sm:inline">•</span>
+          <span class="text-stone-400 hidden sm:inline">Pesanan diproses instan 24 jam</span>
+        </div>
+        <div class="flex items-center gap-4 text-[11px]">
+          <span class="text-stone-400">QRIS Tipzy Resmi</span>
+          <span class="text-stone-400 hidden sm:inline">Garansi Ganti Baru</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- NAVIGATION HEADER -->
+    <header
+      class="sticky top-0 z-40 bg-obsidian-950/90 backdrop-blur-md border-b border-obsidian-800"
+    >
+      <div class="max-w-6xl mx-auto px-4 py-3.5 flex items-center justify-between gap-4">
+        <div class="flex items-center gap-3">
+          <div
+            class="w-9 h-9 rounded-xl bg-gradient-to-br from-ember-600 to-amber-700 p-0.5 flex items-center justify-center shadow-lg shadow-ember-900/20"
+          >
+            <div
+              class="w-full h-full bg-obsidian-950 rounded-[10px] flex items-center justify-center"
+            >
+              <svg class="w-5 h-5 text-amber-500" fill="currentColor" viewBox="0 0 24 24">
+                <path
+                  d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"
+                />
+              </svg>
+            </div>
+          </div>
+          <div>
+            <div class="flex items-center gap-2">
+              <h1 class="font-black text-base tracking-tight text-white">Bintang Store</h1>
+              <span
+                class="text-[10px] px-1.5 py-0.5 rounded bg-obsidian-800 border border-obsidian-700 text-stone-400 font-mono"
+                >v1.0</span
+              >
+            </div>
+            <p class="text-[11px] text-stone-400">Kebutuhan Akun & Lisensi Digital Terpercaya</p>
+          </div>
+        </div>
+
+        <!-- SEARCH & CART ACTION -->
+        <div class="flex items-center gap-2.5">
+          <div class="relative hidden sm:block w-64">
+            <input
+              type="text"
+              id="search-input"
+              placeholder="Cari Spotify, Netflix, Canva..."
+              class="w-full bg-obsidian-900 border border-obsidian-800 rounded-xl px-3.5 py-1.5 text-xs text-stone-200 placeholder-stone-500 focus:outline-none focus:border-ember-600 transition-colors"
+            />
+          </div>
+          <button
+            id="btn-cart-toggle"
+            class="relative bg-obsidian-900 hover:bg-obsidian-850 border border-obsidian-800 hover:border-obsidian-700 px-3 py-1.5 rounded-xl text-xs font-semibold text-stone-200 flex items-center gap-2 transition-all cursor-pointer"
+          >
+            <svg
+              class="w-4 h-4 text-stone-400"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"
+              />
+            </svg>
+            <span>Keranjang</span>
+            <span
+              id="cart-counter"
+              class="w-4 h-4 rounded-full bg-ember-600 text-white text-[10px] font-bold flex items-center justify-center"
+              >1</span
+            >
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- MAIN BODY CONTAINER -->
+    <main class="max-w-6xl mx-auto px-4 py-6 flex-1 w-full space-y-6">
+      <!-- HERO PROMO BANNER (FOCUSED & HONEST) -->
+      <section
+        class="rounded-2xl bg-gradient-to-r from-obsidian-900 via-obsidian-850 to-obsidian-900 border border-obsidian-800 p-6 sm:p-8 relative overflow-hidden"
+      >
+        <div class="relative z-10 max-w-xl space-y-3">
+          <div
+            class="inline-flex items-center gap-2 px-2.5 py-1 rounded-full bg-ember-950/60 border border-ember-800/60 text-amber-400 text-xs font-medium"
+          >
+            <span class="w-1.5 h-1.5 rounded-full bg-amber-400"></span>
+            Garansi Penuh Selama Durasi Aktif
+          </div>
+          <h2 class="text-2xl sm:text-3xl font-extrabold tracking-tight text-white leading-tight">
+            Beli Produk Digital Langsung Jadi, Tanpa Menunggu Admin.
+          </h2>
+          <p class="text-xs sm:text-sm text-stone-400 leading-relaxed">
+            Pilih paket, bayar otomatis via QRIS Tipzy, akun atau lisensi langsung muncul di layar
+            detik itu juga. Bebas drama, anti on-hold.
+          </p>
+          <div class="pt-2 flex flex-wrap items-center gap-3 text-xs text-stone-400">
+            <div
+              class="flex items-center gap-1.5 bg-obsidian-950/60 px-3 py-1.5 rounded-lg border border-obsidian-800"
+            >
+              <span class="text-emerald-400 font-bold">✓</span> Akun Resmi & Privat
+            </div>
+            <div
+              class="flex items-center gap-1.5 bg-obsidian-950/60 px-3 py-1.5 rounded-lg border border-obsidian-800"
+            >
+              <span class="text-emerald-400 font-bold">✓</span> QRIS Bebas Biaya Admin
+            </div>
+            <div
+              class="flex items-center gap-1.5 bg-obsidian-950/60 px-3 py-1.5 rounded-lg border border-obsidian-800"
+            >
+              <span class="text-emerald-400 font-bold">✓</span> Bantuan Langsung via WhatsApp
+            </div>
+          </div>
+        </div>
+        <!-- Subtle Decorative Accent -->
+        <div
+          class="absolute -right-12 -bottom-12 w-64 h-64 bg-ember-600/10 rounded-full blur-3xl pointer-events-none"
+        ></div>
+      </section>
+
+      <!-- CATEGORY TABS -->
+      <section class="flex items-center gap-2 overflow-x-auto pb-2 custom-scrollbar">
+        <button
+          class="cat-pill active px-4 py-2 rounded-xl text-xs font-bold bg-ember-600 text-white shrink-0 cursor-pointer transition-colors"
+          data-category="all"
+        >
+          Semua Produk
+        </button>
+        <button
+          class="cat-pill px-4 py-2 rounded-xl text-xs font-semibold bg-obsidian-900 hover:bg-obsidian-850 text-stone-400 hover:text-stone-200 border border-obsidian-800 shrink-0 cursor-pointer transition-colors"
+          data-category="streaming"
+        >
+          Streaming & Hiburan
+        </button>
+        <button
+          class="cat-pill px-4 py-2 rounded-xl text-xs font-semibold bg-obsidian-900 hover:bg-obsidian-850 text-stone-400 hover:text-stone-200 border border-obsidian-800 shrink-0 cursor-pointer transition-colors"
+          data-category="music"
+        >
+          Musik & Audio
+        </button>
+        <button
+          class="cat-pill px-4 py-2 rounded-xl text-xs font-semibold bg-obsidian-900 hover:bg-obsidian-850 text-stone-400 hover:text-stone-200 border border-obsidian-800 shrink-0 cursor-pointer transition-colors"
+          data-category="productivity"
+        >
+          Produktivitas & Desain
+        </button>
+        <button
+          class="cat-pill px-4 py-2 rounded-xl text-xs font-semibold bg-obsidian-900 hover:bg-obsidian-850 text-stone-400 hover:text-stone-200 border border-obsidian-800 shrink-0 cursor-pointer transition-colors"
+          data-category="software"
+        >
+          Lisensi & Software
+        </button>
+      </section>
+
+      <!-- PRODUCT CATALOG GRID -->
+      <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        <!-- ITEM 1: SPOTIFY -->
+        <div
+          class="product-card bg-obsidian-900 border border-obsidian-800 hover:border-obsidian-700 rounded-2xl p-5 flex flex-col justify-between transition-all hover:shadow-xl hover:shadow-black/40 group"
+          data-category="music"
+        >
+          <div>
+            <div class="flex items-start justify-between gap-3 mb-3">
+              <div
+                class="w-11 h-11 rounded-xl bg-emerald-950/80 border border-emerald-800/80 flex items-center justify-center font-bold text-emerald-400 text-lg"
+              >
+                SP
+              </div>
+              <span
+                class="px-2 py-0.5 rounded-full bg-emerald-950 border border-emerald-800/60 text-emerald-400 text-[10px] font-bold"
+              >
+                Stok: 24 Akun
+              </span>
+            </div>
+            <h3 class="font-bold text-base text-white group-hover:text-amber-400 transition-colors">
+              Spotify Premium Individual
+            </h3>
+            <p class="text-xs text-stone-400 mt-1 leading-relaxed">
+              Durasi 1 Bulan. Akun baru langsung jadi, bebas download lagu offline, kualitas suara
+              sangat tinggi, tanpa jeda iklan.
+            </p>
+            <div class="mt-3 flex items-center gap-2 text-[11px] text-stone-500 font-medium">
+              <span>Garansi 30 Hari</span>
+              <span>•</span>
+              <span>Bisa Login di HP & PC</span>
+            </div>
+          </div>
+
+          <div class="mt-5 pt-4 border-t border-obsidian-800 flex items-center justify-between">
+            <div>
+              <div class="text-xs text-stone-500">Harga Pas</div>
+              <div class="text-lg font-extrabold text-white">Rp 19.000</div>
+            </div>
+            <button
+              class="btn-buy px-4 py-2 rounded-xl bg-ember-600 hover:bg-ember-500 text-white text-xs font-bold transition-all shadow-md shadow-ember-900/30 cursor-pointer"
+              data-name="Spotify Premium Individual"
+              data-price="19000"
+              data-desc="Akun Spotify Premium 1 Bulan Resmi"
+            >
+              Beli Sekarang
+            </button>
+          </div>
+        </div>
+
+        <!-- ITEM 2: NETFLIX -->
+        <div
+          class="product-card bg-obsidian-900 border border-obsidian-800 hover:border-obsidian-700 rounded-2xl p-5 flex flex-col justify-between transition-all hover:shadow-xl hover:shadow-black/40 group"
+          data-category="streaming"
+        >
+          <div>
+            <div class="flex items-start justify-between gap-3 mb-3">
+              <div
+                class="w-11 h-11 rounded-xl bg-red-950/80 border border-red-800/80 flex items-center justify-center font-bold text-red-400 text-lg"
+              >
+                NF
+              </div>
+              <span
+                class="px-2 py-0.5 rounded-full bg-red-950 border border-red-800/60 text-red-400 text-[10px] font-bold"
+              >
+                Stok: 12 Profil
+              </span>
+            </div>
+            <h3 class="font-bold text-base text-white group-hover:text-amber-400 transition-colors">
+              Netflix 4K UHD Profile Private
+            </h3>
+            <p class="text-xs text-stone-400 mt-1 leading-relaxed">
+              Durasi 1 Bulan. 1 Profil khusus dengan PIN pribadi. Kualitas Ultra HD 4K, anti layar
+              penuh atau tabrakan pengguna lain.
+            </p>
+            <div class="mt-3 flex items-center gap-2 text-[11px] text-stone-500 font-medium">
+              <span>Garansi Anti Hold</span>
+              <span>•</span>
+              <span>Support Smart TV</span>
+            </div>
+          </div>
+
+          <div class="mt-5 pt-4 border-t border-obsidian-800 flex items-center justify-between">
+            <div>
+              <div class="text-xs text-stone-500">Harga Pas</div>
+              <div class="text-lg font-extrabold text-white">Rp 35.000</div>
+            </div>
+            <button
+              class="btn-buy px-4 py-2 rounded-xl bg-ember-600 hover:bg-ember-500 text-white text-xs font-bold transition-all shadow-md shadow-ember-900/30 cursor-pointer"
+              data-name="Netflix 4K UHD Profile Private"
+              data-price="35000"
+              data-desc="Netflix 4K UHD 1 Profil Privat PIN"
+            >
+              Beli Sekarang
+            </button>
+          </div>
+        </div>
+
+        <!-- ITEM 3: YOUTUBE PREMIUM -->
+        <div
+          class="product-card bg-obsidian-900 border border-obsidian-800 hover:border-obsidian-700 rounded-2xl p-5 flex flex-col justify-between transition-all hover:shadow-xl hover:shadow-black/40 group"
+          data-category="streaming"
+        >
+          <div>
+            <div class="flex items-start justify-between gap-3 mb-3">
+              <div
+                class="w-11 h-11 rounded-xl bg-rose-950/80 border border-rose-800/80 flex items-center justify-center font-bold text-rose-400 text-lg"
+              >
+                YT
+              </div>
+              <span
+                class="px-2 py-0.5 rounded-full bg-emerald-950 border border-emerald-800/60 text-emerald-400 text-[10px] font-bold"
+              >
+                Stok: 18 Slot
+              </span>
+            </div>
+            <h3 class="font-bold text-base text-white group-hover:text-amber-400 transition-colors">
+              YouTube Premium + Music
+            </h3>
+            <p class="text-xs text-stone-400 mt-1 leading-relaxed">
+              Durasi 3 Bulan. Nonton video tanpa iklan sama sekali, putar di latar belakang,
+              termasuk akses penuh YouTube Music.
+            </p>
+            <div class="mt-3 flex items-center gap-2 text-[11px] text-stone-500 font-medium">
+              <span>Invite Email Pribadi</span>
+              <span>•</span>
+              <span>Tanpa Ganti Password</span>
+            </div>
+          </div>
+
+          <div class="mt-5 pt-4 border-t border-obsidian-800 flex items-center justify-between">
+            <div>
+              <div class="text-xs text-stone-500">Harga Pas</div>
+              <div class="text-lg font-extrabold text-white">Rp 25.000</div>
+            </div>
+            <button
+              class="btn-buy px-4 py-2 rounded-xl bg-ember-600 hover:bg-ember-500 text-white text-xs font-bold transition-all shadow-md shadow-ember-900/30 cursor-pointer"
+              data-name="YouTube Premium + Music"
+              data-price="25000"
+              data-desc="YouTube Premium 3 Bulan Tanpa Iklan"
+            >
+              Beli Sekarang
+            </button>
+          </div>
+        </div>
+
+        <!-- ITEM 4: CANVA PRO -->
+        <div
+          class="product-card bg-obsidian-900 border border-obsidian-800 hover:border-obsidian-700 rounded-2xl p-5 flex flex-col justify-between transition-all hover:shadow-xl hover:shadow-black/40 group"
+          data-category="productivity"
+        >
+          <div>
+            <div class="flex items-start justify-between gap-3 mb-3">
+              <div
+                class="w-11 h-11 rounded-xl bg-cyan-950/80 border border-cyan-800/80 flex items-center justify-center font-bold text-cyan-400 text-lg"
+              >
+                CV
+              </div>
+              <span
+                class="px-2 py-0.5 rounded-full bg-cyan-950 border border-cyan-800/60 text-cyan-400 text-[10px] font-bold"
+              >
+                Stok: 50 Slot
+              </span>
+            </div>
+            <h3 class="font-bold text-base text-white group-hover:text-amber-400 transition-colors">
+              Canva Pro Designer Tim
+            </h3>
+            <p class="text-xs text-stone-400 mt-1 leading-relaxed">
+              Durasi 1 Tahun. Buka jutaan template premium, penghapus latar belakang instan, brand
+              kit, dan ekspor kualitas SVG/PDF cetak.
+            </p>
+            <div class="mt-3 flex items-center gap-2 text-[11px] text-stone-500 font-medium">
+              <span>Email Sendiri</span>
+              <span>•</span>
+              <span>Garansi 1 Tahun</span>
+            </div>
+          </div>
+
+          <div class="mt-5 pt-4 border-t border-obsidian-800 flex items-center justify-between">
+            <div>
+              <div class="text-xs text-stone-500">Harga Pas</div>
+              <div class="text-lg font-extrabold text-white">Rp 15.000</div>
+            </div>
+            <button
+              class="btn-buy px-4 py-2 rounded-xl bg-ember-600 hover:bg-ember-500 text-white text-xs font-bold transition-all shadow-md shadow-ember-900/30 cursor-pointer"
+              data-name="Canva Pro Designer Tim"
+              data-price="15000"
+              data-desc="Canva Pro 1 Tahun Akses Lengkap"
+            >
+              Beli Sekarang
+            </button>
+          </div>
+        </div>
+
+        <!-- ITEM 5: CHATGPT PLUS SHARED -->
+        <div
+          class="product-card bg-obsidian-900 border border-obsidian-800 hover:border-obsidian-700 rounded-2xl p-5 flex flex-col justify-between transition-all hover:shadow-xl hover:shadow-black/40 group"
+          data-category="productivity"
+        >
+          <div>
+            <div class="flex items-start justify-between gap-3 mb-3">
+              <div
+                class="w-11 h-11 rounded-xl bg-teal-950/80 border border-teal-800/80 flex items-center justify-center font-bold text-teal-400 text-lg"
+              >
+                AI
+              </div>
+              <span
+                class="px-2 py-0.5 rounded-full bg-teal-950 border border-teal-800/60 text-teal-400 text-[10px] font-bold"
+              >
+                Stok: 8 Slot
+              </span>
+            </div>
+            <h3 class="font-bold text-base text-white group-hover:text-amber-400 transition-colors">
+              ChatGPT Plus (GPT-4o & Canvas)
+            </h3>
+            <p class="text-xs text-stone-400 mt-1 leading-relaxed">
+              Durasi 1 Bulan. Akses GPT-4o, DALL-E 3 image generation, analisis data spreadsheet,
+              dan kecepatan respon maksimal.
+            </p>
+            <div class="mt-3 flex items-center gap-2 text-[11px] text-stone-500 font-medium">
+              <span>Slot Shared Maks 3 User</span>
+              <span>•</span>
+              <span>Bebas Limit Ketat</span>
+            </div>
+          </div>
+
+          <div class="mt-5 pt-4 border-t border-obsidian-800 flex items-center justify-between">
+            <div>
+              <div class="text-xs text-stone-500">Harga Pas</div>
+              <div class="text-lg font-extrabold text-white">Rp 45.000</div>
+            </div>
+            <button
+              class="btn-buy px-4 py-2 rounded-xl bg-ember-600 hover:bg-ember-500 text-white text-xs font-bold transition-all shadow-md shadow-ember-900/30 cursor-pointer"
+              data-name="ChatGPT Plus (GPT-4o & Canvas)"
+              data-price="45000"
+              data-desc="ChatGPT Plus 1 Bulan Akses Penuh"
+            >
+              Beli Sekarang
+            </button>
+          </div>
+        </div>
+
+        <!-- ITEM 6: WINDOWS 11 PRO -->
+        <div
+          class="product-card bg-obsidian-900 border border-obsidian-800 hover:border-obsidian-700 rounded-2xl p-5 flex flex-col justify-between transition-all hover:shadow-xl hover:shadow-black/40 group"
+          data-category="software"
+        >
+          <div>
+            <div class="flex items-start justify-between gap-3 mb-3">
+              <div
+                class="w-11 h-11 rounded-xl bg-blue-950/80 border border-blue-800/80 flex items-center justify-center font-bold text-blue-400 text-lg"
+              >
+                W11
+              </div>
+              <span
+                class="px-2 py-0.5 rounded-full bg-blue-950 border border-blue-800/60 text-blue-400 text-[10px] font-bold"
+              >
+                Stok: 5 Lisensi
+              </span>
+            </div>
+            <h3 class="font-bold text-base text-white group-hover:text-amber-400 transition-colors">
+              Windows 11 Pro Retail Original
+            </h3>
+            <p class="text-xs text-stone-400 mt-1 leading-relaxed">
+              Kunci lisensi retail resmi untuk 1 PC. Aktivasi permanen online seumur hidup, dapat
+              dihubungkan ke Akun Microsoft milikmu.
+            </p>
+            <div class="mt-3 flex items-center gap-2 text-[11px] text-stone-500 font-medium">
+              <span>Aktivasi Online</span>
+              <span>•</span>
+              <span>Garansi Seumur Hidup</span>
+            </div>
+          </div>
+
+          <div class="mt-5 pt-4 border-t border-obsidian-800 flex items-center justify-between">
+            <div>
+              <div class="text-xs text-stone-500">Harga Pas</div>
+              <div class="text-lg font-extrabold text-white">Rp 125.000</div>
+            </div>
+            <button
+              class="btn-buy px-4 py-2 rounded-xl bg-ember-600 hover:bg-ember-500 text-white text-xs font-bold transition-all shadow-md shadow-ember-900/30 cursor-pointer"
+              data-name="Windows 11 Pro Retail Original"
+              data-price="125000"
+              data-desc="Lisensi Windows 11 Pro Original Resmi"
+            >
+              Beli Sekarang
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- TRUST & GUARANTEE SECTION (AUTHENTICITY) -->
+      <section
+        class="bg-obsidian-900 border border-obsidian-800 rounded-2xl p-6 sm:p-7 grid grid-cols-1 sm:grid-cols-3 gap-6 text-stone-300"
+      >
+        <div class="flex items-start gap-3">
+          <div
+            class="w-9 h-9 rounded-xl bg-amber-950/80 border border-amber-800/80 text-amber-400 flex items-center justify-center shrink-0 font-bold"
+          >
+            ⚡
+          </div>
+          <div>
+            <h4 class="font-bold text-sm text-white">Otomatisasi Penuh</h4>
+            <p class="text-xs text-stone-400 mt-1 leading-relaxed">
+              Begitu QRIS Tipzy terbayar, sistem langsung merilis kredensial akun dan menyimpannya
+              di riwayat pesananmu.
+            </p>
+          </div>
+        </div>
+        <div class="flex items-start gap-3">
+          <div
+            class="w-9 h-9 rounded-xl bg-emerald-950/80 border border-emerald-800/80 text-emerald-400 flex items-center justify-center shrink-0 font-bold"
+          >
+            🛡️
+          </div>
+          <div>
+            <h4 class="font-bold text-sm text-white">Garansi Ganti Akun</h4>
+            <p class="text-xs text-stone-400 mt-1 leading-relaxed">
+              Jika akun bermasalah sebelum masa aktif berakhir, tim kami siap mengganti akun baru
+              tanpa biaya tambahan.
+            </p>
+          </div>
+        </div>
+        <div class="flex items-start gap-3">
+          <div
+            class="w-9 h-9 rounded-xl bg-blue-950/80 border border-blue-800/80 text-blue-400 flex items-center justify-center shrink-0 font-bold"
+          >
+            📱
+          </div>
+          <div>
+            <h4 class="font-bold text-sm text-white">Bisa Lewat Bot Telegram</h4>
+            <p class="text-xs text-stone-400 mt-1 leading-relaxed">
+              Data pesanan dan akun tersinkronisasi mulus baik dibuka via web browser maupun Mini
+              App Telegram.
+            </p>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="bg-obsidian-950 border-t border-obsidian-800 py-6 text-xs text-stone-500">
+      <div
+        class="max-w-6xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-3"
+      >
+        <div>
+          <p>© 2026 Bintang Store. Didukung oleh Bintang Tech Studio.</p>
+          <p class="text-[11px] text-stone-600 mt-0.5">
+            Payment gateway terintegrasi dengan Tipzy ID.
+          </p>
+        </div>
+        <div class="flex items-center gap-4 text-stone-400 font-medium">
+          <a href="https://wa.me/" target="_blank" class="hover:text-amber-400 transition-colors"
+            >Bantuan WhatsApp</a
+          >
+          <span>•</span>
+          <a href="#terms" class="hover:text-amber-400 transition-colors">Syarat & Ketentuan</a>
+        </div>
+      </div>
+    </footer>
+
+    <!-- CHECKOUT MODAL DRAWER -->
+    <div
+      id="checkout-modal"
+      class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4"
+    >
+      <div
+        class="bg-obsidian-900 border border-obsidian-700 rounded-2xl w-full max-w-md p-6 relative shadow-2xl"
+      >
+        <div class="flex items-start justify-between mb-4">
+          <div>
+            <h3 class="font-bold text-lg text-white" id="modal-product-name">
+              Spotify Premium Individual
+            </h3>
+            <p class="text-xs text-stone-400" id="modal-product-desc">
+              Akun 1 Bulan Resmi (Garansi 30 Hari)
+            </p>
+          </div>
+          <button
+            id="modal-close"
+            class="text-stone-400 hover:text-white p-1 rounded-lg cursor-pointer"
+          >
+            ✕
+          </button>
+        </div>
+
+        <div class="space-y-4">
+          <div>
+            <label class="block text-xs font-semibold text-stone-300 mb-1">Nama Pembeli</label>
+            <input
+              type="text"
+              id="buyer-name"
+              value="Nuruzz"
+              class="w-full bg-obsidian-950 border border-obsidian-800 rounded-xl px-3.5 py-2 text-xs text-white focus:outline-none focus:border-ember-600"
+            />
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-stone-300 mb-1"
+              >Email / WhatsApp (Untuk Terima Akun)</label
+            >
+            <input
+              type="text"
+              id="buyer-contact"
+              value="nuruzz.bintang@gmail.com"
+              class="w-full bg-obsidian-950 border border-obsidian-800 rounded-xl px-3.5 py-2 text-xs text-white focus:outline-none focus:border-ember-600"
+            />
+          </div>
+          <div
+            class="bg-obsidian-950 rounded-xl p-3 border border-obsidian-800/80 flex items-center justify-between text-xs"
+          >
+            <span class="text-stone-400">Total Pembayaran</span>
+            <span class="font-extrabold text-white text-base" id="modal-total-price"
+              >Rp 19.000</span
+            >
+          </div>
+
+          <!-- SIMULASI QRIS TIPZY BOX -->
+          <div
+            id="qris-view"
+            class="bg-obsidian-950 border border-amber-600/40 rounded-xl p-4 text-center space-y-3"
+          >
+            <div
+              class="inline-block px-2.5 py-1 rounded bg-amber-500/10 text-amber-400 text-[11px] font-bold"
+            >
+              QRIS TIPZY LIVE INTEGRATED
+            </div>
+            <div
+              class="w-48 h-48 mx-auto bg-white rounded-xl p-2 flex items-center justify-center shadow-lg"
+            >
+              <!-- Simulated QR Pattern -->
+              <img
+                src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=01M4V0750XG46CEF559Y1X8ANV-BINTANG-TECH"
+                alt="QRIS Tipzy"
+                class="w-full h-full"
+              />
+            </div>
+            <p class="text-[11px] text-stone-400">
+              Scan QRIS menggunakan BCA, Mandiri, GoPay, OVO, ShopeePay, atau DANA
+            </p>
+            <div class="text-[11px] font-mono text-emerald-400 font-semibold animate-pulse">
+              Menunggu konfirmasi pembayaran...
+            </div>
+          </div>
+
+          <button
+            id="btn-submit-order"
+            class="w-full py-3 rounded-xl bg-ember-600 hover:bg-ember-500 text-white font-bold text-xs tracking-wide shadow-lg shadow-ember-900/40 cursor-pointer transition-all"
+          >
+            Lanjut ke Pembayaran QRIS
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // Simple filter interaction
+      const pills = document.querySelectorAll('.cat-pill');
+      const cards = document.querySelectorAll('.product-card');
+      pills.forEach((pill) => {
+        pill.addEventListener('click', () => {
+          pills.forEach((p) => p.classList.remove('active', 'bg-ember-600', 'text-white'));
+          pills.forEach((p) => p.classList.add('bg-obsidian-900', 'text-stone-400'));
+          pill.classList.remove('bg-obsidian-900', 'text-stone-400');
+          pill.classList.add('active', 'bg-ember-600', 'text-white');
+
+          const cat = pill.getAttribute('data-category');
+          cards.forEach((card) => {
+            if (cat === 'all' || card.getAttribute('data-category') === cat) {
+              card.style.display = 'flex';
+            } else {
+              card.style.display = 'none';
+            }
+          });
+        });
+      });
+
+      // Modal Interaction
+      const modal = document.getElementById('checkout-modal');
+      const modalClose = document.getElementById('modal-close');
+      const modalName = document.getElementById('modal-product-name');
+      const modalDesc = document.getElementById('modal-product-desc');
+      const modalPrice = document.getElementById('modal-total-price');
+      const qrisView = document.getElementById('qris-view');
+      const submitBtn = document.getElementById('btn-submit-order');
+
+      document.querySelectorAll('.btn-buy').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          const name = btn.getAttribute('data-name');
+          const price = parseInt(btn.getAttribute('data-price'), 10);
+          const desc = btn.getAttribute('data-desc');
+
+          modalName.textContent = name;
+          modalDesc.textContent = desc;
+          modalPrice.textContent = 'Rp ' + price.toLocaleString('id-ID');
+          qrisView.classList.add('hidden');
+          submitBtn.textContent = 'Lanjut ke Pembayaran QRIS';
+          submitBtn.style.display = 'block';
+
+          modal.classList.remove('hidden');
+        });
+      });
+
+      modalClose.addEventListener('click', () => {
+        modal.classList.add('hidden');
+      });
+
+      submitBtn.addEventListener('click', () => {
+        qrisView.classList.remove('hidden');
+        submitBtn.textContent = 'Buka Halaman Pembayaran Tipzy';
+        submitBtn.onclick = () => {
+          window.open('https://tipzy.id/donation/transaction/01M4V0750XG46CEF559Y1X8ANV', '_blank');
+        };
+      });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,797 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>2. Dashboard Admin (Seller) — Bintang Tech Studio</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      body {
+        font-family: 'Plus Jakarta Sans', sans-serif;
+        background-color: #0e1015;
+        color: #ffffff;
+        -webkit-font-smoothing: antialiased;
+      }
+    </style>
+  </head>
+  <body
+    class="p-6 md:p-10 bg-[#0E1015] min-h-screen flex flex-col justify-center items-center space-y-8"
+  >
+    <!-- HEADER SLIDE -->
+    <div class="w-full max-w-6xl text-left space-y-1">
+      <h1 class="text-2xl md:text-3xl font-extrabold text-white tracking-tight">
+        2. Dashboard Admin (Seller)
+      </h1>
+      <p class="text-xs md:text-sm text-stone-400">
+        Kelola produk, pesanan, pelanggan, dan operasional toko.
+      </p>
+    </div>
+
+    <!-- BROWSER MOCKUP WORKSPACE -->
+    <div
+      class="w-full max-w-6xl bg-white rounded-2xl shadow-2xl border border-stone-800 overflow-hidden flex flex-col min-h-[780px] text-[#1E293B]"
+    >
+      <!-- GLOBAL HEADER BAR (DARK) -->
+      <header
+        class="bg-[#18191E] text-white px-6 py-3 flex items-center justify-between border-b border-stone-800 shrink-0"
+      >
+        <!-- Brand Logo -->
+        <div class="flex items-center gap-2.5">
+          <div
+            class="w-7 h-7 rounded-lg bg-stone-800 border border-amber-600/50 flex items-center justify-center text-amber-500"
+          >
+            <svg
+              class="w-4 h-4"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2.5"
+            >
+              <polygon
+                points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"
+              />
+            </svg>
+          </div>
+          <span class="font-bold text-sm tracking-tight text-white">Bintang Tech Studio</span>
+        </div>
+
+        <!-- Quick Actions & Profile -->
+        <div class="flex items-center gap-4 text-stone-300">
+          <button class="hover:text-white" aria-label="Pesan">
+            <svg
+              class="w-4 h-4"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
+              />
+            </svg>
+          </button>
+          <button class="hover:text-white relative" aria-label="Notifikasi">
+            <svg
+              class="w-4 h-4"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"
+              />
+            </svg>
+          </button>
+          <div
+            class="w-7 h-7 rounded-full bg-amber-600/30 border border-amber-500/50 flex items-center justify-center font-bold text-xs text-amber-300"
+          >
+            U
+          </div>
+        </div>
+      </header>
+
+      <!-- WORKSPACE BODY (SIDEBAR + MAIN CANVAS) -->
+      <div class="flex-1 flex overflow-hidden">
+        <!-- LEFT SIDEBAR (DARK MATTE BLACK #121316) -->
+        <aside
+          class="w-56 bg-[#14151A] text-stone-300 flex flex-col justify-between p-4 border-r border-stone-800 shrink-0"
+        >
+          <div class="space-y-4">
+            <!-- Store Switcher Card -->
+            <div
+              class="bg-[#1C1D24] p-2.5 rounded-xl border border-stone-800 flex items-center justify-between text-xs cursor-pointer hover:border-stone-700"
+            >
+              <div class="flex items-center gap-2">
+                <div
+                  class="w-6 h-6 rounded-full bg-amber-500/20 text-amber-400 flex items-center justify-center text-[10px]"
+                >
+                  ★
+                </div>
+                <div class="leading-tight">
+                  <div class="font-bold text-white text-xs">Toko Saya</div>
+                  <div class="text-[10px] text-stone-500 font-mono">seller</div>
+                </div>
+              </div>
+              <span class="text-stone-500 text-xs">⌄</span>
+            </div>
+
+            <!-- 10 Primary Navigation Links -->
+            <nav class="space-y-0.5 text-xs font-semibold">
+              <!-- 1. Dashboard (Active) -->
+              <a
+                href="#dashboard"
+                class="flex items-center gap-3 px-3 py-2 rounded-xl bg-[#D95338] text-white"
+              >
+                <svg
+                  class="w-4 h-4"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
+                  />
+                </svg>
+                <span>Dashboard</span>
+              </a>
+              <!-- 2. Produk -->
+              <a
+                href="#produk"
+                class="flex items-center gap-3 px-3 py-2 rounded-xl text-stone-400 hover:text-white hover:bg-stone-800/60 transition"
+              >
+                <svg
+                  class="w-4 h-4"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"
+                  />
+                </svg>
+                <span>Produk</span>
+              </a>
+              <!-- 3. Pesanan -->
+              <a
+                href="#pesanan"
+                class="flex items-center gap-3 px-3 py-2 rounded-xl text-stone-400 hover:text-white hover:bg-stone-800/60 transition"
+              >
+                <svg
+                  class="w-4 h-4"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                  />
+                </svg>
+                <span>Pesanan</span>
+              </a>
+              <!-- 4. Pelanggan -->
+              <a
+                href="#pelanggan"
+                class="flex items-center gap-3 px-3 py-2 rounded-xl text-stone-400 hover:text-white hover:bg-stone-800/60 transition"
+              >
+                <svg
+                  class="w-4 h-4"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"
+                  />
+                </svg>
+                <span>Pelanggan</span>
+              </a>
+              <!-- 5. Stok -->
+              <a
+                href="#stok"
+                class="flex items-center gap-3 px-3 py-2 rounded-xl text-stone-400 hover:text-white hover:bg-stone-800/60 transition"
+              >
+                <svg
+                  class="w-4 h-4"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"
+                  />
+                </svg>
+                <span>Stok</span>
+              </a>
+              <!-- 6. Voucher -->
+              <a
+                href="#voucher"
+                class="flex items-center gap-3 px-3 py-2 rounded-xl text-stone-400 hover:text-white hover:bg-stone-800/60 transition"
+              >
+                <svg
+                  class="w-4 h-4"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z"
+                  />
+                </svg>
+                <span>Voucher</span>
+              </a>
+              <!-- 7. Broadcast -->
+              <a
+                href="#broadcast"
+                class="flex items-center gap-3 px-3 py-2 rounded-xl text-stone-400 hover:text-white hover:bg-stone-800/60 transition"
+              >
+                <svg
+                  class="w-4 h-4"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z"
+                  />
+                </svg>
+                <span>Broadcast</span>
+              </a>
+              <!-- 8. Bot Telegram -->
+              <a
+                href="#bot-telegram"
+                class="flex items-center gap-3 px-3 py-2 rounded-xl text-stone-400 hover:text-white hover:bg-stone-800/60 transition"
+              >
+                <svg
+                  class="w-4 h-4"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"
+                  />
+                </svg>
+                <span>Bot Telegram</span>
+              </a>
+              <!-- 9. Statistik -->
+              <a
+                href="#statistik"
+                class="flex items-center gap-3 px-3 py-2 rounded-xl text-stone-400 hover:text-white hover:bg-stone-800/60 transition"
+              >
+                <svg
+                  class="w-4 h-4"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
+                  />
+                </svg>
+                <span>Statistik</span>
+              </a>
+              <!-- 10. Pengaturan -->
+              <a
+                href="#pengaturan"
+                class="flex items-center gap-3 px-3 py-2 rounded-xl text-stone-400 hover:text-white hover:bg-stone-800/60 transition"
+              >
+                <svg
+                  class="w-4 h-4"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"
+                  />
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                  />
+                </svg>
+                <span>Pengaturan</span>
+              </a>
+            </nav>
+          </div>
+
+          <!-- Secondary Bottom Menu -->
+          <div class="space-y-1 pt-4 border-t border-stone-800 text-xs font-semibold">
+            <a
+              href="#bantuan"
+              class="flex items-center gap-3 px-3 py-2 rounded-xl text-stone-400 hover:text-white transition"
+            >
+              <svg
+                class="w-4 h-4"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
+              </svg>
+              <span>Bantuan</span>
+            </a>
+            <a
+              href="#keluar"
+              class="flex items-center gap-3 px-3 py-2 rounded-xl text-[#D95338] hover:text-[#c2452c] transition"
+            >
+              <svg
+                class="w-4 h-4"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
+                />
+              </svg>
+              <span>Keluar</span>
+            </a>
+          </div>
+        </aside>
+
+        <!-- MAIN CONTENT AREA (#F8F9FA) -->
+        <main class="flex-1 bg-[#F8F9FA] p-6 space-y-6 overflow-y-auto relative">
+          <!-- OFFICIAL BINTANG LOGO SILHOUETTE WATERMARK -->
+          <div
+            class="absolute right-6 bottom-16 w-96 h-96 opacity-[0.03] pointer-events-none select-none z-0"
+          >
+            <svg
+              viewBox="0 0 120 120"
+              fill="none"
+              class="w-full h-full text-stone-900"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <line
+                x1="8"
+                y1="60"
+                x2="112"
+                y2="60"
+                stroke="currentColor"
+                stroke-width="3"
+                stroke-linecap="round"
+              />
+              <path
+                d="M28 50 L60 14 L92 50"
+                stroke="currentColor"
+                stroke-width="6"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+              <path
+                d="M28 70 L60 106 L92 70"
+                stroke="currentColor"
+                stroke-width="6"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+              <polygon points="60,36 78,60 60,84 42,60" fill="currentColor" />
+              <path
+                d="M60 42 C60 54 52 60 46 60 C52 60 60 66 60 78 C60 66 68 60 74 60 C68 60 60 54 60 42 Z"
+                fill="currentColor"
+              />
+            </svg>
+          </div>
+
+          <!-- Header & Date Filter -->
+          <div class="flex items-center justify-between">
+            <h2 class="text-xl font-extrabold text-gray-900 tracking-tight">Dashboard</h2>
+            <button
+              class="px-3.5 py-1.5 rounded-full border border-gray-300 bg-white text-xs font-semibold text-gray-700 flex items-center gap-2 shadow-xs"
+            >
+              <svg
+                class="w-3.5 h-3.5 text-gray-400"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                />
+              </svg>
+              <span>7 hari terakhir</span>
+              <span class="text-gray-400">⌄</span>
+            </button>
+          </div>
+
+          <!-- 4 KPI Summary Cards -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <!-- KPI 1 -->
+            <div class="bg-white p-4 rounded-2xl border border-gray-200/90 shadow-xs space-y-2">
+              <div class="flex items-center justify-between text-xs font-medium text-gray-500">
+                <span>Total Penjualan</span>
+                <svg
+                  class="w-4 h-4 text-gray-400"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"
+                  />
+                </svg>
+              </div>
+              <div class="flex items-baseline justify-between">
+                <span class="text-xl font-extrabold text-gray-900 tracking-tight"
+                  >Rp 2.450.000</span
+                >
+                <span
+                  class="px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 font-bold text-[10px] flex items-center gap-0.5"
+                >
+                  <span>▲</span> +12%
+                </span>
+              </div>
+            </div>
+
+            <!-- KPI 2 -->
+            <div class="bg-white p-4 rounded-2xl border border-gray-200/90 shadow-xs space-y-2">
+              <div class="flex items-center justify-between text-xs font-medium text-gray-500">
+                <span>Pesanan</span>
+                <svg
+                  class="w-4 h-4 text-gray-400"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"
+                  />
+                </svg>
+              </div>
+              <div class="flex items-baseline justify-between">
+                <span class="text-xl font-extrabold text-gray-900 tracking-tight">48</span>
+                <span
+                  class="px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 font-bold text-[10px] flex items-center gap-0.5"
+                >
+                  <span>▲</span> +20%
+                </span>
+              </div>
+            </div>
+
+            <!-- KPI 3 -->
+            <div class="bg-white p-4 rounded-2xl border border-gray-200/90 shadow-xs space-y-2">
+              <div class="flex items-center justify-between text-xs font-medium text-gray-500">
+                <span>Pelanggan</span>
+                <svg
+                  class="w-4 h-4 text-gray-400"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"
+                  />
+                </svg>
+              </div>
+              <div class="flex items-baseline justify-between">
+                <span class="text-xl font-extrabold text-gray-900 tracking-tight">35</span>
+                <span
+                  class="px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 font-bold text-[10px] flex items-center gap-0.5"
+                >
+                  <span>▲</span> +8%
+                </span>
+              </div>
+            </div>
+
+            <!-- KPI 4 -->
+            <div class="bg-white p-4 rounded-2xl border border-gray-200/90 shadow-xs space-y-2">
+              <div class="flex items-center justify-between text-xs font-medium text-gray-500">
+                <span>Produk Terjual</span>
+                <svg
+                  class="w-4 h-4 text-gray-400"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"
+                  />
+                </svg>
+              </div>
+              <div class="flex items-baseline justify-between">
+                <span class="text-xl font-extrabold text-gray-900 tracking-tight">73</span>
+                <span
+                  class="px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 font-bold text-[10px] flex items-center gap-0.5"
+                >
+                  <span>▲</span> +15%
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Sales Analytics Card (Grafik Penjualan) -->
+          <div class="bg-white p-5 rounded-2xl border border-gray-200/90 shadow-xs space-y-4">
+            <div class="flex items-center justify-between">
+              <h3 class="font-extrabold text-sm text-gray-900">Grafik Penjualan</h3>
+              <button
+                class="px-3 py-1 rounded-full border border-gray-300 text-xs font-semibold text-gray-600 flex items-center gap-1.5 shadow-xs"
+              >
+                <span>7 hari terakhir</span>
+                <span class="text-gray-400">⌄</span>
+              </button>
+            </div>
+
+            <!-- Spline Line Chart -->
+            <div class="w-full h-44 flex items-end">
+              <!-- Y-Axis -->
+              <div
+                class="flex flex-col justify-between h-36 text-[10px] text-gray-400 font-mono pr-3 text-right shrink-0"
+              >
+                <span>800K</span>
+                <span>600K</span>
+                <span>400K</span>
+                <span>200K</span>
+                <span>0</span>
+              </div>
+              <!-- Chart SVG Canvas -->
+              <div class="flex-1 h-36 flex flex-col justify-between relative">
+                <svg viewBox="0 0 600 130" class="w-full h-full overflow-visible">
+                  <defs>
+                    <linearGradient id="sellerGrad" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stop-color="#D95338" stop-opacity="0.3" />
+                      <stop offset="100%" stop-color="#D95338" stop-opacity="0.0" />
+                    </linearGradient>
+                  </defs>
+                  <!-- Horizontal Guidelines -->
+                  <line x1="0" y1="5" x2="600" y2="5" stroke="#F1F5F9" stroke-width="1" />
+                  <line x1="0" y1="35" x2="600" y2="35" stroke="#F1F5F9" stroke-width="1" />
+                  <line x1="0" y1="65" x2="600" y2="65" stroke="#F1F5F9" stroke-width="1" />
+                  <line x1="0" y1="95" x2="600" y2="95" stroke="#F1F5F9" stroke-width="1" />
+                  <line x1="0" y1="125" x2="600" y2="125" stroke="#F1F5F9" stroke-width="1" />
+
+                  <!-- Curve Area & Line -->
+                  <path
+                    d="M 20 110 Q 80 90 140 75 T 260 85 T 380 45 T 480 30 T 580 15 L 580 125 L 20 125 Z"
+                    fill="url(#sellerGrad)"
+                  />
+                  <path
+                    d="M 20 110 Q 80 90 140 75 T 260 85 T 380 45 T 480 30 T 580 15"
+                    fill="none"
+                    stroke="#D95338"
+                    stroke-width="3"
+                    stroke-linecap="round"
+                  />
+
+                  <!-- Data Nodes -->
+                  <circle
+                    cx="20"
+                    cy="110"
+                    r="3.5"
+                    fill="#D95338"
+                    stroke="white"
+                    stroke-width="1.5"
+                  />
+                  <circle
+                    cx="110"
+                    cy="80"
+                    r="3.5"
+                    fill="#D95338"
+                    stroke="white"
+                    stroke-width="1.5"
+                  />
+                  <circle
+                    cx="200"
+                    cy="80"
+                    r="3.5"
+                    fill="#D95338"
+                    stroke="white"
+                    stroke-width="1.5"
+                  />
+                  <circle
+                    cx="300"
+                    cy="70"
+                    r="3.5"
+                    fill="#D95338"
+                    stroke="white"
+                    stroke-width="1.5"
+                  />
+                  <circle
+                    cx="400"
+                    cy="40"
+                    r="3.5"
+                    fill="#D95338"
+                    stroke="white"
+                    stroke-width="1.5"
+                  />
+                  <circle
+                    cx="500"
+                    cy="28"
+                    r="3.5"
+                    fill="#D95338"
+                    stroke="white"
+                    stroke-width="1.5"
+                  />
+                  <circle cx="580" cy="15" r="4.5" fill="#D95338" stroke="white" stroke-width="2" />
+                </svg>
+                <!-- X-Axis Labels -->
+                <div
+                  class="flex justify-between text-[10px] text-gray-500 font-medium pt-2 border-t border-gray-100"
+                >
+                  <span>1 Okt</span>
+                  <span>2 Okt</span>
+                  <span>3 Okt</span>
+                  <span>4 Okt</span>
+                  <span>5 Okt</span>
+                  <span>6 Okt</span>
+                  <span>7 Okt</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Recent Orders Card (Pesanan Terbaru) -->
+          <div class="bg-white rounded-2xl border border-gray-200/90 shadow-xs overflow-hidden">
+            <div class="px-5 py-3.5 border-b border-gray-200 flex items-center justify-between">
+              <h3 class="font-extrabold text-sm text-gray-900">Pesanan Terbaru</h3>
+              <a
+                href="#all"
+                class="text-xs font-bold text-[#D95338] hover:underline flex items-center gap-1"
+              >
+                Lihat Semua &gt;
+              </a>
+            </div>
+
+            <!-- 5 Rows Table -->
+            <div class="overflow-x-auto">
+              <table class="w-full text-left text-xs">
+                <thead
+                  class="bg-gray-50 border-b border-gray-200 text-gray-500 font-semibold uppercase text-[10px]"
+                >
+                  <tr>
+                    <th class="px-5 py-2.5">##</th>
+                    <th class="px-5 py-2.5">Pelanggan</th>
+                    <th class="px-5 py-2.5">Produk</th>
+                    <th class="px-5 py-2.5">Total</th>
+                    <th class="px-5 py-2.5">Status</th>
+                    <th class="px-5 py-2.5">Tanggal</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-100 text-gray-700">
+                  <!-- Row 1 -->
+                  <tr class="hover:bg-gray-50/50">
+                    <td class="px-5 py-3 font-mono font-bold text-gray-900">#INV-0012</td>
+                    <td class="px-5 py-3 font-semibold text-gray-900">Andi Pratama</td>
+                    <td class="px-5 py-3 text-gray-600">Canva Template Bundle</td>
+                    <td class="px-5 py-3 font-bold text-gray-900">Rp 49.000</td>
+                    <td class="px-5 py-3">
+                      <span
+                        class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-700 font-bold text-[10px]"
+                      >
+                        <span>✓</span> Selesai
+                      </span>
+                    </td>
+                    <td class="px-5 py-3 text-gray-500">7 Okt 2026</td>
+                  </tr>
+                  <!-- Row 2 -->
+                  <tr class="hover:bg-gray-50/50">
+                    <td class="px-5 py-3 font-mono font-bold text-gray-900">#INV-0011</td>
+                    <td class="px-5 py-3 font-semibold text-gray-900">Siti Aminah</td>
+                    <td class="px-5 py-3 text-gray-600">Notion Planner</td>
+                    <td class="px-5 py-3 font-bold text-gray-900">Rp 39.000</td>
+                    <td class="px-5 py-3">
+                      <span
+                        class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-amber-50 text-amber-700 font-bold text-[10px]"
+                      >
+                        <span>↻</span> Diproses
+                      </span>
+                    </td>
+                    <td class="px-5 py-3 text-gray-500">7 Okt 2026</td>
+                  </tr>
+                  <!-- Row 3 -->
+                  <tr class="hover:bg-gray-50/50">
+                    <td class="px-5 py-3 font-mono font-bold text-gray-900">#INV-0010</td>
+                    <td class="px-5 py-3 font-semibold text-gray-900">Budi Santoso</td>
+                    <td class="px-5 py-3 text-gray-600">Ebook Digital Marketing</td>
+                    <td class="px-5 py-3 font-bold text-gray-900">Rp 29.000</td>
+                    <td class="px-5 py-3">
+                      <span
+                        class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-700 font-bold text-[10px]"
+                      >
+                        <span>✓</span> Selesai
+                      </span>
+                    </td>
+                    <td class="px-5 py-3 text-gray-500">6 Okt 2026</td>
+                  </tr>
+                  <!-- Row 4 -->
+                  <tr class="hover:bg-gray-50/50">
+                    <td class="px-5 py-3 font-mono font-bold text-gray-900">#INV-0009</td>
+                    <td class="px-5 py-3 font-semibold text-gray-900">Rina Dewi</td>
+                    <td class="px-5 py-3 text-gray-600">Template Instagram</td>
+                    <td class="px-5 py-3 font-bold text-gray-900">Rp 49.000</td>
+                    <td class="px-5 py-3">
+                      <span
+                        class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-700 font-bold text-[10px]"
+                      >
+                        <span>✓</span> Selesai
+                      </span>
+                    </td>
+                    <td class="px-5 py-3 text-gray-500">6 Okt 2026</td>
+                  </tr>
+                  <!-- Row 5 -->
+                  <tr class="hover:bg-gray-50/50">
+                    <td class="px-5 py-3 font-mono font-bold text-gray-900">#INV-0008</td>
+                    <td class="px-5 py-3 font-semibold text-gray-900">Agus Setiawan</td>
+                    <td class="px-5 py-3 text-gray-600">Video Overlay Pack</td>
+                    <td class="px-5 py-3 font-bold text-gray-900">Rp 39.000</td>
+                    <td class="px-5 py-3">
+                      <span
+                        class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-rose-50 text-rose-700 font-bold text-[10px]"
+                      >
+                        <span>✕</span> Dibatalkan
+                      </span>
+                    </td>
+                    <td class="px-5 py-3 text-gray-500">5 Okt 2026</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </main>
+      </div>
+    </div>
+  </body>
+</html>

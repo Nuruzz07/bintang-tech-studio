@@ -112,7 +112,7 @@ export const TEMPLATE_01_PRODUCTS = [
     benefits: ['Bebas iklan 100%', 'Unduh lagu offline', 'Audio 320 kbps', 'Garansi 30 hari'],
     importantInfo:
       'Login menggunakan akun yang diberikan. Boleh ganti password profil Anda sendiri.',
-    credentialSecret: 'SPOTIFY:user=bintang.spot.892@gmail.com|pass=SPOT-PREM-PASS-2026',
+    credentialSecret: 'SIMULATED_DELIVERY_ONLY',
   },
   {
     id: 'prod_yt_prem',
@@ -137,7 +137,7 @@ export const TEMPLATE_01_PRODUCTS = [
     ],
     importantInfo:
       'Email belum pernah bergabung dengan grup Google Family lain dalam 12 bulan terakhir.',
-    credentialSecret: 'INVITE_LINK:https://families.google.com/join/bintang-yt-fam-991',
+    credentialSecret: 'SIMULATED_DELIVERY_ONLY',
   },
   {
     id: 'prod_netflix_prem',
@@ -161,7 +161,7 @@ export const TEMPLATE_01_PRODUCTS = [
       'Garansi full durasi',
     ],
     importantInfo: '1 profil hanya untuk 1 perangkat aktif bersamaan.',
-    credentialSecret: 'NETFLIX:email=nf.bintang.771@gmail.com|pass=Net-Flix-Bintang-2026|pin=4821',
+    credentialSecret: 'SIMULATED_DELIVERY_ONLY',
   },
   {
     id: 'prod_disney_hotstar',
@@ -185,7 +185,7 @@ export const TEMPLATE_01_PRODUCTS = [
       'Garansi pergantian akun',
     ],
     importantInfo: 'Login via nomor HP dan kode OTP yang kami bantu verifikasi.',
-    credentialSecret: 'DISNEY:phone=+6281239847123|access_code=DISNEY-HOTSTAR-VIP-881',
+    credentialSecret: 'SIMULATED_DELIVERY_ONLY',
   },
   {
     id: 'prod_vidio_plat',
@@ -210,7 +210,7 @@ export const TEMPLATE_01_PRODUCTS = [
       'Bisa nonton di Smart TV',
     ],
     importantInfo: 'Paket Platinum (tidak termasuk Premier League / Formula 1 tertentu).',
-    credentialSecret: 'VIDIO:user=vidio.plat.bintang@gmail.com|pass=VidioPlat2026',
+    credentialSecret: 'SIMULATED_DELIVERY_ONLY',
   },
 
   // 2. AI & Productivity (6)
@@ -237,7 +237,7 @@ export const TEMPLATE_01_PRODUCTS = [
       'Analisis spreadsheet',
     ],
     importantInfo: 'Shared maksimal 3 pengguna. Jangan utak-atik nomor ponsel/password utama.',
-    credentialSecret: 'CHATGPT:email=ai.gpt4o.slot3@bintang.tech|pass=GPT4o-Studio-Pro-2026',
+    credentialSecret: 'SIMULATED_DELIVERY_ONLY',
   },
   {
     id: 'prod_gemini_adv',
@@ -262,7 +262,7 @@ export const TEMPLATE_01_PRODUCTS = [
       'Akun privat email baru',
     ],
     importantInfo: 'Disediakan akun Google baru yang sudah aktif paket Google One AI Premium.',
-    credentialSecret: 'GOOGLE_ONE:user=gemini.adv.user11@gmail.com|pass=Gemini-Adv-2026-Pass',
+    credentialSecret: 'SIMULATED_DELIVERY_ONLY',
   },
   {
     id: 'prod_claude_pro',
@@ -286,7 +286,7 @@ export const TEMPLATE_01_PRODUCTS = [
       'Slot privat per chat',
     ],
     importantInfo: 'Gunakan percakapan masing-masing. Jangan hapus chat pengguna lain.',
-    credentialSecret: 'CLAUDE:user=claude.sonnet35@bintang.tech|pass=Anthropic-Sonnet-2026',
+    credentialSecret: 'SIMULATED_DELIVERY_ONLY',
   },
   {
     id: 'prod_midjourney_std',
@@ -310,7 +310,7 @@ export const TEMPLATE_01_PRODUCTS = [
       'Download resolusi penuh',
     ],
     importantInfo: 'Gunakan channel private thread di server Discord yang kami tentukan.',
-    credentialSecret: 'DISCORD_MJ:token=mjt_discord_auth_bintang_std_2026|channel_id=12903810293',
+    credentialSecret: 'SIMULATED_DELIVERY_ONLY',
   },
   {
     id: 'prod_perplexity_pro',
@@ -334,7 +334,7 @@ export const TEMPLATE_01_PRODUCTS = [
       'Koleksi sitasi sumber',
     ],
     importantInfo: 'Akun private siap pakai. Email & password dapat diubah pembeli.',
-    credentialSecret: 'PERPLEXITY:user=pplx.bintang.pro@gmail.com|pass=PPLX-Pro-Bintang-2026',
+    credentialSecret: 'SIMULATED_DELIVERY_ONLY',
   },
   {
     id: 'prod_notion_ai',
@@ -359,7 +359,7 @@ export const TEMPLATE_01_PRODUCTS = [
       'Invite workspace pribadi',
     ],
     importantInfo: 'Aktivasi via tautan undangan workspace yang sudah memiliki lisensi aktif.',
-    credentialSecret: 'NOTION_INVITE:https://notion.so/invite/bintang-plus-workspace-2026',
+    credentialSecret: 'SIMULATED_DELIVERY_ONLY',
   },
 
   // 3. Design (5)
@@ -385,8 +385,7 @@ export const TEMPLATE_01_PRODUCTS = [
       'Aktivasi email sendiri',
     ],
     importantInfo: 'Bisa email baru atau email lama yang sudah terdaftar Canva.',
-    credentialSecret:
-      'CANVA_INVITE:https://www.canva.com/brand/join?token=canva_bintang_pro_edu_team_2026',
+    credentialSecret: 'SIMULATED_DELIVERY_ONLY',
   },
   {
     id: 'prod_adobe_cc',
@@ -411,7 +410,7 @@ export const TEMPLATE_01_PRODUCTS = [
     ],
     importantInfo:
       'Kirimkan email Adobe Anda via catatan transaksi untuk di-invite ke lisensi tim.',
-    credentialSecret: 'ADOBE_LICENSE:team_invite=bintang-creative-enterprise|slot_id=AD-CC-2026-99',
+    credentialSecret: 'SIMULATED_DELIVERY_ONLY',
   },
   {
     id: 'prod_freepik_prem',
@@ -436,7 +435,7 @@ export const TEMPLATE_01_PRODUCTS = [
       'Garansi full 30 hari',
     ],
     importantInfo: 'Akun privat login web resmi Freepik.',
-    credentialSecret: 'FREEPIK:user=fp.bintang.prem@gmail.com|pass=FreepikBintang2026',
+    credentialSecret: 'SIMULATED_DELIVERY_ONLY',
   },
   {
     id: 'prod_envato_elements',
@@ -460,7 +459,7 @@ export const TEMPLATE_01_PRODUCTS = [
       'Akun stabil anti-logout',
     ],
     importantInfo: 'Akun shared via ekstensi browser atau direct login resmi.',
-    credentialSecret: 'ENVATO:user=envato.bintang.vip@gmail.com|pass=EnvatoElements2026',
+    credentialSecret: 'SIMULATED_DELIVERY_ONLY',
   },
   {
     id: 'prod_mega_asset_pack',
@@ -485,8 +484,7 @@ export const TEMPLATE_01_PRODUCTS = [
     ],
     importantInfo:
       'Tautan Google Drive VIP langsung dikirim seketika saat pembayaran diverifikasi.',
-    credentialSecret:
-      'VIP_DRIVE_LINK:https://drive.google.com/drive/folders/1bintang-mega-asset-pack-2026-vip',
+    credentialSecret: 'SIMULATED_DELIVERY_ONLY',
   },
 
   // 4. Gaming (5)
@@ -512,7 +510,7 @@ export const TEMPLATE_01_PRODUCTS = [
       'Tanpa potongan kartu kredit',
     ],
     importantInfo: 'Redeem di aplikasi Steam client menu Games > Redeem a Steam Wallet Code.',
-    credentialSecret: 'STEAM_CODE:STM-9921-XAKQ-4819',
+    credentialSecret: 'SIMULATED_DELIVERY_ONLY',
   },
   {
     id: 'prod_mlbb_284',
@@ -536,7 +534,7 @@ export const TEMPLATE_01_PRODUCTS = [
       'Layanan 24 jam bot otomatis',
     ],
     importantInfo: 'Tuliskan User ID & Zone ID di kolom catatan pesanan (contoh: 12345678 (2021)).',
-    credentialSecret: 'TOPUP_RECEIPT:MLBB-284D-TXID-99214810-SUCCESS',
+    credentialSecret: 'SIMULATED_DELIVERY_ONLY',
   },
   {
     id: 'prod_val_1000',
@@ -561,7 +559,7 @@ export const TEMPLATE_01_PRODUCTS = [
       'Server Indonesia / Asia Pasifik',
     ],
     importantInfo: 'Redeem di dalam in-game store menu Prepaid Cards & Codes.',
-    credentialSecret: 'RIOT_CODE:RA-ID-1000-881924194',
+    credentialSecret: 'SIMULATED_DELIVERY_ONLY',
   },
   {
     id: 'prod_genshin_welkin',
@@ -586,7 +584,7 @@ export const TEMPLATE_01_PRODUCTS = [
       'Hanya butuh UID & Server',
     ],
     importantInfo: 'Sertakan UID dan Server (Asia / America / Europe) di catatan.',
-    credentialSecret: 'GENSHIN_RECEIPT:WELKIN-UID-PROCESSED-CONFIRMED',
+    credentialSecret: 'SIMULATED_DELIVERY_ONLY',
   },
   {
     id: 'prod_roblox_800',
@@ -611,7 +609,7 @@ export const TEMPLATE_01_PRODUCTS = [
       'Aman tanpa login akun pembeli',
     ],
     importantInfo: 'Kode digital 16 digit dapat langsung dimasukkan di website Roblox resmi.',
-    credentialSecret: 'ROBLOX_PIN:RBX-8821-4910-8812',
+    credentialSecret: 'SIMULATED_DELIVERY_ONLY',
   },
 
   // 5. Software (5)
@@ -637,7 +635,7 @@ export const TEMPLATE_01_PRODUCTS = [
       'Garansi aktivasi sukses 100%',
     ],
     importantInfo: 'Bukan versi KMS atau crack. Masukkan product key 25 digit langsung di Windows.',
-    credentialSecret: 'WIN11_KEY:W11PR-9921A-KDJQ1-88294-BINTG',
+    credentialSecret: 'SIMULATED_DELIVERY_ONLY',
   },
   {
     id: 'prod_m365_pro',
@@ -662,7 +660,7 @@ export const TEMPLATE_01_PRODUCTS = [
     ],
     importantInfo:
       'Disediakan akun Microsoft Enterprise baru. Ganti password profil saat login pertama kali.',
-    credentialSecret: 'OFFICE365:user=nur.office.bintang@msft365pro.org|pass=Office-Bintang-2026',
+    credentialSecret: 'SIMULATED_DELIVERY_ONLY',
   },
   {
     id: 'prod_idm_lifetime',
@@ -687,7 +685,7 @@ export const TEMPLATE_01_PRODUCTS = [
       'Lisensi serial key permanen',
     ],
     importantInfo: 'Gunakan installer resmi dari internetdownloadmanager.com.',
-    credentialSecret: 'IDM_KEY:IDM-8829-1092-4819-BINT',
+    credentialSecret: 'SIMULATED_DELIVERY_ONLY',
   },
   {
     id: 'prod_nordvpn_1y',
@@ -711,7 +709,7 @@ export const TEMPLATE_01_PRODUCTS = [
       'Garansi akun aktif 1 tahun',
     ],
     importantInfo: 'Shared akun untuk 1 perangkat aktif Anda.',
-    credentialSecret: 'NORDVPN:user=nord.bintang.sec@gmail.com|pass=NordSecBintang2026',
+    credentialSecret: 'SIMULATED_DELIVERY_ONLY',
   },
   {
     id: 'prod_jetbrains_all',
@@ -735,8 +733,7 @@ export const TEMPLATE_01_PRODUCTS = [
       'Bisa aktivasi di akun JetBrains Anda',
     ],
     importantInfo: 'Disediakan akun email institusi atau invite lisensi developer.',
-    credentialSecret:
-      'JETBRAINS:user=dev.bintang.student@alumni.univ.edu|pass=JetBrains-AllPack-2026',
+    credentialSecret: 'SIMULATED_DELIVERY_ONLY',
   },
 
   // 6. Cloud & Storage (4)
@@ -763,7 +760,7 @@ export const TEMPLATE_01_PRODUCTS = [
       'Garansi perpanjangan mudah',
     ],
     importantInfo: 'Akun Google baru dengan username kustom pilihan Anda.',
-    credentialSecret: 'GDRIVE:email=backup.bintang.user@gworkspace.pro|pass=GDrive1TBPass2026',
+    credentialSecret: 'SIMULATED_DELIVERY_ONLY',
   },
   {
     id: 'prod_onedrive_5tb',
@@ -788,7 +785,7 @@ export const TEMPLATE_01_PRODUCTS = [
     ],
     importantInfo:
       'Akun Microsoft domain institusi. Disarankan tidak menyimpan data sensitif perbankan.',
-    credentialSecret: 'ONEDRIVE5TB:user=cloud.bintang.5tb@onedrivepro.me|pass=ODrive5TBPass2026',
+    credentialSecret: 'SIMULATED_DELIVERY_ONLY',
   },
   {
     id: 'prod_icloud_200gb',
@@ -812,8 +809,7 @@ export const TEMPLATE_01_PRODUCTS = [
       'Aktivasi via Apple ID pribadi',
     ],
     importantInfo: 'Apple ID Anda belum pernah tergabung dalam grup Family Sharing lain.',
-    credentialSecret:
-      'ICLOUD_INVITE:https://apple.com/family-sharing/invite?code=icloud-bintang-fam-2026',
+    credentialSecret: 'SIMULATED_DELIVERY_ONLY',
   },
   {
     id: 'prod_mega_2tb',
@@ -837,8 +833,7 @@ export const TEMPLATE_01_PRODUCTS = [
       'Bebas ganti email & password',
     ],
     importantInfo: 'Akun privat email baru. Simpan Recovery Key yang diberikan secara aman.',
-    credentialSecret:
-      'MEGA:user=mega.pro.bintang@gmail.com|pass=MegaPro2TBPass2026|recovery_key=MG-KEY-99124',
+    credentialSecret: 'SIMULATED_DELIVERY_ONLY',
   },
 
   // 7. Education (3)
@@ -865,7 +860,7 @@ export const TEMPLATE_01_PRODUCTS = [
       'Aktivasi ke akun Duolingo Anda',
     ],
     importantInfo: 'Kirimkan username Duolingo Anda atau klik tautan invite yang kami kirimkan.',
-    credentialSecret: 'DUOLINGO_INVITE:https://invite.duolingo.com/family/bintang-super-2026-slot1',
+    credentialSecret: 'SIMULATED_DELIVERY_ONLY',
   },
   {
     id: 'prod_grammarly_prem',
@@ -890,7 +885,7 @@ export const TEMPLATE_01_PRODUCTS = [
       'Ekstensi browser & MS Word',
     ],
     importantInfo: 'Akun private siap pakai. Bebas ubah password profil.',
-    credentialSecret: 'GRAMMARLY:user=grammarly.prem.bintang@gmail.com|pass=GrammarlyPrem2026',
+    credentialSecret: 'SIMULATED_DELIVERY_ONLY',
   },
   {
     id: 'prod_turnitin_check',
@@ -915,8 +910,7 @@ export const TEMPLATE_01_PRODUCTS = [
     ],
     importantInfo:
       'Unggah file dokumen Anda via link dashboard pemeriksa khusus yang kami sediakan.',
-    credentialSecret:
-      'TURNITIN_ACCESS:portal_url=https://turnitin.bintang.tech/student|access_token=TN-NOREPO-2026-VIP',
+    credentialSecret: 'SIMULATED_DELIVERY_ONLY',
   },
 
   // 8. Digital Tools (3)
@@ -942,7 +936,7 @@ export const TEMPLATE_01_PRODUCTS = [
       'Dapat dipakai di PC dan HP',
     ],
     importantInfo: 'Login via akun TikTok/Google yang sudah kami berikan akses CapCut Pro.',
-    credentialSecret: 'CAPCUT:user=capcut.pro.bintang@gmail.com|pass=CapCutProBintang2026',
+    credentialSecret: 'SIMULATED_DELIVERY_ONLY',
   },
   {
     id: 'prod_tradingview_plus',
@@ -967,7 +961,7 @@ export const TEMPLATE_01_PRODUCTS = [
       'Alert harga instan SMS/Email',
     ],
     importantInfo: 'Akun TradingView private baru siap pakai.',
-    credentialSecret: 'TRADINGVIEW:user=tv.trader.bintang@gmail.com|pass=TradingViewPro2026',
+    credentialSecret: 'SIMULATED_DELIVERY_ONLY',
   },
   {
     id: 'prod_creator_starter',
@@ -992,8 +986,7 @@ export const TEMPLATE_01_PRODUCTS = [
       'Download direct link super cepat',
     ],
     importantInfo: 'Akses Google Drive VIP permanen. Bebas download kapan saja.',
-    credentialSecret:
-      'CREATOR_KIT_LINK:https://drive.google.com/drive/folders/1bintang-creator-kit-2026-vip',
+    credentialSecret: 'SIMULATED_DELIVERY_ONLY',
   },
 ] as const;
 

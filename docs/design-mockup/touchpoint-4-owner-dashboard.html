@@ -1,0 +1,866 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>4. Dashboard Owner (Platform) — Bintang Tech Studio</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      body {
+        font-family: 'Plus Jakarta Sans', sans-serif;
+        background-color: #0e1015;
+        color: #ffffff;
+        -webkit-font-smoothing: antialiased;
+      }
+    </style>
+  </head>
+  <body
+    class="p-6 md:p-10 bg-[#0E1015] min-h-screen flex flex-col justify-center items-center space-y-8"
+  >
+    <!-- HEADER SLIDE -->
+    <div class="w-full max-w-6xl text-left space-y-1">
+      <h1 class="text-2xl md:text-3xl font-extrabold text-white tracking-tight">
+        4. Dashboard Owner (Platform)
+      </h1>
+      <p class="text-xs md:text-sm text-stone-400">
+        Pantau semua toko, pelanggan, revenue, dan pertumbuhan bisnis.
+      </p>
+    </div>
+
+    <!-- BROWSER MOCKUP WORKSPACE -->
+    <div
+      class="w-full max-w-6xl bg-white rounded-2xl shadow-2xl border border-stone-800 overflow-hidden flex flex-col min-h-[780px] text-[#1E293B]"
+    >
+      <!-- GLOBAL HEADER BAR (DARK) -->
+      <header
+        class="bg-[#18191E] text-white px-6 py-3 flex items-center justify-between border-b border-stone-800 shrink-0"
+      >
+        <!-- Brand Logo -->
+        <div class="flex items-center gap-2.5">
+          <div
+            class="w-7 h-7 rounded-full bg-amber-500/20 border border-amber-500/50 flex items-center justify-center text-amber-400 text-xs font-bold"
+          >
+            ★
+          </div>
+          <span class="font-bold text-sm tracking-tight text-white">Bintang Tech Studio</span>
+        </div>
+
+        <!-- Right Notifications & Profile -->
+        <div class="flex items-center gap-4 text-stone-300">
+          <button class="hover:text-white" aria-label="Notifikasi">
+            <svg
+              class="w-4 h-4"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"
+              />
+            </svg>
+          </button>
+          <div class="flex items-center gap-2.5 pl-2 border-l border-stone-800">
+            <div
+              class="w-7 h-7 rounded-full bg-purple-500/30 border border-purple-400/40 flex items-center justify-center text-purple-200 text-xs font-bold"
+            >
+              OW
+            </div>
+            <div class="leading-tight text-left">
+              <div class="font-bold text-xs text-white">Owner</div>
+              <div class="text-[10px] text-stone-400">Platform Owner</div>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <!-- WORKSPACE BODY (SIDEBAR + MAIN CANVAS) -->
+      <div class="flex-1 flex overflow-hidden">
+        <!-- LEFT SIDEBAR (DARK MATTE BLACK #14151A) -->
+        <aside
+          class="w-56 bg-[#14151A] text-stone-300 flex flex-col justify-between p-4 border-r border-stone-800 shrink-0"
+        >
+          <div class="space-y-4">
+            <!-- Console Switcher Card -->
+            <div
+              class="bg-[#1C1D24] p-2.5 rounded-xl border border-stone-800 flex items-center justify-between text-xs cursor-pointer hover:border-stone-700"
+            >
+              <div class="flex items-center gap-2">
+                <div
+                  class="w-6 h-6 rounded-full bg-amber-500/20 text-amber-400 flex items-center justify-center text-[10px]"
+                >
+                  ★
+                </div>
+                <div class="leading-tight">
+                  <div class="font-bold text-white text-xs">Owner Console</div>
+                  <div class="text-[10px] text-stone-500 font-mono">platform</div>
+                </div>
+              </div>
+              <span class="text-stone-500 text-xs">⌄</span>
+            </div>
+
+            <!-- 10 Primary Navigation Links -->
+            <nav class="space-y-0.5 text-xs font-semibold">
+              <!-- 1. Dashboard (Active) -->
+              <a
+                href="#dashboard"
+                class="flex items-center gap-3 px-3 py-2 rounded-xl bg-[#D95338] text-white"
+              >
+                <svg
+                  class="w-4 h-4"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
+                  />
+                </svg>
+                <span>Dashboard</span>
+              </a>
+              <!-- 2. Toko -->
+              <a
+                href="#toko"
+                class="flex items-center gap-3 px-3 py-2 rounded-xl text-stone-400 hover:text-white hover:bg-stone-800/60 transition"
+              >
+                <svg
+                  class="w-4 h-4"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
+                  />
+                </svg>
+                <span>Toko</span>
+              </a>
+              <!-- 3. Pengguna -->
+              <a
+                href="#pengguna"
+                class="flex items-center gap-3 px-3 py-2 rounded-xl text-stone-400 hover:text-white hover:bg-stone-800/60 transition"
+              >
+                <svg
+                  class="w-4 h-4"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"
+                  />
+                </svg>
+                <span>Pengguna</span>
+              </a>
+              <!-- 4. Langganan -->
+              <a
+                href="#langganan"
+                class="flex items-center gap-3 px-3 py-2 rounded-xl text-stone-400 hover:text-white hover:bg-stone-800/60 transition"
+              >
+                <svg
+                  class="w-4 h-4"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"
+                  />
+                </svg>
+                <span>Langganan</span>
+              </a>
+              <!-- 5. Pembayaran -->
+              <a
+                href="#pembayaran"
+                class="flex items-center gap-3 px-3 py-2 rounded-xl text-stone-400 hover:text-white hover:bg-stone-800/60 transition"
+              >
+                <svg
+                  class="w-4 h-4"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M9 14l6-6m-5.5.5h.01m4.99 5h.01M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16l3.5-2 3.5 2 3.5-2 3.5 2z"
+                  />
+                </svg>
+                <span>Pembayaran</span>
+              </a>
+              <!-- 6. Template -->
+              <a
+                href="#template"
+                class="flex items-center gap-3 px-3 py-2 rounded-xl text-stone-400 hover:text-white hover:bg-stone-800/60 transition"
+              >
+                <svg
+                  class="w-4 h-4"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z"
+                  />
+                </svg>
+                <span>Template</span>
+              </a>
+              <!-- 7. Add-ons -->
+              <a
+                href="#addons"
+                class="flex items-center gap-3 px-3 py-2 rounded-xl text-stone-400 hover:text-white hover:bg-stone-800/60 transition"
+              >
+                <svg
+                  class="w-4 h-4"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"
+                  />
+                </svg>
+                <span>Add-ons</span>
+              </a>
+              <!-- 8. Monitoring -->
+              <a
+                href="#monitoring"
+                class="flex items-center gap-3 px-3 py-2 rounded-xl text-stone-400 hover:text-white hover:bg-stone-800/60 transition"
+              >
+                <svg
+                  class="w-4 h-4"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M13 10V3L4 14h7v7l9-11h-7z"
+                  />
+                </svg>
+                <span>Monitoring</span>
+              </a>
+              <!-- 9. Laporan -->
+              <a
+                href="#laporan"
+                class="flex items-center gap-3 px-3 py-2 rounded-xl text-stone-400 hover:text-white hover:bg-stone-800/60 transition"
+              >
+                <svg
+                  class="w-4 h-4"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                  />
+                </svg>
+                <span>Laporan</span>
+              </a>
+              <!-- 10. Pengaturan -->
+              <a
+                href="#pengaturan"
+                class="flex items-center gap-3 px-3 py-2 rounded-xl text-stone-400 hover:text-white hover:bg-stone-800/60 transition"
+              >
+                <svg
+                  class="w-4 h-4"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"
+                  />
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                  />
+                </svg>
+                <span>Pengaturan</span>
+              </a>
+            </nav>
+          </div>
+
+          <!-- Secondary Bottom Menu -->
+          <div class="space-y-1 pt-4 border-t border-stone-800 text-xs font-semibold">
+            <a
+              href="#bantuan"
+              class="flex items-center gap-3 px-3 py-2 rounded-xl text-stone-400 hover:text-white transition"
+            >
+              <svg
+                class="w-4 h-4"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
+              </svg>
+              <span>Bantuan</span>
+            </a>
+            <a
+              href="#keluar"
+              class="flex items-center gap-3 px-3 py-2 rounded-xl text-[#D95338] hover:text-[#c2452c] transition"
+            >
+              <svg
+                class="w-4 h-4"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
+                />
+              </svg>
+              <span>Keluar</span>
+            </a>
+          </div>
+        </aside>
+
+        <!-- MAIN CONTENT AREA (#F8F9FA) -->
+        <main class="flex-1 bg-[#F8F9FA] p-6 space-y-6 overflow-y-auto relative">
+          <!-- OFFICIAL BINTANG LOGO SILHOUETTE WATERMARK -->
+          <div
+            class="absolute right-6 bottom-16 w-96 h-96 opacity-[0.03] pointer-events-none select-none z-0"
+          >
+            <svg
+              viewBox="0 0 120 120"
+              fill="none"
+              class="w-full h-full text-stone-900"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <line
+                x1="8"
+                y1="60"
+                x2="112"
+                y2="60"
+                stroke="currentColor"
+                stroke-width="3"
+                stroke-linecap="round"
+              />
+              <path
+                d="M28 50 L60 14 L92 50"
+                stroke="currentColor"
+                stroke-width="6"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+              <path
+                d="M28 70 L60 106 L92 70"
+                stroke="currentColor"
+                stroke-width="6"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+              <polygon points="60,36 78,60 60,84 42,60" fill="currentColor" />
+              <path
+                d="M60 42 C60 54 52 60 46 60 C52 60 60 66 60 78 C60 66 68 60 74 60 C68 60 60 54 60 42 Z"
+                fill="currentColor"
+              />
+            </svg>
+          </div>
+
+          <!-- Header & Date Filter -->
+          <div class="flex items-center justify-between">
+            <h2 class="text-xl font-extrabold text-gray-900 tracking-tight">Dashboard Platform</h2>
+            <button
+              class="px-3.5 py-1.5 rounded-full border border-gray-300 bg-white text-xs font-semibold text-gray-700 flex items-center gap-2 shadow-xs"
+            >
+              <svg
+                class="w-3.5 h-3.5 text-gray-400"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                />
+              </svg>
+              <span>1-31 Okt 2026</span>
+              <span class="text-gray-400">⌄</span>
+            </button>
+          </div>
+
+          <!-- 4 KPI Summary Cards -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <!-- KPI 1 -->
+            <div class="bg-white p-4 rounded-2xl border border-gray-200/90 shadow-xs space-y-2">
+              <div class="text-xs font-medium text-gray-500">Total Toko</div>
+              <div class="flex items-baseline justify-between">
+                <span class="text-2xl font-extrabold text-gray-900 tracking-tight">124</span>
+                <span
+                  class="px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 font-bold text-[10px] flex items-center gap-0.5"
+                >
+                  <span>▲</span> +12%
+                </span>
+              </div>
+            </div>
+
+            <!-- KPI 2 -->
+            <div class="bg-white p-4 rounded-2xl border border-gray-200/90 shadow-xs space-y-2">
+              <div class="text-xs font-medium text-gray-500">Total Pengguna</div>
+              <div class="flex items-baseline justify-between">
+                <span class="text-2xl font-extrabold text-gray-900 tracking-tight">892</span>
+                <span
+                  class="px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 font-bold text-[10px] flex items-center gap-0.5"
+                >
+                  <span>▲</span> +18%
+                </span>
+              </div>
+            </div>
+
+            <!-- KPI 3 -->
+            <div class="bg-white p-4 rounded-2xl border border-gray-200/90 shadow-xs space-y-2">
+              <div class="text-xs font-medium text-gray-500">Recurring Revenue</div>
+              <div class="flex items-baseline justify-between">
+                <span class="text-xl font-extrabold text-gray-900 tracking-tight"
+                  >Rp 6.250.000</span
+                >
+                <span
+                  class="px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 font-bold text-[10px] flex items-center gap-0.5"
+                >
+                  <span>▲</span> +22%
+                </span>
+              </div>
+            </div>
+
+            <!-- KPI 4 -->
+            <div class="bg-white p-4 rounded-2xl border border-gray-200/90 shadow-xs space-y-2">
+              <div class="text-xs font-medium text-gray-500">Toko Aktif</div>
+              <div class="flex items-baseline justify-between">
+                <span class="text-2xl font-extrabold text-gray-900 tracking-tight">98</span>
+                <span class="text-[10px] font-semibold text-gray-500">
+                  <span class="text-[#D95338] font-bold">79%</span> dari total
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Middle Row: Analytics & Distribution Charts -->
+          <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <!-- Left: Store Growth Line Chart -->
+            <div
+              class="lg:col-span-2 bg-white p-5 rounded-2xl border border-gray-200/90 shadow-xs space-y-4"
+            >
+              <div class="flex items-center justify-between">
+                <h3 class="font-extrabold text-sm text-gray-900">Pertumbuhan Toko</h3>
+                <div class="flex items-center gap-4 text-xs font-medium">
+                  <span class="flex items-center gap-1.5"
+                    ><span class="w-2.5 h-2.5 rounded-full bg-[#D95338]"></span> Toko Baru</span
+                  >
+                  <span class="flex items-center gap-1.5"
+                    ><span class="w-2.5 h-2.5 rounded-full bg-[#0284C7]"></span> Toko Aktif</span
+                  >
+                </div>
+              </div>
+
+              <!-- Line Chart SVG -->
+              <div class="w-full h-44 flex items-end">
+                <div
+                  class="flex flex-col justify-between h-36 text-[10px] text-gray-400 font-mono pr-3 text-right shrink-0"
+                >
+                  <span>300</span>
+                  <span>200</span>
+                  <span>100</span>
+                  <span>0</span>
+                </div>
+                <div class="flex-1 h-36 flex flex-col justify-between relative">
+                  <svg viewBox="0 0 500 120" class="w-full h-full overflow-visible">
+                    <defs>
+                      <linearGradient id="growthGrad" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stop-color="#0284C7" stop-opacity="0.25" />
+                        <stop offset="100%" stop-color="#0284C7" stop-opacity="0.0" />
+                      </linearGradient>
+                    </defs>
+                    <line x1="0" y1="5" x2="500" y2="5" stroke="#F1F5F9" stroke-width="1" />
+                    <line x1="0" y1="42" x2="500" y2="42" stroke="#F1F5F9" stroke-width="1" />
+                    <line x1="0" y1="78" x2="500" y2="78" stroke="#F1F5F9" stroke-width="1" />
+                    <line x1="0" y1="115" x2="500" y2="115" stroke="#F1F5F9" stroke-width="1" />
+
+                    <path
+                      d="M 20 100 Q 100 80 180 50 T 320 60 T 420 30 T 480 15 L 480 115 L 20 115 Z"
+                      fill="url(#growthGrad)"
+                    />
+                    <path
+                      d="M 20 100 Q 100 80 180 50 T 320 60 T 420 30 T 480 15"
+                      fill="none"
+                      stroke="#0284C7"
+                      stroke-width="2.5"
+                      stroke-linecap="round"
+                    />
+
+                    <circle
+                      cx="20"
+                      cy="100"
+                      r="3.5"
+                      fill="#0284C7"
+                      stroke="white"
+                      stroke-width="1.5"
+                    />
+                    <circle
+                      cx="110"
+                      cy="75"
+                      r="3.5"
+                      fill="#0284C7"
+                      stroke="white"
+                      stroke-width="1.5"
+                    />
+                    <circle
+                      cx="200"
+                      cy="50"
+                      r="3.5"
+                      fill="#0284C7"
+                      stroke="white"
+                      stroke-width="1.5"
+                    />
+                    <circle
+                      cx="300"
+                      cy="55"
+                      r="3.5"
+                      fill="#0284C7"
+                      stroke="white"
+                      stroke-width="1.5"
+                    />
+                    <circle
+                      cx="400"
+                      cy="35"
+                      r="3.5"
+                      fill="#0284C7"
+                      stroke="white"
+                      stroke-width="1.5"
+                    />
+                    <circle cx="480" cy="15" r="4" fill="#0284C7" stroke="white" stroke-width="2" />
+                  </svg>
+                  <div
+                    class="flex justify-between text-[10px] text-gray-500 font-medium pt-2 border-t border-gray-100"
+                  >
+                    <span>Mei</span>
+                    <span>Jun</span>
+                    <span>Jul</span>
+                    <span>Agu</span>
+                    <span>Sep</span>
+                    <span>Okt</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Right: Plan Distribution Donut Chart -->
+            <div
+              class="bg-white p-5 rounded-2xl border border-gray-200/90 shadow-xs space-y-4 flex flex-col justify-between"
+            >
+              <h3 class="font-extrabold text-sm text-gray-900">Distribusi Paket</h3>
+
+              <div class="flex items-center justify-around py-2">
+                <!-- Donut Graphic -->
+                <div class="relative w-28 h-28 flex items-center justify-center">
+                  <svg viewBox="0 0 36 36" class="w-full h-full transform -rotate-90">
+                    <circle
+                      cx="18"
+                      cy="18"
+                      r="15.915"
+                      fill="none"
+                      stroke="#F1F5F9"
+                      stroke-width="3.5"
+                    />
+                    <circle
+                      cx="18"
+                      cy="18"
+                      r="15.915"
+                      fill="none"
+                      stroke="#64748B"
+                      stroke-width="3.5"
+                      stroke-dasharray="55 45"
+                      stroke-dashoffset="0"
+                    />
+                    <circle
+                      cx="18"
+                      cy="18"
+                      r="15.915"
+                      fill="none"
+                      stroke="#10B981"
+                      stroke-width="3.5"
+                      stroke-dasharray="34 66"
+                      stroke-dashoffset="-55"
+                    />
+                    <circle
+                      cx="18"
+                      cy="18"
+                      r="15.915"
+                      fill="none"
+                      stroke="#D95338"
+                      stroke-width="3.5"
+                      stroke-dasharray="11 89"
+                      stroke-dashoffset="-89"
+                    />
+                  </svg>
+                  <div class="absolute text-center leading-none">
+                    <span class="text-base font-extrabold text-gray-900">124</span>
+                    <div class="text-[9px] text-gray-400 font-medium mt-0.5">Toko</div>
+                  </div>
+                </div>
+
+                <!-- Legend Table -->
+                <div class="space-y-2 text-xs">
+                  <div class="flex items-center gap-2">
+                    <span class="w-2.5 h-2.5 rounded bg-[#64748B]"></span>
+                    <span class="text-gray-600">Starter —</span>
+                    <span class="font-bold text-gray-900">68 (55%)</span>
+                  </div>
+                  <div class="flex items-center gap-2">
+                    <span class="w-2.5 h-2.5 rounded bg-emerald-500"></span>
+                    <span class="text-gray-600">Pro —</span>
+                    <span class="font-bold text-gray-900">42 (34%)</span>
+                  </div>
+                  <div class="flex items-center gap-2">
+                    <span class="w-2.5 h-2.5 rounded bg-[#D95338]"></span>
+                    <span class="text-gray-600">Business —</span>
+                    <span class="font-bold text-gray-900">14 (11%)</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="pt-2 border-t border-gray-100 text-[10px] text-gray-400 text-center">
+                Total 124 toko aktif berlangganan
+              </div>
+            </div>
+          </div>
+
+          <!-- Bottom Row: Table & Monthly Revenue -->
+          <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <!-- Left: Latest Registered Stores Table (2 cols) -->
+            <div
+              class="lg:col-span-2 bg-white rounded-2xl border border-gray-200/90 shadow-xs overflow-hidden"
+            >
+              <div class="px-5 py-3.5 border-b border-gray-200 flex items-center justify-between">
+                <h3 class="font-extrabold text-sm text-gray-900">Toko Terbaru</h3>
+                <a
+                  href="#all"
+                  class="text-xs font-bold text-[#D95338] hover:underline flex items-center gap-1"
+                >
+                  Lihat Semua &gt;
+                </a>
+              </div>
+
+              <!-- Table (5 rows) -->
+              <div class="overflow-x-auto">
+                <table class="w-full text-left text-xs">
+                  <thead
+                    class="bg-gray-50 border-b border-gray-200 text-gray-500 font-semibold uppercase text-[10px]"
+                  >
+                    <tr>
+                      <th class="px-5 py-2.5">Nama Toko</th>
+                      <th class="px-5 py-2.5">Pemilik</th>
+                      <th class="px-5 py-2.5">Paket</th>
+                      <th class="px-5 py-2.5">Status</th>
+                      <th class="px-5 py-2.5">Bergabung</th>
+                    </tr>
+                  </thead>
+                  <tbody class="divide-y divide-gray-100 text-gray-700">
+                    <!-- Row 1 -->
+                    <tr class="hover:bg-gray-50/50">
+                      <td class="px-5 py-2.5 font-bold text-gray-900">Kreatif Digital</td>
+                      <td class="px-5 py-2.5 text-gray-500 font-mono">ahmad@p...</td>
+                      <td class="px-5 py-2.5">
+                        <span
+                          class="px-2 py-0.5 rounded-full bg-orange-50 text-[#D95338] font-bold text-[10px]"
+                          >Starter</span
+                        >
+                      </td>
+                      <td class="px-5 py-2.5">
+                        <span
+                          class="px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 font-bold text-[10px]"
+                          >Aktif</span
+                        >
+                      </td>
+                      <td class="px-5 py-2.5 text-gray-500">7 Okt 2026</td>
+                    </tr>
+                    <!-- Row 2 -->
+                    <tr class="hover:bg-gray-50/50">
+                      <td class="px-5 py-2.5 font-bold text-gray-900">Template Hub</td>
+                      <td class="px-5 py-2.5 text-gray-500 font-mono">siti@p.....</td>
+                      <td class="px-5 py-2.5">
+                        <span
+                          class="px-2 py-0.5 rounded-full bg-amber-50 text-amber-700 font-bold text-[10px]"
+                          >Pro</span
+                        >
+                      </td>
+                      <td class="px-5 py-2.5">
+                        <span
+                          class="px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 font-bold text-[10px]"
+                          >Aktif</span
+                        >
+                      </td>
+                      <td class="px-5 py-2.5 text-gray-500">6 Okt 2026</td>
+                    </tr>
+                    <!-- Row 3 -->
+                    <tr class="hover:bg-gray-50/50">
+                      <td class="px-5 py-2.5 font-bold text-gray-900">Desain Kita</td>
+                      <td class="px-5 py-2.5 text-gray-500 font-mono">budi@p.....</td>
+                      <td class="px-5 py-2.5">
+                        <span
+                          class="px-2 py-0.5 rounded-full bg-orange-50 text-[#D95338] font-bold text-[10px]"
+                          >Starter</span
+                        >
+                      </td>
+                      <td class="px-5 py-2.5">
+                        <span
+                          class="px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 font-bold text-[10px]"
+                          >Aktif</span
+                        >
+                      </td>
+                      <td class="px-5 py-2.5 text-gray-500">6 Okt 2026</td>
+                    </tr>
+                    <!-- Row 4 -->
+                    <tr class="hover:bg-gray-50/50">
+                      <td class="px-5 py-2.5 font-bold text-gray-900">Konten Pro</td>
+                      <td class="px-5 py-2.5 text-gray-500 font-mono">rina@p.....</td>
+                      <td class="px-5 py-2.5">
+                        <span
+                          class="px-2 py-0.5 rounded-full bg-blue-50 text-blue-700 font-bold text-[10px]"
+                          >Business</span
+                        >
+                      </td>
+                      <td class="px-5 py-2.5">
+                        <span
+                          class="px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 font-bold text-[10px]"
+                          >Aktif</span
+                        >
+                      </td>
+                      <td class="px-5 py-2.5 text-gray-500">5 Okt 2026</td>
+                    </tr>
+                    <!-- Row 5 -->
+                    <tr class="hover:bg-gray-50/50">
+                      <td class="px-5 py-2.5 font-bold text-gray-900">Digital Store</td>
+                      <td class="px-5 py-2.5 text-gray-500 font-mono">agus@p.....</td>
+                      <td class="px-5 py-2.5">
+                        <span
+                          class="px-2 py-0.5 rounded-full bg-orange-50 text-[#D95338] font-bold text-[10px]"
+                          >Starter</span
+                        >
+                      </td>
+                      <td class="px-5 py-2.5">
+                        <span
+                          class="px-2 py-0.5 rounded-full bg-rose-50 text-rose-700 font-bold text-[10px]"
+                          >Pending</span
+                        >
+                      </td>
+                      <td class="px-5 py-2.5 text-gray-500">5 Okt 2026</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <!-- Right: Monthly Revenue Bar Chart (1 col) -->
+            <div
+              class="bg-white p-5 rounded-2xl border border-gray-200/90 shadow-xs space-y-4 flex flex-col justify-between"
+            >
+              <div>
+                <h3 class="font-extrabold text-sm text-gray-900">Pendapatan Bulanan</h3>
+                <p class="text-[10px] text-gray-400 font-mono">(Rp Juta)</p>
+              </div>
+
+              <!-- Bar Chart Visualization -->
+              <div class="w-full h-36 flex items-end">
+                <div
+                  class="flex flex-col justify-between h-32 text-[9px] text-gray-400 font-mono pr-2 text-right shrink-0"
+                >
+                  <span>800</span>
+                  <span>600</span>
+                  <span>400</span>
+                  <span>200</span>
+                  <span>0</span>
+                </div>
+                <div
+                  class="flex-1 h-32 flex items-end justify-between gap-1.5 pt-2 border-b border-gray-100 pb-1"
+                >
+                  <!-- Mei: 200 -->
+                  <div class="flex-1 flex flex-col items-center gap-1 h-full justify-end">
+                    <div class="w-full bg-[#0284C7] rounded-t" style="height: 25%"></div>
+                    <span class="text-[9px] text-gray-500">Mei</span>
+                  </div>
+                  <!-- Jun: 250 -->
+                  <div class="flex-1 flex flex-col items-center gap-1 h-full justify-end">
+                    <div class="w-full bg-[#0284C7] rounded-t" style="height: 32%"></div>
+                    <span class="text-[9px] text-gray-500">Jun</span>
+                  </div>
+                  <!-- Jul: 450 -->
+                  <div class="flex-1 flex flex-col items-center gap-1 h-full justify-end">
+                    <div class="w-full bg-[#0284C7] rounded-t" style="height: 55%"></div>
+                    <span class="text-[9px] text-gray-500">Jul</span>
+                  </div>
+                  <!-- Agu: 650 -->
+                  <div class="flex-1 flex flex-col items-center gap-1 h-full justify-end">
+                    <div class="w-full bg-[#0284C7] rounded-t" style="height: 75%"></div>
+                    <span class="text-[9px] text-gray-500">Agu</span>
+                  </div>
+                  <!-- Sep: 550 -->
+                  <div class="flex-1 flex flex-col items-center gap-1 h-full justify-end">
+                    <div class="w-full bg-[#0284C7] rounded-t" style="height: 65%"></div>
+                    <span class="text-[9px] text-gray-500">Sep</span>
+                  </div>
+                  <!-- Okt: 750 -->
+                  <div class="flex-1 flex flex-col items-center gap-1 h-full justify-end">
+                    <div class="w-full bg-[#0284C7] rounded-t" style="height: 90%"></div>
+                    <span class="text-[9px] text-gray-500 font-bold text-[#0284C7]">Okt</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="text-[10px] text-gray-400 text-center">
+                Tren pendapatan platform tumbuh +18.5%
+              </div>
+            </div>
+          </div>
+        </main>
+      </div>
+    </div>
+  </body>
+</html>
