@@ -557,7 +557,28 @@ export function createApiServer(options: ApiServerOptions = {}): ApiServerInstan
               },
             });
 
-            sendJson(res, 201, { success: true, data: result }, requestId);
+            sendJson(
+              res,
+              201,
+              {
+                success: true,
+                data: {
+                  ...result,
+                  qrImageUrl:
+                    (result.rawResponse as any)?.result?.qr_url ??
+                    (result.rawResponse as any)?.result?.qr_image_url ??
+                    (result.rawResponse as any)?.data?.qr_image_url ??
+                    (result.rawResponse as any)?.['qr_url'] ??
+                    null,
+                  qrString:
+                    (result.rawResponse as any)?.result?.qr_string ??
+                    (result.rawResponse as any)?.data?.qr_string ??
+                    (result.rawResponse as any)?.['qr_string'] ??
+                    null,
+                },
+              },
+              requestId,
+            );
             logRequest(logger, parsed.method, parsed.pathname, 201, startTime, requestId);
             return;
           } catch (err: unknown) {
@@ -575,6 +596,78 @@ export function createApiServer(options: ApiServerOptions = {}): ApiServerInstan
               status: 'PENDING',
               paymentUrl: null,
             },
+          },
+          requestId,
+        );
+        logRequest(logger, parsed.method, parsed.pathname, 200, startTime, requestId);
+        return;
+      }
+
+      // 21. Tipzy Live Payment Status Verification Endpoint
+      if (
+        parsed.method === 'GET' &&
+        (parsed.pathname.startsWith('/api/v1/tipzy/check-status') ||
+          parsed.pathname.includes('/tipzy/check-status'))
+      ) {
+        const parts = parsed.pathname.split('/');
+        const lastPart = parts[parts.length - 1];
+        const txId =
+          (lastPart && lastPart !== 'check-status' ? lastPart : '') ||
+          parsed.searchParams.get('transactionId') ||
+          parsed.searchParams.get('id') ||
+          '';
+
+        const tipzyApiKey =
+          typeof process !== 'undefined' ? process.env?.['TIPZY_API_KEY'] : undefined;
+        const tipzyMerchantCode =
+          typeof process !== 'undefined' ? process.env?.['TIPZY_MERCHANT_CODE'] : undefined;
+        const tipzyCallbackSecret =
+          typeof process !== 'undefined' ? process.env?.['TIPZY_CALLBACK_SECRET'] : undefined;
+
+        if (txId && tipzyApiKey) {
+          try {
+            const tipzyAdapter = new TipzyPaymentProviderAdapter({
+              apiKey: tipzyApiKey,
+              merchantCode: tipzyMerchantCode,
+              callbackSecret: tipzyCallbackSecret,
+            });
+
+            const statusRes = await tipzyAdapter.verifyPayment({
+              storeId: 'store_pilot_web_01',
+              paymentIntentId: `pi_${txId}`,
+              providerReference: txId,
+              credentialReference: 'env:TIPZY_API_KEY',
+            });
+
+            const isPaid = statusRes.status === 'SUCCEEDED';
+            sendJson(
+              res,
+              200,
+              {
+                success: true,
+                transactionId: txId,
+                status: statusRes.status,
+                paid: isPaid,
+                amount: statusRes.amount,
+                currency: statusRes.currency,
+              },
+              requestId,
+            );
+            logRequest(logger, parsed.method, parsed.pathname, 200, startTime, requestId);
+            return;
+          } catch (err: unknown) {
+            logger.warn('Tipzy verification query error:', { error: String(err), txId });
+          }
+        }
+
+        sendJson(
+          res,
+          200,
+          {
+            success: true,
+            transactionId: txId || 'SIM-DEMO',
+            status: 'PENDING',
+            paid: false,
           },
           requestId,
         );

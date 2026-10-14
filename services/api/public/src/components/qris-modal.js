@@ -72,8 +72,15 @@ export async function showPaymentSimulation({ order, onCompleted = null }) {
       <!-- QR Code Display with Laser Scanner Animation -->
       <div class="relative w-56 h-56 bg-white p-3 rounded-2xl border-2 border-stone-800 shadow-md flex items-center justify-center overflow-hidden mb-3">
         <div class="qris-scanner-line"></div>
-        <!-- Stylized QR Vector Graphic -->
-        <svg class="w-48 h-48 text-stone-950" viewBox="0 0 200 200" fill="currentColor">
+        ${
+          txData.qrImageUrl
+            ? `<img src="${txData.qrImageUrl}" alt="Tipzy QRIS" class="w-48 h-48 object-contain rounded-xl" />`
+            : txData.qrString || txData.paymentUrl
+              ? `<img src="https://api.qrserver.com/v1/create-qr-code/?size=240x240&data=${encodeURIComponent(txData.qrString || txData.paymentUrl)}" alt="QRIS QR" class="w-48 h-48 object-contain rounded-xl shadow-xs" onerror="this.onerror=null; this.classList.add('hidden'); document.getElementById('fallback-qr-svg').classList.remove('hidden');" />`
+              : ''
+        }
+        <!-- Stylized QR Vector Graphic Fallback -->
+        <svg id="fallback-qr-svg" class="w-48 h-48 text-stone-950 ${txData.qrImageUrl || txData.paymentUrl ? 'hidden' : ''}" viewBox="0 0 200 200" fill="currentColor">
           <!-- Top Left Marker -->
           <rect x="10" y="10" width="50" height="50" rx="6" />
           <rect x="20" y="20" width="30" height="30" fill="white" />
@@ -130,6 +137,14 @@ export async function showPaymentSimulation({ order, onCompleted = null }) {
         </svg>
       </div>
 
+      <!-- Real-time Live Status Monitoring Badge -->
+      <div class="mb-3 flex items-center justify-center gap-2">
+        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-mono font-medium bg-amber-50 text-amber-700 border border-amber-200 shadow-xs">
+          <span class="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></span>
+          <span id="payment-status-badge">Menunggu Pembayaran (Auto-detect Aktif)</span>
+        </span>
+      </div>
+
       <!-- Expiry Countdown -->
       <div class="text-xs text-stone-500 mb-3.5 flex items-center justify-center gap-1.5 font-mono">
         ${ICONS.clock}
@@ -145,6 +160,17 @@ export async function showPaymentSimulation({ order, onCompleted = null }) {
           ${ICONS.check}
           <span>Saya Sudah Membayar (Cek Otomatis)</span>
         </button>
+
+        <!-- Hidden Helper Hint for testing / latency -->
+        <div id="payment-pending-hint" class="hidden text-center py-1 bg-stone-50 rounded-xl p-2.5 border border-stone-200">
+          <p class="text-[11px] text-stone-500 mb-1 leading-relaxed">
+            Mutasi belum terdeteksi dari bank. Jika baru saja transfer, tunggu 2-4 detik sistem akan mendeteksi otomatis.
+          </p>
+          <button type="button" id="btn-force-demo-complete" class="text-[11px] text-terracotta-600 hover:text-terracotta-700 font-semibold underline">
+            Simulasikan Bayar Berhasil (Mode Testing)
+          </button>
+        </div>
+
         <p class="text-[11px] text-stone-400 leading-tight">
           Buka aplikasi m-Banking (BCA, Mandiri, BRI, BNI) atau E-Wallet (GoPay, OVO, DANA, ShopeePay), lalu scan QR di atas.
         </p>
@@ -157,13 +183,71 @@ export async function showPaymentSimulation({ order, onCompleted = null }) {
     content: content,
     maxWidth: 'max-w-md',
     onOpen: (modalEl) => {
+      let isCompleted = false;
+      let isChecking = false;
+
+      // Trigger Instant Delivery & Transition to Fulfillment View
+      const triggerFulfillmentSuccess = async () => {
+        if (isCompleted) return;
+        isCompleted = true;
+        if (timerInterval) clearInterval(timerInterval);
+        if (pollInterval) clearInterval(pollInterval);
+
+        const modalBody = modalEl.querySelector('#payment-modal-body');
+        if (modalBody) {
+          modalBody.innerHTML = `
+            <div class="py-12 flex flex-col items-center justify-center space-y-4">
+              <div class="w-16 h-16 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center animate-bounce shadow-sm">
+                <svg class="w-9 h-9" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+              </div>
+              <div class="font-heading font-black text-xl text-stone-900">Pembayaran Berhasil!</div>
+              <p class="text-xs text-stone-500 font-sans">Mutasi QRIS terverifikasi. Menyiapkan lisensi & kredensial otomatis...</p>
+            </div>
+          `;
+        }
+
+        // Advance Order Lifecycle to PAID & FULFILLED
+        store.updateOrderStatus(order.id, 'PAID', 'PROCESSING');
+        await sleep(900);
+        store.updateOrderStatus(order.id, 'PAID', 'FULFILLED');
+        await sleep(400);
+
+        showFulfillmentResult(order, onCompleted);
+      };
+
+      // Real-time Background Polling (Every 2.5 seconds)
+      const pollInterval = setInterval(async () => {
+        if (isCompleted || isChecking) return;
+        if (
+          !txData.transactionId ||
+          txData.transactionId.startsWith('TX-') ||
+          txData.transactionId.startsWith('REF-')
+        )
+          return;
+
+        isChecking = true;
+        try {
+          const statusCheck = await paymentService.checkStatus(txData.transactionId);
+          if (statusCheck && statusCheck.paid) {
+            await triggerFulfillmentSuccess();
+          }
+        } catch (err) {
+          console.warn('[QRIS Auto-poll] status check notice:', err);
+        } finally {
+          isChecking = false;
+        }
+      }, 2500);
+
       // Setup Countdown Timer
       const timerEl = modalEl.querySelector('#qris-timer');
       timerInterval = setInterval(() => {
         timerSeconds--;
         if (timerSeconds <= 0) {
           clearInterval(timerInterval);
+          if (pollInterval) clearInterval(pollInterval);
           if (timerEl) timerEl.textContent = '00:00 (Kedaluwarsa)';
+          const badge = modalEl.querySelector('#payment-status-badge');
+          if (badge) badge.textContent = 'Tagihan Kedaluwarsa';
         } else if (timerEl) {
           const m = Math.floor(timerSeconds / 60)
             .toString()
@@ -173,13 +257,12 @@ export async function showPaymentSimulation({ order, onCompleted = null }) {
         }
       }, 1000);
 
-      // Verify Payment Action
+      // Verify Payment Action Button
       const btnVerify = modalEl.querySelector('#btn-verify-payment');
       if (btnVerify) {
         btnVerify.addEventListener('click', async () => {
-          clearInterval(timerInterval);
+          if (isCompleted) return;
 
-          // Change to verifying state
           btnVerify.disabled = true;
           btnVerify.innerHTML = `
             <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white inline-block" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -189,23 +272,60 @@ export async function showPaymentSimulation({ order, onCompleted = null }) {
             <span>Memverifikasi mutasi bank...</span>
           `;
 
-          await sleep(1800);
+          if (
+            txData.transactionId &&
+            !txData.transactionId.startsWith('TX-') &&
+            !txData.transactionId.startsWith('REF-')
+          ) {
+            try {
+              const statusCheck = await paymentService.checkStatus(txData.transactionId);
+              if (statusCheck && statusCheck.paid) {
+                await triggerFulfillmentSuccess();
+                return;
+              }
+            } catch (err) {
+              console.warn('[Manual verify error]:', err);
+            }
+          }
 
-          // Complete payment via Payment Adapter & update store
-          await paymentService.simulateSuccess(txData.transactionId);
-          store.updateOrderStatus(order.id, 'PAID', 'PROCESSING');
+          await sleep(1500);
 
-          // Auto-fulfillment progression
-          await sleep(1200);
-          store.updateOrderStatus(order.id, 'PAID', 'FULFILLED');
+          // Re-check once more
+          if (txData.transactionId && !txData.transactionId.startsWith('TX-')) {
+            try {
+              const statusCheck2 = await paymentService.checkStatus(txData.transactionId);
+              if (statusCheck2 && statusCheck2.paid) {
+                await triggerFulfillmentSuccess();
+                return;
+              }
+            } catch (err) {
+              // fallback
+            }
+          }
 
-          // Show Success & Fulfillment Modal
-          showFulfillmentResult(order, onCompleted);
+          btnVerify.disabled = false;
+          btnVerify.innerHTML = `
+            ${ICONS.check}
+            <span>Belum Terdeteksi — Cek Lagi</span>
+          `;
+          const hintEl = modalEl.querySelector('#payment-pending-hint');
+          if (hintEl) {
+            hintEl.classList.remove('hidden');
+          }
+        });
+      }
+
+      // Force Demo Complete Button (Sandbox/Testing convenience)
+      const btnForceDemo = modalEl.querySelector('#btn-force-demo-complete');
+      if (btnForceDemo) {
+        btnForceDemo.addEventListener('click', async () => {
+          await triggerFulfillmentSuccess();
         });
       }
     },
     onClose: () => {
       if (timerInterval) clearInterval(timerInterval);
+      if (typeof pollInterval !== 'undefined' && pollInterval) clearInterval(pollInterval);
     },
   });
 }

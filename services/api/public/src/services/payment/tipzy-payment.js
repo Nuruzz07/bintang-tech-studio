@@ -31,6 +31,8 @@ export class TipzyPaymentAdapter extends PaymentAdapter {
             amount: amount,
             refCode: data.providerReference || `TIPZY-${Date.now().toString().slice(-6)}`,
             paymentUrl: data.paymentUrl || null,
+            qrImageUrl: data.qrImageUrl || null,
+            qrString: data.qrString || null,
             status: data.status || 'PENDING_PAYMENT',
           },
         };
@@ -52,7 +54,24 @@ export class TipzyPaymentAdapter extends PaymentAdapter {
   }
 
   async checkStatus(transactionId) {
-    return { success: true, status: 'PENDING_PAYMENT' };
+    if (!transactionId || transactionId.startsWith('TX-') || transactionId.startsWith('REF-')) {
+      return { success: true, status: 'PENDING_PAYMENT', paid: false };
+    }
+    try {
+      const res = await fetch(`/api/v1/tipzy/check-status/${encodeURIComponent(transactionId)}`);
+      if (res.ok) {
+        const json = await res.json();
+        return {
+          success: true,
+          transactionId,
+          status: json.status,
+          paid: Boolean(json.paid),
+        };
+      }
+    } catch (err) {
+      console.warn('[TipzyPaymentAdapter] Check status error:', err);
+    }
+    return { success: true, status: 'PENDING_PAYMENT', paid: false };
   }
 
   async simulateSuccess(transactionId) {

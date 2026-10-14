@@ -256,6 +256,7 @@ export async function handleProcessPaymentWebhook(
 
   // Resolve Signature
   const rawSignature =
+    req.headers['x-tipzy-signature'] ||
     req.headers['x-signature'] ||
     req.headers['x-callback-signature'] ||
     req.headers['x-hub-signature'];
