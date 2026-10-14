@@ -318,9 +318,7 @@ export async function handleGetOrder(
     }
 
     const memberRepo = deps.storeMemberRepo ?? deps.database?.storeMembers;
-    const member = memberRepo
-      ? await memberRepo.findByStoreAndUser(storeId, session.userId)
-      : null;
+    const member = memberRepo ? await memberRepo.findByStoreAndUser(storeId, session.userId) : null;
 
     if (!member || member.status !== 'ACTIVE') {
       throw new ForbiddenError('User is not an active member of this store');

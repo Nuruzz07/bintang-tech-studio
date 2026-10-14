@@ -1,0 +1,23 @@
+<svg viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Garis Cakrawala / Portal -->
+  <line x1="8" y1="60" x2="112" y2="60" stroke="#E7E5E4" stroke-width="2" stroke-linecap="round"/>
+  <line x1="30" y1="60" x2="90" y2="60" stroke="#E8A359" stroke-width="2.5" stroke-linecap="round"/>
+
+  <!-- Bingkai Diamond Atas (Stone 950) -->
+  <path d="M28 50 L60 14 L92 50" 
+        stroke="#1C1917" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+
+  <!-- Bingkai Diamond Bawah (Warm Terracotta) -->
+  <path d="M28 70 L60 106 L92 70" 
+        stroke="#9C532B" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+
+  <!-- Belah Ketupat Padat Inti -->
+  <polygon points="60,36 78,60 60,84 42,60" fill="#1C1917"/>
+
+  <!-- Bintang Sinar Emas Murni -->
+  <path d="M60 42 C60 54 52 60 46 60 C52 60 60 66 60 78 C60 66 68 60 74 60 C68 60 60 54 60 42 Z" 
+        fill="#E8A359"/>
+
+  <!-- Pusat Kilau Putih Mini -->
+  <circle cx="60" cy="60" r="2" fill="#FAF8F5"/>
+</svg>

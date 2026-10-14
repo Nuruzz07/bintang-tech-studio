@@ -12,6 +12,7 @@ export default tseslint.config(
       'docs/**',
       'scratch/**',
       '*.config.js',
+      'services/api/public/**',
     ],
   },
   js.configs.recommended,

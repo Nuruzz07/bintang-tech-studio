@@ -37,7 +37,14 @@ import {
   InMemoryIdempotencyRepository,
   Customer,
 } from '@bintang/orders';
-import { createApiServer, ApiServerInstance } from '../src/index.js';
+import {
+  createApiServer,
+  ApiServerInstance,
+  assertNotProductionTarget,
+  validateSupabaseTarget,
+  PRODUCTION_PROJECT_REF,
+  STAGING_PROJECT_REF,
+} from '../src/index.js';
 
 class TestStoreRepository implements StoreRepository {
   private readonly stores = new Map<string, Store>();
@@ -757,7 +764,9 @@ describe('HTTP API Gateway Integration Suite (Catalog & Orders)', () => {
       expect(res.status).toBe(400);
       const body = await res.json();
       expect(body.error.code).toBe('BAD_REQUEST');
-      expect(body.error.message).toContain('Unauthenticated guest checkout cannot specify an explicit customer id');
+      expect(body.error.message).toContain(
+        'Unauthenticated guest checkout cannot specify an explicit customer id',
+      );
     });
 
     it('rejects authenticated checkout when explicit customer id does not match session with 403 Forbidden', async () => {
@@ -781,7 +790,9 @@ describe('HTTP API Gateway Integration Suite (Catalog & Orders)', () => {
       expect(res.status).toBe(403);
       const body = await res.json();
       expect(body.error.code).toBe('FORBIDDEN');
-      expect(body.error.message).toContain('Explicit customer id does not match authenticated customer session');
+      expect(body.error.message).toContain(
+        'Explicit customer id does not match authenticated customer session',
+      );
     });
 
     it('guarantees idempotency replay when repeating identical checkout', async () => {
@@ -874,7 +885,9 @@ describe('HTTP API Gateway Integration Suite (Catalog & Orders)', () => {
       expect(statusCodes).toEqual([201, 422]);
 
       // Exactly 1 order was created, and stock is now 0
-      const prodRes = await fetch(`${baseUrl}/api/v1/stores/${storeAId}/products/${productA4LimitedId}`);
+      const prodRes = await fetch(
+        `${baseUrl}/api/v1/stores/${storeAId}/products/${productA4LimitedId}`,
+      );
       const prodBody = await prodRes.json();
       expect(prodBody.data.availableQuantity).toBe(0);
       expect(prodBody.data.isAvailable).toBe(false);
@@ -997,7 +1010,9 @@ describe('HTTP API Gateway Integration Suite (Catalog & Orders)', () => {
       expect(res.status).toBe(401);
       const body = await res.json();
       expect(body.error.code).toBe('UNAUTHORIZED');
-      expect(body.error.message).toContain('X-Customer-Id header is not a valid authentication proof');
+      expect(body.error.message).toContain(
+        'X-Customer-Id header is not a valid authentication proof',
+      );
     });
 
     it('returns 401 Unauthorized when no authentication is provided', async () => {
@@ -1103,14 +1118,96 @@ describe('HTTP API Gateway Integration Suite (Catalog & Orders)', () => {
   // 5. CORS PREFLIGHT
   // =========================================================================
   describe('CORS Options Preflight', () => {
-    it('handles OPTIONS preflight with 204 No Content and CORS headers', async () => {
+    it('does not grant cross-origin access without a configured origin', async () => {
       const res = await fetch(`${baseUrl}/api/v1/stores/${storeAId}/orders`, {
         method: 'OPTIONS',
       });
 
       expect(res.status).toBe(204);
-      expect(res.headers.get('access-control-allow-origin')).toBe('*');
+      expect(res.headers.get('access-control-allow-origin')).toBeNull();
       expect(res.headers.get('access-control-allow-methods')).toContain('POST');
+    });
+
+    it('echoes only an explicitly configured allowed origin', async () => {
+      const allowed = 'https://seller.example.test';
+      const allowedServer = createApiServer({
+        port: 0,
+        host: '127.0.0.1',
+        corsAllowedOrigins: [allowed],
+        dependencies: {
+          storeRepo,
+          customerRepo,
+          catalogService,
+          inventoryService,
+          orderService,
+          logger: new StructuredLogger({ requestId: 'cors-allow-test' }),
+        },
+      });
+      await allowedServer.start();
+      try {
+        const port = (allowedServer.server.address() as AddressInfo).port;
+        const res = await fetch(`http://127.0.0.1:${port}/api/v1/stores/${storeAId}/orders`, {
+          method: 'OPTIONS',
+          headers: { Origin: allowed },
+        });
+        expect(res.status).toBe(204);
+        expect(res.headers.get('access-control-allow-origin')).toBe(allowed);
+        expect(res.headers.get('vary')).toContain('Origin');
+      } finally {
+        await allowedServer.stop();
+      }
+    });
+
+    it('does not reflect an untrusted origin', async () => {
+      const res = await fetch(`${baseUrl}/api/v1/stores/${storeAId}/orders`, {
+        method: 'OPTIONS',
+        headers: { Origin: 'https://attacker.example' },
+      });
+      expect(res.status).toBe(204);
+      expect(res.headers.get('access-control-allow-origin')).toBeNull();
+    });
+  });
+
+  // =========================================================================
+  // 6. STAGING & PRODUCTION SAFETY GUARDS
+  // =========================================================================
+  describe('Database Target Safety Guard', () => {
+    it('throws fatal error when URL targets production project ref', () => {
+      const prodUrl = `https://${PRODUCTION_PROJECT_REF}.supabase.co`;
+      expect(() => assertNotProductionTarget(prodUrl)).toThrowError(
+        /FATAL SAFETY VIOLATION: Production Supabase project ref/,
+      );
+    });
+
+    it('permits staging URL pointing to vaaixneyotrilqfkulqw', () => {
+      const stagingUrl = `https://${STAGING_PROJECT_REF}.supabase.co`;
+      expect(() => assertNotProductionTarget(stagingUrl)).not.toThrow();
+      const res = validateSupabaseTarget(stagingUrl);
+      expect(res.projectRef).toBe(STAGING_PROJECT_REF);
+      expect(res.isLocal).toBe(false);
+    });
+
+    it('permits local mock URL when local mock is allowed', () => {
+      expect(() => assertNotProductionTarget('http://127.0.0.1:54321')).not.toThrow();
+      const res = validateSupabaseTarget('http://127.0.0.1:54321');
+      expect(res.isLocal).toBe(true);
+    });
+
+    it('throws error when URL is empty or whitespace', () => {
+      expect(() => validateSupabaseTarget('')).toThrowError(/required and cannot be empty/);
+      expect(() => validateSupabaseTarget('   ')).toThrowError(/required and cannot be empty/);
+    });
+
+    it('throws error when URL is malformed', () => {
+      expect(() => validateSupabaseTarget('not-a-valid-url')).toThrowError(
+        /Malformed Supabase URL/,
+      );
+    });
+
+    it('throws error when URL targets a non-staging Supabase project ref', () => {
+      expect(() => validateSupabaseTarget('https://otherproject123.supabase.co')).toThrowError(
+        /UNAUTHORIZED PROJECT TARGET/,
+      );
     });
   });
 });

@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
+    <title>Template 01: Digital Minimal — Bintang Tech Studio</title>
+    <meta
+      name="description"
+      content="Portfolio Template 01 DIGITAL MINIMAL Bintang Tech Studio. Solusi otomasi jualan produk digital untuk seller kecil."
+    />
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@500;600;700;800;900&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- Tailwind Play CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              ivory: {
+                50: '#FDFBF7',
+                100: '#FAF7F2',
+                200: '#F3ECE2',
+                300: '#E7DDCE',
+              },
+              obsidian: {
+                950: '#080A0D',
+                900: '#0E1117',
+                800: '#181D26',
+                700: '#232936',
+                600: '#384255',
+                500: '#55627A',
+              },
+              terracotta: {
+                50: '#FDF6F2',
+                100: '#FAEBE2',
+                400: '#DE7249',
+                500: '#C85A32',
+                600: '#B04B26',
+                700: '#8E3A1D',
+              },
+              gold: {
+                400: '#F59E0B',
+                500: '#D99B26',
+                600: '#B47E18',
+              },
+              emerald: {
+                400: '#34D399',
+                500: '#10B981',
+                600: '#059669',
+              },
+            },
+            fontFamily: {
+              heading: ['"Plus Jakarta Sans"', 'sans-serif'],
+              sans: ['Inter', 'sans-serif'],
+              mono: ['"JetBrains Mono"', 'monospace'],
+            },
+          },
+        },
+      };
+    </script>
+
+    <!-- Local Styles -->
+    <link rel="stylesheet" href="./src/styles/design-tokens.css" />
+    <link rel="stylesheet" href="./src/styles/main.css" />
+  </head>
+  <body
+    class="bg-ivory-100 text-obsidian-900 min-h-screen flex flex-col antialiased selection:bg-terracotta-500 selection:text-white"
+  >
+    <!-- Global Top Demo Switcher Bar -->
+    <div id="demo-navbar-container"></div>
+
+    <!-- Main View Render Target -->
+    <div id="app-root" class="flex-1"></div>
+
+    <!-- Toast Container -->
+    <div
+      id="toast-container"
+      class="fixed bottom-5 right-5 z-[9999] flex flex-col gap-2 pointer-events-none max-w-sm w-full px-4"
+    ></div>
+
+    <!-- Application Main Script -->
+    <script type="module" src="./src/main.js"></script>
+  </body>
+</html>

@@ -5,6 +5,7 @@ export interface RouteParams {
   readonly storeId?: string | undefined;
   readonly productId?: string | undefined;
   readonly orderId?: string | undefined;
+  readonly provider?: string | undefined;
 }
 
 export interface ParsedRequest {
@@ -109,6 +110,36 @@ function matchRouteParams(pathname: string): RouteParams {
     };
   }
 
+  // /api/v1/stores/:storeId/orders/:orderId/payments
+  const orderPaymentsMatch = pathname.match(
+    /^\/api\/v1\/stores\/([^/]+)\/orders\/([^/]+)\/payments$/,
+  );
+  if (orderPaymentsMatch && orderPaymentsMatch[1] && orderPaymentsMatch[2]) {
+    return {
+      storeId: decodeURIComponent(orderPaymentsMatch[1]),
+      orderId: decodeURIComponent(orderPaymentsMatch[2]),
+    };
+  }
+
+  // /api/v1/stores/:storeId/orders/:orderId/fulfillment
+  const orderFulfillmentMatch = pathname.match(
+    /^\/api\/v1\/stores\/([^/]+)\/orders\/([^/]+)\/fulfillment$/,
+  );
+  if (orderFulfillmentMatch && orderFulfillmentMatch[1] && orderFulfillmentMatch[2]) {
+    return {
+      storeId: decodeURIComponent(orderFulfillmentMatch[1]),
+      orderId: decodeURIComponent(orderFulfillmentMatch[2]),
+    };
+  }
+
+  // /api/v1/webhooks/payments/:provider
+  const webhookPaymentsMatch = pathname.match(/^\/api\/v1\/webhooks\/payments\/([^/]+)$/);
+  if (webhookPaymentsMatch && webhookPaymentsMatch[1]) {
+    return {
+      provider: decodeURIComponent(webhookPaymentsMatch[1]),
+    };
+  }
+
   // /api/v1/stores/:storeId/orders/:orderId
   const orderDetailMatch = pathname.match(/^\/api\/v1\/stores\/([^/]+)\/orders\/([^/]+)$/);
   if (orderDetailMatch && orderDetailMatch[1] && orderDetailMatch[2]) {
@@ -143,4 +174,19 @@ export function sendJson(
     ...(requestId ? { 'X-Request-Id': requestId } : {}),
   });
   res.end(jsonPayload);
+}
+
+export function sendHtml(
+  res: ServerResponse,
+  status: number,
+  html: string,
+  requestId?: string,
+): void {
+  res.writeHead(status, {
+    'Content-Type': 'text/html; charset=utf-8',
+    'X-Content-Type-Options': 'nosniff',
+    'Cache-Control': 'no-store, no-cache, must-revalidate',
+    ...(requestId ? { 'X-Request-Id': requestId } : {}),
+  });
+  res.end(html);
 }

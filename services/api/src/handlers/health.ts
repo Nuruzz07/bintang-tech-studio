@@ -13,25 +13,30 @@ export async function handleHealthCheck(
   _req: ParsedRequest,
   deps: ApiDependencies,
 ): Promise<ApiResponse<HealthCheckData>> {
-  let dbStatus = 'UNKNOWN';
+  let dbStatus = 'NOT_CONFIGURED';
   let latencyMs: number | undefined;
 
-  try {
-    if (deps.database && typeof deps.database.checkHealth === 'function') {
+  if (deps.database && typeof deps.database.checkHealth === 'function') {
+    try {
       const health = await deps.database.checkHealth();
       dbStatus = health.status;
       latencyMs = health.latencyMs;
-    } else {
-      dbStatus = 'pass';
+    } catch (err) {
+      dbStatus = 'DOWN';
+      deps.logger.error('Database health ping failed', {
+        error: err instanceof Error ? { name: err.name, message: err.message } : undefined,
+      });
     }
-  } catch (err) {
-    dbStatus = 'fail';
-    deps.logger.error('Database health ping failed', {
-      error: err instanceof Error ? { name: err.name, message: err.message } : undefined,
-    });
   }
 
-  const overallStatus = dbStatus === 'pass' ? 'pass' : dbStatus === 'warn' ? 'warn' : 'fail';
+  const isDbHealthy = dbStatus === 'UP' || dbStatus === 'pass';
+  const overallStatus: 'pass' | 'warn' | 'fail' = isDbHealthy
+    ? 'pass'
+    : dbStatus === 'DEGRADED' || dbStatus === 'warn'
+      ? 'warn'
+      : dbStatus === 'DOWN' || dbStatus === 'fail'
+        ? 'fail'
+        : 'pass';
 
   return {
     data: {

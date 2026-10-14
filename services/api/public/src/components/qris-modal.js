@@ -1,0 +1,348 @@
+// Bintang Store — Payment Controller (Production Quality)
+// Brand: Bintang Store — "Produk digital, langsung beres."
+
+import { openModal, closeModal } from './modal.js';
+import { formatRupiah } from '../utils/currency.js';
+import { copyToClipboard, sleep, ICONS, BRAND_LOGO_SVG } from '../utils/helpers.js';
+import { store } from '../state/store.js';
+import { paymentService } from '../services/payment/index.js';
+
+export async function showPaymentSimulation({ order, onCompleted = null }) {
+  let timerSeconds = 15 * 60; // 15 mins countdown
+  let timerInterval = null;
+
+  // Initialize payment via paymentService abstraction
+  const paymentRes = await paymentService.createPayment({
+    orderId: order.id,
+    amount: order.total,
+    paymentMethod: order.paymentMethod || 'QRIS',
+    customer: order.customer,
+  });
+
+  const txData = paymentRes.data || {
+    refCode: `REF-QRIS-${Math.floor(100000 + Math.random() * 900000)}`,
+    transactionId: `TX-${order.id.replace('#', '')}`,
+  };
+
+  const content = `
+    <div id="payment-modal-body" class="flex flex-col items-center text-center">
+      <!-- QRIS Brand Header -->
+      <div class="w-full bg-[#0D1117] rounded-xl p-3 text-white flex items-center justify-between mb-3.5 border border-stone-800">
+        <div class="flex items-center gap-2">
+          <span class="font-heading font-black tracking-wider text-[11px] bg-red-600 px-2 py-0.5 rounded text-white shadow-sm">QRIS</span>
+          <span class="text-xs text-stone-300 font-medium">Pembayaran Digital Instan</span>
+        </div>
+        <span class="text-[10px] font-mono text-stone-400">GPN / Bank Indonesia</span>
+      </div>
+
+      <!-- Merchant & Amount Info -->
+      <div class="w-full bg-stone-50 rounded-2xl p-3.5 border border-stone-200/90 mb-3.5 text-left space-y-1.5 shadow-sm">
+        <div class="flex justify-between items-center text-xs text-stone-500">
+          <span>Merchant Resmi</span>
+          <span class="font-bold text-stone-900 flex items-center gap-1.5">
+            <span class="w-4 h-4 inline-block">${BRAND_LOGO_SVG}</span>
+            <span>Bintang Store</span>
+          </span>
+        </div>
+        <div class="flex justify-between items-center text-xs text-stone-500">
+          <span>ID Pesanan</span>
+          <span class="font-mono font-semibold text-stone-900">${order.id}</span>
+        </div>
+        <div class="flex justify-between items-center text-xs text-stone-500">
+          <span>No. Referensi</span>
+          <span class="font-mono text-[11px] text-stone-600">${txData.refCode}</span>
+        </div>
+        ${
+          txData.paymentUrl
+            ? `
+        <div class="pt-1.5 pb-0.5">
+          <a href="${txData.paymentUrl}" target="_blank" rel="noopener noreferrer" class="w-full inline-flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl bg-[#D95338] text-white text-xs font-bold shadow-xs hover:bg-[#c2452c] transition">
+            <span>🔗 Buka Tagihan Tipzy QRIS (Live)</span>
+          </a>
+        </div>
+        `
+            : ''
+        }
+        <div class="flex justify-between items-center text-xs text-stone-500 pt-2 border-t border-stone-200">
+          <span class="font-medium">Total Pembayaran</span>
+          <span class="font-heading font-extrabold text-base text-terracotta-600">${formatRupiah(order.total)}</span>
+        </div>
+      </div>
+
+      <!-- QR Code Display with Laser Scanner Animation -->
+      <div class="relative w-56 h-56 bg-white p-3 rounded-2xl border-2 border-stone-800 shadow-md flex items-center justify-center overflow-hidden mb-3">
+        <div class="qris-scanner-line"></div>
+        <!-- Stylized QR Vector Graphic -->
+        <svg class="w-48 h-48 text-stone-950" viewBox="0 0 200 200" fill="currentColor">
+          <!-- Top Left Marker -->
+          <rect x="10" y="10" width="50" height="50" rx="6" />
+          <rect x="20" y="20" width="30" height="30" fill="white" />
+          <rect x="26" y="26" width="18" height="18" rx="2" />
+
+          <!-- Top Right Marker -->
+          <rect x="140" y="10" width="50" height="50" rx="6" />
+          <rect x="150" y="20" width="30" height="30" fill="white" />
+          <rect x="156" y="26" width="18" height="18" rx="2" />
+
+          <!-- Bottom Left Marker -->
+          <rect x="10" y="140" width="50" height="50" rx="6" />
+          <rect x="20" y="150" width="30" height="30" fill="white" />
+          <rect x="26" y="156" width="18" height="18" rx="2" />
+
+          <!-- QR Data Dots Pattern -->
+          <rect x="70" y="15" width="12" height="12" />
+          <rect x="90" y="15" width="15" height="12" />
+          <rect x="115" y="15" width="15" height="12" />
+          <rect x="70" y="35" width="20" height="15" />
+          <rect x="100" y="35" width="15" height="15" />
+          <rect x="120" y="35" width="12" height="15" />
+
+          <rect x="15" y="70" width="15" height="15" />
+          <rect x="35" y="75" width="12" height="12" />
+          <rect x="15" y="100" width="12" height="20" />
+          <rect x="35" y="100" width="20" height="15" />
+          <rect x="15" y="125" width="25" height="10" />
+
+          <!-- Official Bintang Logo Center Badge in QR -->
+          <rect x="70" y="70" width="60" height="60" rx="8" fill="#1C1917" />
+          <rect x="73" y="73" width="54" height="54" rx="6" fill="#FAF8F5" />
+          <!-- Diamond Frame -->
+          <path d="M84 95 L100 78 L116 95" stroke="#1C1917" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+          <path d="M84 105 L100 122 L116 105" stroke="#9C532B" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+          <!-- Star -->
+          <polygon points="100,88 109,100 100,112 91,100" fill="#1C1917"/>
+          <path d="M100 91 C100 97 96 100 93 100 C96 100 100 103 100 109 C100 103 104 100 107 100 C104 100 100 97 100 91 Z" fill="#E8A359"/>
+          <circle cx="100" cy="100" r="1.5" fill="#FAF8F5"/>
+
+          <rect x="140" y="70" width="15" height="20" />
+          <rect x="165" y="70" width="25" height="12" />
+          <rect x="140" y="100" width="25" height="12" />
+          <rect x="175" y="95" width="15" height="20" />
+
+          <rect x="70" y="140" width="25" height="15" />
+          <rect x="105" y="140" width="25" height="15" />
+          <rect x="140" y="140" width="15" height="25" />
+          <rect x="165" y="140" width="25" height="15" />
+          <rect x="70" y="165" width="15" height="25" />
+          <rect x="95" y="165" width="30" height="12" />
+          <rect x="135" y="170" width="20" height="20" />
+          <rect x="165" y="165" width="25" height="25" />
+        </svg>
+      </div>
+
+      <!-- Expiry Countdown -->
+      <div class="text-xs text-stone-500 mb-3.5 flex items-center justify-center gap-1.5 font-mono">
+        ${ICONS.clock}
+        <span>Selesaikan pembayaran dalam:</span>
+        <span id="qris-timer" class="font-bold text-stone-900 bg-stone-100 px-2 py-0.5 rounded">15:00</span>
+      </div>
+
+      <!-- Action Verification Button -->
+      <div class="w-full flex flex-col gap-2">
+        <button id="btn-verify-payment"
+                type="button"
+                class="w-full py-3 px-4 rounded-xl font-heading font-bold text-sm bg-emerald-600 hover:bg-emerald-700 active:scale-98 text-white shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2">
+          ${ICONS.check}
+          <span>Saya Sudah Membayar (Cek Otomatis)</span>
+        </button>
+        <p class="text-[11px] text-stone-400 leading-tight">
+          Buka aplikasi m-Banking (BCA, Mandiri, BRI, BNI) atau E-Wallet (GoPay, OVO, DANA, ShopeePay), lalu scan QR di atas.
+        </p>
+      </div>
+    </div>
+  `;
+
+  openModal({
+    title: 'Pembayaran QRIS — Bintang Store',
+    content: content,
+    maxWidth: 'max-w-md',
+    onOpen: (modalEl) => {
+      // Setup Countdown Timer
+      const timerEl = modalEl.querySelector('#qris-timer');
+      timerInterval = setInterval(() => {
+        timerSeconds--;
+        if (timerSeconds <= 0) {
+          clearInterval(timerInterval);
+          if (timerEl) timerEl.textContent = '00:00 (Kedaluwarsa)';
+        } else if (timerEl) {
+          const m = Math.floor(timerSeconds / 60)
+            .toString()
+            .padStart(2, '0');
+          const s = (timerSeconds % 60).toString().padStart(2, '0');
+          timerEl.textContent = `${m}:${s}`;
+        }
+      }, 1000);
+
+      // Verify Payment Action
+      const btnVerify = modalEl.querySelector('#btn-verify-payment');
+      if (btnVerify) {
+        btnVerify.addEventListener('click', async () => {
+          clearInterval(timerInterval);
+
+          // Change to verifying state
+          btnVerify.disabled = true;
+          btnVerify.innerHTML = `
+            <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white inline-block" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+            <span>Memverifikasi mutasi bank...</span>
+          `;
+
+          await sleep(1800);
+
+          // Complete payment via Payment Adapter & update store
+          await paymentService.simulateSuccess(txData.transactionId);
+          store.updateOrderStatus(order.id, 'PAID', 'PROCESSING');
+
+          // Auto-fulfillment progression
+          await sleep(1200);
+          store.updateOrderStatus(order.id, 'PAID', 'FULFILLED');
+
+          // Show Success & Fulfillment Modal
+          showFulfillmentResult(order, onCompleted);
+        });
+      }
+    },
+    onClose: () => {
+      if (timerInterval) clearInterval(timerInterval);
+    },
+  });
+}
+
+function showFulfillmentResult(order, onCompleted = null) {
+  const updatedOrder = store.getOrder(order.id) || order;
+  const f = updatedOrder.fulfillmentData || {};
+
+  let credentialBlock = '';
+  if (f.format === 'account') {
+    credentialBlock = `
+      <div class="bg-stone-900 text-stone-100 rounded-2xl p-4 text-left font-mono text-xs space-y-2 border border-stone-800 shadow-inner">
+        <div class="text-[10px] text-amber-400 uppercase tracking-widest font-sans font-bold flex items-center justify-between">
+          <span>Kredensial Akun Resmi</span>
+          <span class="text-emerald-400">● Aktif</span>
+        </div>
+        <div class="flex items-center justify-between border-b border-stone-800 pb-2">
+          <div>
+            <span class="text-stone-400 text-[10px] block font-sans">Email / User:</span>
+            <span class="text-stone-100 font-semibold select-all">${f.email || 'demo.user@bintang.store'}</span>
+          </div>
+          <button type="button" class="btn-copy-cred text-stone-400 hover:text-white p-1 rounded transition-colors" data-copy="${f.email || ''}">
+            ${ICONS.copy}
+          </button>
+        </div>
+        <div class="flex items-center justify-between pt-1">
+          <div>
+            <span class="text-stone-400 text-[10px] block font-sans">Password:</span>
+            <span class="text-stone-100 font-semibold select-all">${f.password || 'Bintang2026Secure'}</span>
+          </div>
+          <button type="button" class="btn-copy-cred text-stone-400 hover:text-white p-1 rounded transition-colors" data-copy="${f.password || ''}">
+            ${ICONS.copy}
+          </button>
+        </div>
+      </div>
+    `;
+  } else if (f.format === 'code') {
+    credentialBlock = `
+      <div class="bg-stone-900 text-stone-100 rounded-2xl p-4 text-left font-mono text-xs space-y-2 border border-stone-800 shadow-inner">
+        <div class="text-[10px] text-amber-400 uppercase tracking-widest font-sans font-bold">Kode Voucher Digital</div>
+        <div class="flex items-center justify-between pt-1">
+          <span class="text-amber-300 font-bold text-sm tracking-widest select-all">${f.code || 'BTS-CODE-88912-REDEEM'}</span>
+          <button type="button" class="btn-copy-cred text-stone-400 hover:text-white p-1.5 rounded transition-colors" data-copy="${f.code || ''}">
+            ${ICONS.copy}
+          </button>
+        </div>
+      </div>
+    `;
+  } else if (f.format === 'link') {
+    credentialBlock = `
+      <div class="bg-stone-900 text-stone-100 rounded-2xl p-4 text-left font-mono text-xs space-y-2.5 border border-stone-800 shadow-inner">
+        <div class="text-[10px] text-amber-400 uppercase tracking-widest font-sans font-bold">Link Akses Folder VIP</div>
+        <div class="flex items-center justify-between gap-2">
+          <span class="text-stone-300 text-[11px] truncate select-all">${f.link || 'https://drive.google.com/drive/folders/vip'}</span>
+          <a href="${f.link || '#'}" target="_blank" class="px-2.5 py-1 bg-terracotta-500 hover:bg-terracotta-600 text-white rounded-lg text-xs font-sans font-bold flex items-center gap-1 transition-colors shrink-0">
+            <span>Buka</span>
+            ${ICONS.externalLink}
+          </a>
+        </div>
+      </div>
+    `;
+  } else {
+    credentialBlock = `
+      <div class="bg-stone-900 text-stone-100 rounded-2xl p-4 text-left font-mono text-xs space-y-2 border border-stone-800 shadow-inner">
+        <div class="text-[10px] text-amber-400 uppercase tracking-widest font-sans font-bold">Serial License Key</div>
+        <div class="flex items-center justify-between pt-1">
+          <span class="text-sky-300 font-bold text-sm tracking-wider select-all">${f.licenseKey || 'BTS-LIC-8812-77XA'}</span>
+          <button type="button" class="btn-copy-cred text-stone-400 hover:text-white p-1.5 rounded transition-colors" data-copy="${f.licenseKey || ''}">
+            ${ICONS.copy}
+          </button>
+        </div>
+      </div>
+    `;
+  }
+
+  const successContent = `
+    <div class="flex flex-col items-center text-center space-y-4">
+      <!-- Success Icon -->
+      <div class="w-16 h-16 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center text-2xl shadow-sm border border-emerald-200">
+        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+      </div>
+
+      <div>
+        <h3 class="font-heading font-extrabold text-lg text-stone-900">Pembayaran Berhasil!</h3>
+        <p class="text-xs text-stone-500 mt-0.5">Produk digital Anda telah terkirim secara otomatis.</p>
+      </div>
+
+      <!-- Credential Block -->
+      <div class="w-full">
+        ${credentialBlock}
+      </div>
+
+      <!-- Note / Instructions -->
+      <div class="w-full bg-stone-50 rounded-xl p-3 text-left border border-stone-200 text-xs text-stone-600 leading-relaxed">
+        <span class="font-bold text-stone-900 block mb-0.5">Panduan Penggunaan:</span>
+        ${f.note || 'Akses produk digital aktif seketika. Hubungi layanan pelanggan Bintang Store jika membutuhkan bantuan aktivasi.'}
+      </div>
+
+      <!-- Action Button -->
+      <div class="w-full pt-1">
+        <button id="btn-done-payment"
+                type="button"
+                class="w-full py-3 px-4 rounded-xl font-heading font-bold text-sm bg-stone-900 hover:bg-stone-800 text-white shadow-md transition-colors">
+          Lihat di Pesanan Saya
+        </button>
+      </div>
+    </div>
+  `;
+
+  openModal({
+    title: 'Pesanan Selesai — Bintang Store',
+    content: successContent,
+    maxWidth: 'max-w-md',
+    onOpen: (modalEl) => {
+      // Copy event listener
+      modalEl.querySelectorAll('.btn-copy-cred').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          const text = btn.getAttribute('data-copy');
+          if (text) copyToClipboard(text, 'Kredensial berhasil disalin!');
+        });
+      });
+
+      // Done button
+      const btnDone = modalEl.querySelector('#btn-done-payment');
+      if (btnDone) {
+        btnDone.addEventListener('click', () => {
+          closeModal();
+          if (onCompleted) {
+            onCompleted(updatedOrder);
+          } else {
+            // Trigger tab navigation to orders
+            window.location.hash = '#webapp';
+            const ordersTabBtn = document.querySelector('.btn-webapp-tab[data-tab="orders"]');
+            if (ordersTabBtn) ordersTabBtn.click();
+          }
+        });
+      }
+    },
+  });
+}

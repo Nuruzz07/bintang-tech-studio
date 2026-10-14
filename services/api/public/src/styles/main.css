@@ -1,0 +1,198 @@
+/* Bintang Tech Studio — Main Styling */
+@import url('./design-tokens.css');
+
+body {
+  font-family: var(--font-sans);
+  background-color: var(--color-ivory-100);
+  color: var(--color-obsidian-900);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+h1,
+h2,
+h3,
+h4,
+.font-heading {
+  font-family: var(--font-heading);
+  letter-spacing: -0.02em;
+}
+
+code,
+kbd,
+samp,
+.font-mono {
+  font-family: var(--font-mono);
+}
+
+/* Custom Scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.03);
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.15);
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.25);
+}
+
+/* Micro-interaction button active state */
+button:active:not(:disabled),
+.btn-press:active {
+  transform: scale(0.98);
+}
+
+/* Telegram Bot Simulation Styles */
+.telegram-frame {
+  max-width: 440px;
+  width: 100%;
+  height: 740px;
+  background-color: #0e1621;
+  color: #ffffff;
+  border-radius: 28px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow:
+    0 20px 40px -10px rgba(0, 0, 0, 0.4),
+    0 0 0 1px rgba(0, 0, 0, 0.2);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  position: relative;
+}
+
+@media (max-width: 640px) {
+  .telegram-frame {
+    max-width: 100%;
+    height: 100vh;
+    border-radius: 0;
+    border: none;
+  }
+}
+
+.telegram-chat-area {
+  background-color: #0e1621;
+  background-image: radial-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+  background-size: 16px 16px;
+}
+
+.tg-bubble-bot {
+  background-color: #182533;
+  color: #ffffff;
+  border-radius: 14px 14px 14px 4px;
+  padding: 10px 14px;
+  font-size: 14px;
+  line-height: 1.45;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+  max-width: 88%;
+}
+
+.tg-bubble-user {
+  background-color: #2b5278;
+  color: #ffffff;
+  border-radius: 14px 14px 4px 14px;
+  padding: 10px 14px;
+  font-size: 14px;
+  line-height: 1.45;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+  max-width: 85%;
+  margin-left: auto;
+}
+
+.tg-btn-keyboard {
+  background-color: #242f3d;
+  color: #64b5f6;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-size: 13px;
+  font-weight: 500;
+  text-align: center;
+  transition: all 0.15s ease;
+}
+.tg-btn-keyboard:hover {
+  background-color: #2b3a4a;
+  color: #90caf9;
+}
+.tg-btn-keyboard:active {
+  transform: scale(0.97);
+}
+
+/* Typing Dots Animation */
+.typing-dots span {
+  width: 5px;
+  height: 5px;
+  background-color: #708499;
+  border-radius: 50%;
+  display: inline-block;
+  animation: typingBounce 1.4s infinite ease-in-out both;
+}
+.typing-dots span:nth-child(1) {
+  animation-delay: -0.32s;
+}
+.typing-dots span:nth-child(2) {
+  animation-delay: -0.16s;
+}
+
+@keyframes typingBounce {
+  0%,
+  80%,
+  100% {
+    transform: scale(0);
+    opacity: 0.4;
+  }
+  40% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* QRIS Laser scan animation */
+@keyframes qrisLaser {
+  0% {
+    top: 0%;
+    opacity: 0.8;
+  }
+  50% {
+    top: 96%;
+    opacity: 1;
+  }
+  100% {
+    top: 0%;
+    opacity: 0.8;
+  }
+}
+
+.qris-scanner-line {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, transparent, #c85a32, #d99b26, transparent);
+  box-shadow: 0 0 8px #c85a32;
+  animation: qrisLaser 2.2s ease-in-out infinite;
+}
+
+/* Top Demo Switcher Bar */
+.demo-topbar {
+  background: rgba(14, 17, 23, 0.94);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+/* Modal Backdrops */
+.modal-backdrop {
+  background-color: rgba(11, 13, 16, 0.65);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+/* Transitions */
+.view-container {
+  min-height: calc(100vh - 48px);
+}

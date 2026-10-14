@@ -3,6 +3,8 @@ import { StructuredLogger } from '@bintang/observability';
 import { CatalogService } from '@bintang/commerce';
 import { InventoryService } from '@bintang/inventory';
 import { OrderService, CustomerRepository } from '@bintang/orders';
+import { PaymentService } from '@bintang/payments';
+import { FulfillmentService } from '@bintang/fulfillment';
 import { StoreRepository, StoreMember } from '@bintang/tenancy';
 import { SupabaseDatabase, AppSession } from '@bintang/database';
 
@@ -23,12 +25,18 @@ export interface ApiDependencies {
   readonly catalogService: CatalogService;
   readonly inventoryService: InventoryService;
   readonly orderService: OrderService;
+  readonly paymentService?: PaymentService | undefined;
+  readonly fulfillmentService?: FulfillmentService | undefined;
   readonly logger: StructuredLogger;
 }
 
 export interface ApiServerOptions {
   readonly port?: number | undefined;
   readonly host?: string | undefined;
+  /** Exact HTTP(S) origins allowed to read browser API responses. Empty by default. */
+  readonly corsAllowedOrigins?: readonly string[] | undefined;
+  /** Opt-in local-only demo routes. Requires binding to a loopback interface. */
+  readonly demoEnabled?: boolean | undefined;
   readonly dependencies?: Partial<ApiDependencies> | undefined;
   readonly logger?: StructuredLogger | undefined;
 }

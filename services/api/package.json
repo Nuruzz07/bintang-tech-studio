@@ -15,11 +15,17 @@
   "dependencies": {
     "@bintang/authorization": "^0.1.0",
     "@bintang/commerce": "^0.1.0",
+    "@bintang/customer-store": "^0.1.0",
     "@bintang/database": "^0.1.0",
+    "@bintang/fulfillment": "^0.1.0",
     "@bintang/inventory": "^0.1.0",
     "@bintang/observability": "^0.1.0",
     "@bintang/orders": "^0.1.0",
+    "@bintang/owner-console": "^0.1.0",
+    "@bintang/payments": "^0.1.0",
+    "@bintang/seller-dashboard": "^0.1.0",
     "@bintang/shared": "^0.1.0",
+    "@bintang/telegram": "^0.1.0",
     "@bintang/tenancy": "^0.1.0"
   },
   "devDependencies": {

@@ -14,7 +14,11 @@ declare module 'node:http' {
   }
 
   export class ServerResponse {
-    writeHead(statusCode: number, headers?: Record<string, string | number | readonly string[]>): this;
+    setHeader(name: string, value: string | number | readonly string[]): this;
+    writeHead(
+      statusCode: number,
+      headers?: Record<string, string | number | readonly string[]>,
+    ): this;
     end(chunk?: unknown, callback?: () => void): this;
   }
 
@@ -37,6 +41,17 @@ declare module 'node:net' {
     family: string;
     port: number;
   }
+}
+
+declare module 'node:fs' {
+  export function readFileSync(path: string, encoding: string): string;
+  export function readFileSync(path: string): Buffer;
+  export function existsSync(path: string): boolean;
+}
+
+declare module 'node:path' {
+  export function join(...paths: string[]): string;
+  export function resolve(...paths: string[]): string;
 }
 
 declare interface Buffer {

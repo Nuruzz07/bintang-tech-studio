@@ -1,0 +1,52 @@
+/* Bintang Tech Studio — Design Tokens */
+:root {
+  /* Colors */
+  --color-ivory-50: #fdfbf7;
+  --color-ivory-100: #faf7f2;
+  --color-ivory-200: #f3ece2;
+  --color-ivory-300: #e7ddce;
+  --color-ivory-400: #d8cab6;
+
+  --color-obsidian-950: #080a0d;
+  --color-obsidian-900: #0e1117;
+  --color-obsidian-850: #141821;
+  --color-obsidian-800: #1c222e;
+  --color-obsidian-700: #272f3e;
+  --color-obsidian-600: #384255;
+  --color-obsidian-500: #55627a;
+  --color-obsidian-400: #8895ad;
+  --color-obsidian-300: #b8c2d3;
+  --color-obsidian-200: #e1e6ef;
+
+  --color-terracotta-50: #fdf6f2;
+  --color-terracotta-100: #faebe2;
+  --color-terracotta-400: #de7249;
+  --color-terracotta-500: #c85a32;
+  --color-terracotta-600: #b04b26;
+  --color-terracotta-700: #8e3a1d;
+
+  --color-gold-400: #f59e0b;
+  --color-gold-500: #d99b26;
+  --color-gold-600: #b47e18;
+
+  --color-emerald-400: #34d399;
+  --color-emerald-500: #10b981;
+  --color-emerald-600: #059669;
+
+  /* Typography */
+  --font-heading: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-mono: 'JetBrains Mono', 'SF Mono', Consolas, monospace;
+
+  /* Elevation */
+  --shadow-subtle: 0 1px 3px rgba(0, 0, 0, 0.05), 0 1px 2px rgba(0, 0, 0, 0.08);
+  --shadow-card: 0 4px 12px rgba(0, 0, 0, 0.04), 0 1px 3px rgba(0, 0, 0, 0.06);
+  --shadow-float: 0 12px 28px rgba(0, 0, 0, 0.12), 0 4px 10px rgba(0, 0, 0, 0.06);
+
+  /* Radius */
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --radius-xl: 18px;
+  --radius-full: 9999px;
+}

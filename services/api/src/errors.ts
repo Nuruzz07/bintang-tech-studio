@@ -107,7 +107,8 @@ export function mapErrorToHttpResponse(
     errorName === 'UnauthenticatedError' ||
     errorName === 'CustomerSessionError' ||
     errorName === 'SessionExpiredError' ||
-    errorName === 'SessionRevokedError'
+    errorName === 'SessionRevokedError' ||
+    errorName === 'PaymentSignatureVerificationError'
   ) {
     return {
       status: 401,
@@ -128,7 +129,10 @@ export function mapErrorToHttpResponse(
     errorName === 'CustomerOrderAccessDeniedError' ||
     errorName === 'CustomerAccessDeniedError' ||
     errorName === 'ScopeMismatchError' ||
-    errorName === 'EntitlementDeniedError'
+    errorName === 'EntitlementDeniedError' ||
+    errorName === 'PaymentCustomerAccessDeniedError' ||
+    errorName === 'PaymentStoreMismatchError' ||
+    errorName === 'PaymentOrderMismatchError'
   ) {
     return {
       status: 403,
@@ -150,7 +154,10 @@ export function mapErrorToHttpResponse(
     errorName === 'CategoryNotFoundError' ||
     errorName === 'CustomerNotFoundError' ||
     errorName === 'InventoryNotFoundError' ||
-    errorName === 'StoreNotFoundError'
+    errorName === 'StoreNotFoundError' ||
+    errorName === 'PaymentNotFoundError' ||
+    errorName === 'PaymentIntentNotFoundError' ||
+    errorName === 'PaymentAccountNotFoundError'
   ) {
     return {
       status: 404,
@@ -170,7 +177,9 @@ export function mapErrorToHttpResponse(
     errorName === 'OrderCreationConflictError' ||
     errorName === 'UniqueConstraintError' ||
     errorName === 'OrderAlreadyCancelledError' ||
-    errorName === 'OrderAlreadyFulfilledError'
+    errorName === 'OrderAlreadyFulfilledError' ||
+    errorName === 'PaymentIdempotencyConflictError' ||
+    errorName === 'PaymentEventConflictError'
   ) {
     return {
       status: 409,
@@ -191,13 +200,38 @@ export function mapErrorToHttpResponse(
     errorName === 'NegativeStockError' ||
     errorName === 'InvalidOrderStateTransitionError' ||
     errorName === 'CrossTenantInventoryError' ||
-    errorName === 'CrossTenantOrderError'
+    errorName === 'CrossTenantOrderError' ||
+    errorName === 'OrderNotPayableError' ||
+    errorName === 'PaymentAmountMismatchError' ||
+    errorName === 'PaymentCurrencyMismatchError' ||
+    errorName === 'RefundAmountExceededError' ||
+    errorName === 'RefundUnsupportedError'
   ) {
     return {
       status: 422,
       body: {
         error: {
           code: 'UNPROCESSABLE_ENTITY',
+          message: errorMessage,
+          ...(requestId ? { requestId } : {}),
+        },
+      },
+    };
+  }
+
+  // Generic domain error with statusCode property (e.g. PaymentError)
+  if (
+    err &&
+    typeof err === 'object' &&
+    'statusCode' in err &&
+    typeof (err as { statusCode: unknown }).statusCode === 'number'
+  ) {
+    const customStatus = (err as { statusCode: number }).statusCode;
+    return {
+      status: customStatus,
+      body: {
+        error: {
+          code: (err as { code?: string }).code || 'DOMAIN_ERROR',
           message: errorMessage,
           ...(requestId ? { requestId } : {}),
         },
