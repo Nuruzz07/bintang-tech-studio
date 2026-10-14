@@ -293,42 +293,53 @@ export function createApiServer(options: ApiServerOptions = {}): ApiServerInstan
       // 7. Interactive Bintang Store WebApp (Mounted Live Storefront & Mini App)
       if (parsed.method === 'GET') {
         const publicDir = resolve('C:/BOT_WEB/Bintang-Tech-Project/services/api/public');
+        const normalizedPath = parsed.pathname.toLowerCase();
         let targetFile: string | null = null;
 
         if (
-          parsed.pathname === '/app' ||
-          parsed.pathname === '/app/' ||
-          parsed.pathname === '/live' ||
-          parsed.pathname === '/live/'
+          normalizedPath === '/app' ||
+          normalizedPath === '/app/' ||
+          normalizedPath === '/live' ||
+          normalizedPath === '/live/' ||
+          normalizedPath === '/index.html' ||
+          normalizedPath === '/app/index.html'
         ) {
           targetFile = join(publicDir, 'index.html');
         } else if (
-          parsed.pathname === '/store' ||
-          parsed.pathname === '/store/' ||
-          parsed.pathname === '/app/store'
+          normalizedPath === '/store' ||
+          normalizedPath === '/store/' ||
+          normalizedPath === '/app/store' ||
+          normalizedPath === '/webapp.html' ||
+          normalizedPath === '/app/webapp.html'
         ) {
           targetFile = join(publicDir, 'webapp.html');
         } else if (
-          parsed.pathname === '/seller' ||
-          parsed.pathname === '/seller/' ||
-          parsed.pathname === '/app/seller'
+          normalizedPath === '/seller' ||
+          normalizedPath === '/seller/' ||
+          normalizedPath === '/app/seller' ||
+          normalizedPath === '/admin.html' ||
+          normalizedPath === '/app/admin.html'
         ) {
           targetFile = join(publicDir, 'admin.html');
         } else if (
-          parsed.pathname === '/telegram' ||
-          parsed.pathname === '/telegram/' ||
-          parsed.pathname === '/app/telegram'
+          normalizedPath === '/telegram' ||
+          normalizedPath === '/telegram/' ||
+          normalizedPath === '/app/telegram' ||
+          normalizedPath === '/telegram.html' ||
+          normalizedPath === '/app/telegram.html'
         ) {
           targetFile = join(publicDir, 'telegram.html');
         } else if (
-          parsed.pathname.startsWith('/src/') ||
-          parsed.pathname.startsWith('/assets/') ||
-          parsed.pathname.startsWith('/app/src/') ||
-          parsed.pathname.startsWith('/app/assets/')
+          normalizedPath === '/telegram-admin' ||
+          normalizedPath === '/telegram-admin/' ||
+          normalizedPath === '/telegram-admin.html' ||
+          normalizedPath === '/app/telegram-admin.html'
         ) {
-          const cleanRel = parsed.pathname.replace(/^\/app/, '').replace(/^\//, '');
+          targetFile = join(publicDir, 'telegram-admin.html');
+        } else if (!normalizedPath.startsWith('/api/') && !parsed.pathname.includes('..')) {
+          const cleanRel = parsed.pathname.replace(/^\/app/i, '').replace(/^\//, '');
           const candidate = join(publicDir, cleanRel);
-          if (existsSync(candidate) && !cleanRel.includes('..')) {
+          if (cleanRel && existsSync(candidate)) {
             targetFile = candidate;
           }
         }

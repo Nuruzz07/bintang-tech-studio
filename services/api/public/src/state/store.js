@@ -611,6 +611,37 @@ class Store {
   }
 
   // ==========================================
+  // CUSTOMERS METHODS
+  // ==========================================
+  getCustomers() {
+    return this.customers || [];
+  }
+
+  getCustomer(id) {
+    return (this.customers || []).find((c) => c.id === id);
+  }
+
+  // ==========================================
+  // INVENTORY METHODS
+  // ==========================================
+  getInventorySummary() {
+    return (this.products || []).map((p) => {
+      const reserved = 0;
+      const available = Math.max(0, p.stock - reserved);
+      const sold = p.soldCount || 0;
+      return {
+        id: p.id,
+        name: p.name,
+        category: p.category,
+        stock: p.stock,
+        available,
+        reserved,
+        sold,
+      };
+    });
+  }
+
+  // ==========================================
   // SETTINGS & METRICS
   // ==========================================
   getSettings() {
