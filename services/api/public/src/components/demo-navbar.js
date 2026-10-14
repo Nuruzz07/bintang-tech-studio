@@ -1,6 +1,7 @@
 // Bintang Tech Studio — Top Demo Switcher Navbar (Secondary / Subtle Demo Controls)
 import { store } from '../state/store.js';
 import { showToast, BRAND_LOGO_SVG } from '../utils/helpers.js';
+import { openAuthModal } from './auth-modal.js';
 
 export function renderDemoNavbar(currentView = 'landing') {
   const views = [
@@ -51,8 +52,14 @@ export function renderDemoNavbar(currentView = 'landing') {
             .join('')}
         </nav>
 
-        <!-- Actions: Reset Demo -->
+        <!-- Actions: Auth & Reset Demo -->
         <div class="flex items-center gap-1.5 shrink-0">
+          <button id="btn-open-auth-modal"
+                  type="button"
+                  title="Masuk atau daftar akun seller"
+                  class="flex items-center gap-1 px-2.5 py-1 rounded-md text-[11px] font-heading font-bold text-white bg-terracotta-600 hover:bg-terracotta-700 shadow-xs transition-colors">
+            <span>Masuk / Daftar</span>
+          </button>
           <button id="btn-reset-demo"
                   type="button"
                   title="Reset seluruh data simulasi ke awal"
@@ -67,6 +74,13 @@ export function renderDemoNavbar(currentView = 'landing') {
 }
 
 export function initDemoNavbarEvents() {
+  const btnAuth = document.getElementById('btn-open-auth-modal');
+  if (btnAuth) {
+    btnAuth.addEventListener('click', () => {
+      openAuthModal({ defaultTab: 'login' });
+    });
+  }
+
   const btnReset = document.getElementById('btn-reset-demo');
   if (btnReset) {
     btnReset.addEventListener('click', () => {

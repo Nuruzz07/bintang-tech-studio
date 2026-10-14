@@ -23,6 +23,7 @@ import {
   handleProcessPaymentWebhook,
   handleGetOrderFulfillment,
 } from './handlers/payments.js';
+import { handleAuthSignUp, handleAuthVerifyOtp, handleAuthLogin } from './handlers/auth.js';
 import {
   handleRenderLandingPage,
   handleRenderTelegramMiniApp,
@@ -741,6 +742,42 @@ export function createApiServer(options: ApiServerOptions = {}): ApiServerInstan
         });
 
         sendJson(res, 200, { success: ok }, requestId);
+        logRequest(logger, parsed.method, parsed.pathname, 200, startTime, requestId);
+        return;
+      }
+
+      // 23. Supabase Authentication Endpoints (Signup OTP & Login)
+      if (parsed.method === 'POST' && parsed.pathname === '/api/v1/auth/signup') {
+        const result = await handleAuthSignUp(parsed, deps);
+        sendJson(res, result.status, result.body, requestId);
+        logRequest(logger, parsed.method, parsed.pathname, result.status, startTime, requestId);
+        return;
+      }
+
+      if (parsed.method === 'POST' && parsed.pathname === '/api/v1/auth/verify-otp') {
+        const result = await handleAuthVerifyOtp(parsed, deps);
+        sendJson(res, result.status, result.body, requestId);
+        logRequest(logger, parsed.method, parsed.pathname, result.status, startTime, requestId);
+        return;
+      }
+
+      if (parsed.method === 'POST' && parsed.pathname === '/api/v1/auth/login') {
+        const result = await handleAuthLogin(parsed, deps);
+        sendJson(res, result.status, result.body, requestId);
+        logRequest(logger, parsed.method, parsed.pathname, result.status, startTime, requestId);
+        return;
+      }
+
+      if (parsed.method === 'GET' && parsed.pathname === '/api/v1/auth/google-url') {
+        const env = typeof process !== 'undefined' ? process.env : {};
+        const stagingUrl = (
+          env?.['SUPABASE_STAGING_URL'] || 'https://vaaixneyotrilqfkulqw.supabase.co'
+        ).replace(/\/+$/, '');
+        const redirectTo = (
+          parsed.searchParams.get('redirect_to') || 'https://bintang-digital-demo.vercel.app/#admin'
+        ).trim();
+        const googleAuthUrl = `${stagingUrl}/auth/v1/authorize?provider=google&redirect_to=${encodeURIComponent(redirectTo)}`;
+        sendJson(res, 200, { data: { url: googleAuthUrl } }, requestId);
         logRequest(logger, parsed.method, parsed.pathname, 200, startTime, requestId);
         return;
       }
