@@ -10,6 +10,7 @@ import { BadRequestError, UnauthorizedError } from '../errors.js';
 interface SupabaseAuthConfig {
   supabaseUrl: string;
   anonKey: string;
+  serviceRoleKey: string;
 }
 
 function getSupabaseConfig(): SupabaseAuthConfig {
@@ -19,6 +20,7 @@ function getSupabaseConfig(): SupabaseAuthConfig {
       env?.['SUPABASE_STAGING_URL'] || 'https://vaaixneyotrilqfkulqw.supabase.co'
     ).replace(/\/+$/, ''),
     anonKey: env?.['SUPABASE_STAGING_ANON_KEY'] || '',
+    serviceRoleKey: env?.['SUPABASE_STAGING_SERVICE_ROLE_KEY'] || '',
   };
 }
 
@@ -44,9 +46,72 @@ export async function handleAuthSignUp(
     throw new BadRequestError('Password minimal 6 karakter');
   }
 
-  const { supabaseUrl, anonKey } = getSupabaseConfig();
+  const { supabaseUrl, anonKey, serviceRoleKey } = getSupabaseConfig();
   if (!anonKey) {
     throw new BadRequestError('Supabase Anon Key belum terkonfigurasi di server');
+  }
+
+  // 1. If serviceRoleKey is available, directly provision and pre-confirm user to avoid SMTP email rate limits
+  if (serviceRoleKey) {
+    try {
+      const adminRes = await fetch(`${supabaseUrl}/auth/v1/admin/users`, {
+        method: 'POST',
+        headers: {
+          apikey: serviceRoleKey,
+          Authorization: `Bearer ${serviceRoleKey}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email,
+          password,
+          email_confirm: true,
+          user_metadata: {
+            full_name: fullName || 'Seller Bintang',
+            store_name: body.storeName || 'Toko Digital',
+          },
+        }),
+      });
+
+      const adminData = (await adminRes.json()) as Record<string, unknown>;
+      if (adminRes.ok && adminData['id']) {
+        // Auto-login to generate tokens
+        let sessionData: Record<string, unknown> | null = null;
+        try {
+          const loginRes = await fetch(`${supabaseUrl}/auth/v1/token?grant_type=password`, {
+            method: 'POST',
+            headers: {
+              apikey: anonKey,
+              Authorization: `Bearer ${anonKey}`,
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ email, password }),
+          });
+          if (loginRes.ok) {
+            sessionData = (await loginRes.json()) as Record<string, unknown>;
+          }
+        } catch {
+          // ignore login error
+        }
+
+        return {
+          status: 201,
+          body: {
+            data: {
+              success: true,
+              autoConfirmed: true,
+              email,
+              userId: adminData['id'],
+              accessToken: sessionData?.['access_token'] ?? null,
+              refreshToken: sessionData?.['refresh_token'] ?? null,
+              user: sessionData?.['user'] ?? adminData,
+              message: 'Pendaftaran berhasil! Akun Anda langsung aktif dan siap digunakan.',
+            },
+          },
+        };
+      }
+    } catch (err: unknown) {
+      console.warn('[AuthSignUp] Admin pre-confirm notice, falling back to standard signup:', err);
+    }
   }
 
   try {

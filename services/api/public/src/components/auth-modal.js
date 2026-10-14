@@ -182,24 +182,11 @@ export function openAuthModal({ defaultTab = 'login', onSuccess = null } = {}) {
     const btnGoogle = modalEl.querySelector('#btn-google-oauth');
     if (btnGoogle) {
       btnGoogle.addEventListener('click', async () => {
-        btnGoogle.disabled = true;
-        btnGoogle.innerHTML = `<span>Menghubungkan ke Google...</span>`;
-        try {
-          const res = await fetch('/api/v1/auth/google-url');
-          if (res.ok) {
-            const data = await res.json();
-            const url = data.data?.url;
-            if (url) {
-              window.location.href = url;
-              return;
-            }
-          }
-        } catch {
-          // fallback
-        }
-        showToast('Google OAuth siap diaktifkan di Supabase Settings', 'info');
-        btnGoogle.disabled = false;
-        btnGoogle.innerHTML = `${GOOGLE_ICON_SVG}<span>Lanjutkan Langsung dengan Google (Gmail)</span>`;
+        alert(
+          'ℹ️ PANDUAN AKTIVASI GOOGLE SIGN-IN:\n\n' +
+            'Fitur "Masuk dengan Google" memerlukan Google Cloud OAuth Client ID yang diaktifkan di dashboard Supabase (Authentication -> Providers -> Google).\n\n' +
+            'Untuk saat ini, silakan gunakan form Email & Password di atas — pendaftaran akun langsung aktif seketika tanpa perlu menunggu verifikasi!',
+        );
       });
     }
 
@@ -266,6 +253,24 @@ export function openAuthModal({ defaultTab = 'login', onSuccess = null } = {}) {
 
           const data = await res.json();
           if (res.ok && data.data?.success) {
+            if (data.data.autoConfirmed) {
+              showToast(
+                'Pendaftaran berhasil! Akun Anda langsung aktif dan masuk ke Dashboard.',
+                'success',
+              );
+              localStorage.setItem(
+                'bts_auth_user',
+                JSON.stringify(data.data.user || { email, fullName, storeName }),
+              );
+              closeModal();
+              if (onSuccess) onSuccess(data.data.user);
+              else {
+                window.location.hash = '#admin';
+                window.location.reload();
+              }
+              return;
+            }
+
             showToast('Kode OTP telah dikirim ke email kamu!', 'success');
             registerStep = 2;
             modalEl.querySelector('#auth-modal-wrapper').innerHTML = renderContent();
