@@ -564,17 +564,33 @@ export function createApiServer(options: ApiServerOptions = {}): ApiServerInstan
                 success: true,
                 data: {
                   ...result,
-                  qrImageUrl:
-                    (result.rawResponse as any)?.result?.qr_url ??
-                    (result.rawResponse as any)?.result?.qr_image_url ??
-                    (result.rawResponse as any)?.data?.qr_image_url ??
-                    (result.rawResponse as any)?.['qr_url'] ??
-                    null,
-                  qrString:
-                    (result.rawResponse as any)?.result?.qr_string ??
-                    (result.rawResponse as any)?.data?.qr_string ??
-                    (result.rawResponse as any)?.['qr_string'] ??
-                    null,
+                  qrImageUrl: (() => {
+                    const resp = result.rawResponse as Record<string, unknown> | undefined;
+                    const resObj = resp?.['result'] as Record<string, unknown> | undefined;
+                    const dataObj = resp?.['data'] as Record<string, unknown> | undefined;
+                    return (
+                      (typeof resObj?.['qr_url'] === 'string' ? resObj['qr_url'] : null) ??
+                      (typeof resObj?.['qr_image_url'] === 'string'
+                        ? resObj['qr_image_url']
+                        : null) ??
+                      (typeof dataObj?.['qr_image_url'] === 'string'
+                        ? dataObj['qr_image_url']
+                        : null) ??
+                      (typeof resp?.['qr_url'] === 'string' ? resp['qr_url'] : null) ??
+                      null
+                    );
+                  })(),
+                  qrString: (() => {
+                    const resp = result.rawResponse as Record<string, unknown> | undefined;
+                    const resObj = resp?.['result'] as Record<string, unknown> | undefined;
+                    const dataObj = resp?.['data'] as Record<string, unknown> | undefined;
+                    return (
+                      (typeof resObj?.['qr_string'] === 'string' ? resObj['qr_string'] : null) ??
+                      (typeof dataObj?.['qr_string'] === 'string' ? dataObj['qr_string'] : null) ??
+                      (typeof resp?.['qr_string'] === 'string' ? resp['qr_string'] : null) ??
+                      null
+                    );
+                  })(),
                 },
               },
               requestId,
