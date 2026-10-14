@@ -208,6 +208,19 @@ export async function showPaymentSimulation({ order, onCompleted = null }) {
 
         // Advance Order Lifecycle to PAID & FULFILLED
         store.updateOrderStatus(order.id, 'PAID', 'PROCESSING');
+
+        // Notify seller via Telegram bot
+        const prodName = order.items && order.items[0] ? order.items[0].name : 'Produk Digital';
+        fetch('/api/v1/telegram/notify-fulfillment', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            orderId: order.id,
+            amount: order.total,
+            productName: prodName,
+          }),
+        }).catch(() => {});
+
         await sleep(900);
         store.updateOrderStatus(order.id, 'PAID', 'FULFILLED');
         await sleep(400);

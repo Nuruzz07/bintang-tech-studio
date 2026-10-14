@@ -8,6 +8,11 @@ import { InventoryService } from '@bintang/inventory';
 import { OrderService, CustomerRepository } from '@bintang/orders';
 import { StoreRepository } from '@bintang/tenancy';
 import { TipzyPaymentProviderAdapter } from '@bintang/payments';
+import {
+  notifyNewOrder,
+  notifyPaymentSuccess,
+  sendTelegramMessage,
+} from './services/telegram-notifier.js';
 import { parseRequest, sendJson, sendHtml } from './router.js';
 import { mapErrorToHttpResponse, NotFoundError } from './errors.js';
 import { handleHealthCheck } from './handlers/health.js';
@@ -595,6 +600,16 @@ export function createApiServer(options: ApiServerOptions = {}): ApiServerInstan
               },
               requestId,
             );
+
+            // Real-time Telegram Alert to Seller
+            void notifyNewOrder({
+              orderId: body.orderId || `ORD-${Date.now()}`,
+              customerName: body.customerName || 'Customer Bintang',
+              customerContact: body.customerEmail || undefined,
+              amount: numericAmount,
+              paymentUrl: result.paymentUrl,
+            });
+
             logRequest(logger, parsed.method, parsed.pathname, 201, startTime, requestId);
             return;
           } catch (err: unknown) {
@@ -656,6 +671,15 @@ export function createApiServer(options: ApiServerOptions = {}): ApiServerInstan
             });
 
             const isPaid = statusRes.status === 'SUCCEEDED';
+            if (isPaid) {
+              void notifyPaymentSuccess({
+                orderId: txId,
+                amount: statusRes.amount,
+                transactionId: txId,
+                productName: 'Produk Digital Bintang Store',
+              });
+            }
+
             sendJson(
               res,
               200,
@@ -687,6 +711,36 @@ export function createApiServer(options: ApiServerOptions = {}): ApiServerInstan
           },
           requestId,
         );
+        logRequest(logger, parsed.method, parsed.pathname, 200, startTime, requestId);
+        return;
+      }
+
+      // 22. Telegram Seller Notification Endpoints
+      if (parsed.method === 'POST' && parsed.pathname === '/api/v1/telegram/test-notification') {
+        const ok = await sendTelegramMessage(
+          '🔔 <b>Test Notifikasi Bintang Tech Studio</b>\n\nKoneksi bot Telegram seller berhasil terverifikasi aktif!',
+        );
+        sendJson(res, ok ? 200 : 500, { success: ok }, requestId);
+        logRequest(logger, parsed.method, parsed.pathname, ok ? 200 : 500, startTime, requestId);
+        return;
+      }
+
+      if (parsed.method === 'POST' && parsed.pathname === '/api/v1/telegram/notify-fulfillment') {
+        const body = await parsed.getBody<{
+          orderId: string;
+          amount: number | string;
+          productName?: string;
+          fulfillmentSnippet?: string;
+        }>();
+
+        const ok = await notifyPaymentSuccess({
+          orderId: body.orderId || `ORD-${Date.now()}`,
+          amount: body.amount || 0,
+          productName: body.productName,
+          fulfillmentSnippet: body.fulfillmentSnippet,
+        });
+
+        sendJson(res, 200, { success: ok }, requestId);
         logRequest(logger, parsed.method, parsed.pathname, 200, startTime, requestId);
         return;
       }
