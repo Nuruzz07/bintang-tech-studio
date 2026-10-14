@@ -123,7 +123,8 @@ export class TelegramBotDaemon {
     const env = typeof process !== 'undefined' ? process.env : {};
     this.botToken = env?.['TELEGRAM_BOT_TOKEN'] || '';
     this.sellerChatId = env?.['TELEGRAM_CHAT_ID'] || '';
-    this.storeWebUrl = env?.['STORE_WEB_URL'] || 'https://bintang-digital-demo.vercel.app/#webapp';
+    this.storeWebUrl =
+      env?.['STORE_WEB_URL'] || 'https://bintang-digital-demo.vercel.app/webapp.html';
   }
 
   public start(): void {
