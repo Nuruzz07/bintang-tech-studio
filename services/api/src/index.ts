@@ -27,6 +27,7 @@ import { readFileSync, existsSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { createApiServer } from './server.js';
 import { ApiServerInstance } from './types.js';
+import { TelegramBotDaemon } from './services/telegram-bot-daemon.js';
 
 export * from './types.js';
 export * from './errors.js';
@@ -270,5 +271,9 @@ if (
   void (async () => {
     const instance = await bootstrap();
     await instance.start();
+
+    // Start interactive Telegram Bot Daemon
+    const botDaemon = new TelegramBotDaemon();
+    botDaemon.start();
   })();
 }
