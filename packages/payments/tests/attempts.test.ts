@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { createAuthenticatedStoreContext } from '@bintang/tenancy';
 import { AuthorizationService, InMemoryEntitlementResolver } from '@bintang/authorization';
 import {
@@ -157,6 +157,29 @@ describe('M08 Payment Attempts Suite', () => {
     expect(updatedIntent.status).toBe('PROCESSING');
   });
 
+  it('serializes simultaneous payment-attempt creation to prevent duplicate provider requests', async () => {
+    const order = await orderService.createOrder(
+      { type: 'CUSTOMER', context: { storeId, customerId: customer.id } },
+      { items: [{ productId: product.id, quantity: 1 }] },
+    );
+    const intent = await paymentService.createPaymentIntent(
+      { type: 'CUSTOMER', context: { storeId, customerId: customer.id } },
+      { orderId: order.id },
+    );
+    const providerCreate = vi.spyOn(mockAdapter, 'createPayment');
+    const caller = { type: 'CUSTOMER' as const, context: { storeId, customerId: customer.id } };
+
+    const outcomes = await Promise.allSettled([
+      paymentService.createPaymentAttempt(caller, { paymentIntentId: intent.id }),
+      paymentService.createPaymentAttempt(caller, { paymentIntentId: intent.id }),
+    ]);
+
+    expect(outcomes.filter((outcome) => outcome.status === 'fulfilled')).toHaveLength(1);
+    expect(outcomes.filter((outcome) => outcome.status === 'rejected')).toHaveLength(1);
+    expect(await attemptRepo.findByIntentId(storeId, intent.id)).toHaveLength(1);
+    expect(providerCreate).toHaveBeenCalledTimes(1);
+  });
+
   it('supports multiple sequential attempts under one intent without overwriting historical truth', async () => {
     const order = await orderService.createOrder(
       { type: 'CUSTOMER', context: { storeId, customerId: customer.id } },
@@ -199,6 +222,41 @@ describe('M08 Payment Attempts Suite', () => {
     expect(attempts[0]!.failureReason).toBe('User closed payment window');
     expect(attempts[1]!.id).toBe(attempt2.id);
     expect(attempts[1]!.status).toBe('PENDING');
+  });
+
+  it('keeps provider timeouts in PROCESSING for reconciliation and blocks a blind retry', async () => {
+    const order = await orderService.createOrder(
+      { type: 'CUSTOMER', context: { storeId, customerId: customer.id } },
+      { items: [{ productId: product.id, quantity: 1 }] },
+    );
+    const intent = await paymentService.createPaymentIntent(
+      { type: 'CUSTOMER', context: { storeId, customerId: customer.id } },
+      { orderId: order.id },
+    );
+    const providerCreate = vi
+      .spyOn(mockAdapter, 'createPayment')
+      .mockRejectedValueOnce(new Error('provider request timed out'));
+
+    await expect(
+      paymentService.createPaymentAttempt(
+        { type: 'CUSTOMER', context: { storeId, customerId: customer.id } },
+        { paymentIntentId: intent.id },
+      ),
+    ).rejects.toThrow('provider request timed out');
+
+    const attempts = await attemptRepo.findByIntentId(storeId, intent.id);
+    expect(attempts).toHaveLength(1);
+    expect(attempts[0]?.status).toBe('PROCESSING');
+    expect(attempts[0]?.providerReference).toBeNull();
+    expect((await intentRepo.findById(storeId, intent.id))?.status).toBe('PROCESSING');
+
+    await expect(
+      paymentService.createPaymentAttempt(
+        { type: 'CUSTOMER', context: { storeId, customerId: customer.id } },
+        { paymentIntentId: intent.id },
+      ),
+    ).rejects.toThrow(/reconcil/i);
+    expect(providerCreate).toHaveBeenCalledTimes(1);
   });
 
   it('rejects creating attempt on SUCCEEDED payment intent', async () => {

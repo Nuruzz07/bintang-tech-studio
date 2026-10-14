@@ -192,6 +192,45 @@ describe('M07 Order Lifecycle & State Machine Suite', () => {
     expect(avail.availableQuantity).toBe(20);
   });
 
+  it('rejects generic transition of PAID order to CANCELLED without provider-confirmed refund', async () => {
+    const order = await orderService.createOrder(
+      { type: 'CUSTOMER', context: { storeId, customerId: customer.id } },
+      { items: [{ productId: product.id, quantity: 2 }] },
+    );
+    await orderService.transitionStatus(sellerContext, order.id, 'PAID');
+
+    await expect(
+      orderService.transitionStatus(sellerContext, order.id, 'CANCELLED', {
+        cancellationReason: 'attempted generic cancellation',
+      }),
+    ).rejects.toThrow(InvalidOrderStateTransitionError);
+
+    expect((await orderRepo.findById(storeId, order.id))?.status).toBe('PAID');
+    const availability = await inventoryService.getAvailability(sellerContext, product.id);
+    expect(availability.quantityReserved).toBe(2);
+    expect(availability.availableQuantity).toBe(18);
+  });
+
+  it('rejects generic transition of PROCESSING order to CANCELLED without provider-confirmed refund', async () => {
+    const order = await orderService.createOrder(
+      { type: 'CUSTOMER', context: { storeId, customerId: customer.id } },
+      { items: [{ productId: product.id, quantity: 2 }] },
+    );
+    await orderService.transitionStatus(sellerContext, order.id, 'PAID');
+    await orderService.transitionStatus(sellerContext, order.id, 'PROCESSING');
+
+    await expect(
+      orderService.transitionStatus(sellerContext, order.id, 'CANCELLED', {
+        cancellationReason: 'attempted generic cancellation',
+      }),
+    ).rejects.toThrow(InvalidOrderStateTransitionError);
+
+    expect((await orderRepo.findById(storeId, order.id))?.status).toBe('PROCESSING');
+    const availability = await inventoryService.getAvailability(sellerContext, product.id);
+    expect(availability.quantityReserved).toBe(2);
+    expect(availability.availableQuantity).toBe(18);
+  });
+
   it('prohibits cancelling PAID order without payment refund integration', async () => {
     const order = await orderService.createOrder(
       { type: 'CUSTOMER', context: { storeId, customerId: customer.id } },
@@ -230,59 +269,43 @@ describe('M07 Order Lifecycle & State Machine Suite', () => {
     expect(repeated.status).toBe('PAID');
   });
 
-  it('permits seller to transition PROCESSING order to CANCELLED and releases reserved inventory', async () => {
+  it('rejects cancelling PROCESSING order through generic transition and preserves reservation', async () => {
     const order = await orderService.createOrder(
       { type: 'CUSTOMER', context: { storeId, customerId: customer.id } },
       { items: [{ productId: product.id, quantity: 2 }] },
     );
-
     await orderService.transitionStatus(sellerContext, order.id, 'PAID');
     await orderService.transitionStatus(sellerContext, order.id, 'PROCESSING');
 
-    let avail = await inventoryService.getAvailability(sellerContext, product.id);
-    expect(avail.quantityReserved).toBe(2);
-
-    const cancelledOrder = await orderService.transitionStatus(
-      sellerContext,
-      order.id,
-      'CANCELLED',
-      {
+    await expect(
+      orderService.transitionStatus(sellerContext, order.id, 'CANCELLED', {
         cancellationReason: 'Defective item discovered during fulfillment',
-      },
-    );
-    expect(cancelledOrder.status).toBe('CANCELLED');
+      }),
+    ).rejects.toThrow(InvalidOrderStateTransitionError);
 
-    // Reserved stock must be released back
-    avail = await inventoryService.getAvailability(sellerContext, product.id);
-    expect(avail.quantityReserved).toBe(0);
-    expect(avail.availableQuantity).toBe(20);
+    expect((await orderRepo.findById(storeId, order.id))?.status).toBe('PROCESSING');
+    const availability = await inventoryService.getAvailability(sellerContext, product.id);
+    expect(availability.quantityReserved).toBe(2);
+    expect(availability.availableQuantity).toBe(18);
   });
 
-  it('permits seller to transition PAID order to CANCELLED and releases reserved inventory', async () => {
+  it('rejects cancelling PAID order through generic transition and preserves reservation', async () => {
     const order = await orderService.createOrder(
       { type: 'CUSTOMER', context: { storeId, customerId: customer.id } },
       { items: [{ productId: product.id, quantity: 3 }] },
     );
-
     await orderService.transitionStatus(sellerContext, order.id, 'PAID');
 
-    let avail = await inventoryService.getAvailability(sellerContext, product.id);
-    expect(avail.quantityReserved).toBe(3);
-
-    const cancelledOrder = await orderService.transitionStatus(
-      sellerContext,
-      order.id,
-      'CANCELLED',
-      {
+    await expect(
+      orderService.transitionStatus(sellerContext, order.id, 'CANCELLED', {
         cancellationReason: 'Merchant out-of-stock resolution',
-      },
-    );
-    expect(cancelledOrder.status).toBe('CANCELLED');
+      }),
+    ).rejects.toThrow(InvalidOrderStateTransitionError);
 
-    // Reserved stock must be released back
-    avail = await inventoryService.getAvailability(sellerContext, product.id);
-    expect(avail.quantityReserved).toBe(0);
-    expect(avail.availableQuantity).toBe(20);
+    expect((await orderRepo.findById(storeId, order.id))?.status).toBe('PAID');
+    const availability = await inventoryService.getAvailability(sellerContext, product.id);
+    expect(availability.quantityReserved).toBe(3);
+    expect(availability.availableQuantity).toBe(17);
   });
 
   it('enforces that direct repository updateStatus mutations cannot bypass state machine', async () => {

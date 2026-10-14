@@ -17,14 +17,8 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 
 // 1. Tenancy & Authorization
-import {
-  createAuthenticatedStoreContext,
-  AuthenticatedStoreContext,
-} from '@bintang/tenancy';
-import {
-  AuthorizationService,
-  InMemoryEntitlementResolver,
-} from '@bintang/authorization';
+import { createAuthenticatedStoreContext, AuthenticatedStoreContext } from '@bintang/tenancy';
+import { AuthorizationService, InMemoryEntitlementResolver } from '@bintang/authorization';
 
 // 2. Commerce & Catalog
 import {
@@ -35,10 +29,7 @@ import {
 } from '@bintang/commerce';
 
 // 3. Inventory
-import {
-  InventoryService,
-  InMemoryInventoryRepository,
-} from '@bintang/inventory';
+import { InventoryService, InMemoryInventoryRepository } from '@bintang/inventory';
 
 // 4. Orders
 import {
@@ -249,15 +240,11 @@ describe('Production Pilot End-to-End Acceptance Suite (Single-Merchant Golden P
     await productRepo.create(storeId, product);
 
     // Deposit initial inventory of 5 units
-    await inventoryService.adjustStock(
-      sellerContext,
-      product.id,
-      {
-        type: 'INCREASE',
-        quantity: 5,
-        reason: 'Initial stock deposit for pilot merchant',
-      },
-    );
+    await inventoryService.adjustStock(sellerContext, product.id, {
+      type: 'INCREASE',
+      quantity: 5,
+      reason: 'Initial stock deposit for pilot merchant',
+    });
 
     const initialStock = await inventoryService.getAvailability(sellerContext, product.id);
     expect(initialStock.quantityOnHand).toBe(5);
@@ -342,10 +329,7 @@ describe('Production Pilot End-to-End Acceptance Suite (Single-Merchant Golden P
     };
 
     // Customer initiates order creation with idempotency key
-    const order = await orderService.createOrder(
-      checkoutCaller,
-      checkoutPayload,
-    );
+    const order = await orderService.createOrder(checkoutCaller, checkoutPayload);
 
     expect(order.id).toBeDefined();
     expect(order.storeId).toBe(storeId);
@@ -364,10 +348,7 @@ describe('Production Pilot End-to-End Acceptance Suite (Single-Merchant Golden P
     expect(postCheckoutStock.quantityOnHand).toBe(5);
 
     // Idempotency Invariant Check: Submitting identical key returns exact same order without double reserving stock
-    const duplicateOrder = await orderService.createOrder(
-      checkoutCaller,
-      checkoutPayload,
-    );
+    const duplicateOrder = await orderService.createOrder(checkoutCaller, checkoutPayload);
     expect(duplicateOrder.id).toBe(order.id);
 
     const idempotencyStock = await inventoryService.getAvailability(sellerContext, product.id);
@@ -401,28 +382,22 @@ describe('Production Pilot End-to-End Acceptance Suite (Single-Merchant Golden P
     };
 
     // Create payment intent
-    const paymentIntent = await paymentService.createPaymentIntent(
-      paymentCaller,
-      {
-        orderId: order.id,
-        paymentAccountId: 'acc_pilot_tipzy_01',
-        amount: '300000.00',
-        currency: 'IDR',
-        idempotencyKey: 'idem_pilot_pay_intent_001',
-      },
-    );
+    const paymentIntent = await paymentService.createPaymentIntent(paymentCaller, {
+      orderId: order.id,
+      paymentAccountId: 'acc_pilot_tipzy_01',
+      amount: '300000.00',
+      currency: 'IDR',
+      idempotencyKey: 'idem_pilot_pay_intent_001',
+    });
 
     expect(paymentIntent.id).toBeDefined();
     expect(paymentIntent.status).toBe('PENDING');
     expect(paymentIntent.amount).toBe('300000.00');
 
     // Execute provider payment attempt
-    const attempt = await paymentService.createPaymentAttempt(
-      paymentCaller,
-      {
-        paymentIntentId: paymentIntent.id,
-      },
-    );
+    const attempt = await paymentService.createPaymentAttempt(paymentCaller, {
+      paymentIntentId: paymentIntent.id,
+    });
     expect(attempt.status).toBe('PENDING');
     expect(attempt.providerReference).toBeDefined();
 
@@ -447,7 +422,10 @@ describe('Production Pilot End-to-End Acceptance Suite (Single-Merchant Golden P
     expect(webhookResult.processingStatus).toBe('PROCESSED');
 
     // Check payment intent transitioned to SUCCEEDED
-    const settledIntent = await paymentService.getPaymentIntentById(paymentCaller, paymentIntent.id);
+    const settledIntent = await paymentService.getPaymentIntentById(
+      paymentCaller,
+      paymentIntent.id,
+    );
     expect(settledIntent.status).toBe('SUCCEEDED');
 
     // Order state is authoritatively transitioned to PAID by the webhook processor
@@ -467,27 +445,21 @@ describe('Production Pilot End-to-End Acceptance Suite (Single-Merchant Golden P
     };
 
     // Create fulfillment record
-    const fulfillment = await fulfillmentService.createFulfillment(
-      fulfillmentCaller,
-      {
-        orderId: order.id,
-        strategy: 'DIGITAL_AUTO',
-        idempotencyKey: 'idem_pilot_fulfil_create_001',
-      },
-    );
+    const fulfillment = await fulfillmentService.createFulfillment(fulfillmentCaller, {
+      orderId: order.id,
+      strategy: 'DIGITAL_AUTO',
+      idempotencyKey: 'idem_pilot_fulfil_create_001',
+    });
     expect(fulfillment.status).toBe('PENDING');
 
     // Execute fulfillment delivery with 2 generated keys
-    const executedFulfillment = await fulfillmentService.executeFulfillment(
-      fulfillmentCaller,
-      {
-        fulfillmentId: fulfillment.id,
-        manualPayloads: {
-          [order.items[0]!.id]: 'WIN11-PILOT-KEY-001, WIN11-PILOT-KEY-002',
-        },
-        idempotencyKey: 'idem_pilot_fulfil_exec_001',
+    const executedFulfillment = await fulfillmentService.executeFulfillment(fulfillmentCaller, {
+      fulfillmentId: fulfillment.id,
+      manualPayloads: {
+        [order.items[0]!.id]: 'WIN11-PILOT-KEY-001, WIN11-PILOT-KEY-002',
       },
-    );
+      idempotencyKey: 'idem_pilot_fulfil_exec_001',
+    });
 
     expect(executedFulfillment.status).toBe('FULFILLED');
 
@@ -509,24 +481,18 @@ describe('Production Pilot End-to-End Acceptance Suite (Single-Merchant Golden P
     // STEP 6: BUSINESS, STATE MACHINE & SECURITY INVARIANTS
     // -------------------------------------------------------------------------
     // Invariant 1: Unpaid orders cannot be fulfilled
-    const unpaidOrder = await orderService.createOrder(
-      checkoutCaller,
-      {
-        customerId,
-        items: [{ productId: product.id, quantity: 1 }],
-        currency: 'IDR',
-        idempotencyKey: 'idem_unpaid_order_check',
-      },
-    );
+    const unpaidOrder = await orderService.createOrder(checkoutCaller, {
+      customerId,
+      items: [{ productId: product.id, quantity: 1 }],
+      currency: 'IDR',
+      idempotencyKey: 'idem_unpaid_order_check',
+    });
     await expect(
-      fulfillmentService.createFulfillment(
-        fulfillmentCaller,
-        {
-          orderId: unpaidOrder.id,
-          strategy: 'DIGITAL_AUTO',
-          idempotencyKey: 'idem_unpaid_fulfil_fail',
-        },
-      ),
+      fulfillmentService.createFulfillment(fulfillmentCaller, {
+        orderId: unpaidOrder.id,
+        strategy: 'DIGITAL_AUTO',
+        idempotencyKey: 'idem_unpaid_fulfil_fail',
+      }),
     ).rejects.toThrowError(FulfillmentOrderNotPayableError);
 
     // Invariant 2: Cross-tenant isolation (foreign store caller cannot access order)
@@ -537,9 +503,7 @@ describe('Production Pilot End-to-End Acceptance Suite (Single-Merchant Golden P
         customerId: 'user_intruder_99',
       },
     };
-    await expect(
-      orderService.getOrderById(foreignStoreCaller, order.id),
-    ).rejects.toThrow();
+    await expect(orderService.getOrderById(foreignStoreCaller, order.id)).rejects.toThrow();
 
     const foreignFulfillmentCaller: FulfillmentCaller = {
       type: 'SELLER',
@@ -551,23 +515,16 @@ describe('Production Pilot End-to-End Acceptance Suite (Single-Merchant Golden P
       }),
     };
     await expect(
-      fulfillmentService.createFulfillment(
-        foreignFulfillmentCaller,
-        {
-          orderId: order.id,
-          strategy: 'DIGITAL_AUTO',
-          idempotencyKey: 'idem_cross_tenant_fulfil_fail',
-        },
-      ),
+      fulfillmentService.createFulfillment(foreignFulfillmentCaller, {
+        orderId: order.id,
+        strategy: 'DIGITAL_AUTO',
+        idempotencyKey: 'idem_cross_tenant_fulfil_fail',
+      }),
     ).rejects.toThrowError(OrderNotFoundError);
 
     // Invariant 3: Completed orders cannot be cancelled
     await expect(
-      orderService.cancelOrder(
-        sellerOrderCaller,
-        order.id,
-        'Cancellation should fail',
-      ),
+      orderService.cancelOrder(sellerOrderCaller, order.id, 'Cancellation should fail'),
     ).rejects.toThrow();
 
     // Log success in structured logger

@@ -7,6 +7,7 @@ export interface IdempotencyRecord {
   readonly actorId: string;
   readonly requestHash: string;
   readonly response: unknown;
+  readonly status?: 'PENDING' | 'COMPLETED' | 'FAILED' | undefined;
   readonly createdAt: string;
   readonly expiresAt?: string | undefined;
 }
@@ -25,4 +26,26 @@ export interface IdempotencyRepository {
    * Persists an idempotency record.
    */
   set(record: IdempotencyRecord): Promise<void>;
+
+  /**
+   * Atomically acquires an in-flight idempotency lease before executing business logic.
+   * Enables cross-instance concurrency serialization in multi-node deployments.
+   */
+  acquire?(
+    storeId: string,
+    actorId: string,
+    key: string,
+    requestHash: string,
+    ttlSeconds?: number,
+  ): Promise<{ readonly acquired: boolean; readonly cachedResponse?: unknown }>;
+
+  /**
+   * Marks an in-flight idempotency record as failed so subsequent retries can succeed.
+   */
+  fail?(
+    storeId: string,
+    actorId: string,
+    key: string,
+    errorPayload?: Record<string, unknown>,
+  ): Promise<void>;
 }

@@ -19,6 +19,7 @@ import {
   MockPaymentProviderAdapter,
   PaymentSignatureVerificationError,
   PaymentEventConflictError,
+  OrderNotPayableError,
 } from '../src/index.js';
 
 describe('M08 Webhook Ingress & Order State Coordination Suite', () => {
@@ -186,6 +187,56 @@ describe('M08 Webhook Ingress & Order State Coordination Suite', () => {
     expect(updatedOrder.status).toBe('PAID');
   });
 
+  it('does not mark a payment succeeded or order paid when it is already cancelled', async () => {
+    const order = await orderService.createOrder(
+      { type: 'CUSTOMER', context: { storeId, customerId: customer.id } },
+      { items: [{ productId: product.id, quantity: 1 }] },
+    );
+    const intent = await paymentService.createPaymentIntent(
+      { type: 'CUSTOMER', context: { storeId, customerId: customer.id } },
+      { orderId: order.id },
+    );
+    const attempt = await paymentService.createPaymentAttempt(
+      { type: 'CUSTOMER', context: { storeId, customerId: customer.id } },
+      { paymentIntentId: intent.id },
+    );
+    await orderService.cancelOrder(
+      { type: 'CUSTOMER', context: { storeId, customerId: customer.id } },
+      order.id,
+    );
+
+    await expect(
+      paymentService.processPaymentWebhook({
+        provider: 'TIPZY',
+        eventId: 'evt_late_success_cancelled_order',
+        headers: { 'x-webhook-signature': 'valid_secure_signature_123' },
+        payload: {
+          event: 'payment.success',
+          attemptId: attempt.id,
+          reference: attempt.providerReference,
+          status: 'SUCCEEDED',
+          amount: 85000,
+          currency: 'IDR',
+        },
+      }),
+    ).rejects.toThrow(OrderNotPayableError);
+
+    expect((await intentRepo.findById(storeId, intent.id))?.status).not.toBe('SUCCEEDED');
+    expect((await attemptRepo.findById(storeId, attempt.id))?.status).not.toBe('SUCCEEDED');
+    expect(
+      (
+        await orderService.getOrderById(
+          { type: 'CUSTOMER', context: { storeId, customerId: customer.id } },
+          order.id,
+        )
+      ).status,
+    ).toBe('CANCELLED');
+    expect(
+      (await eventRepo.findByProviderEventId('TIPZY', 'evt_late_success_cancelled_order'))
+        ?.processingStatus,
+    ).toBe('FAILED');
+  });
+
   it('Webhook with invalid signature is strictly rejected with PaymentSignatureVerificationError', async () => {
     const order = await orderService.createOrder(
       { type: 'CUSTOMER', context: { storeId, customerId: customer.id } },
@@ -297,6 +348,59 @@ describe('M08 Webhook Ingress & Order State Coordination Suite', () => {
       order.id,
     );
     expect(currentOrder.status).toBe('PENDING_PAYMENT');
+  });
+
+  it('does not reconcile a duplicate success webhook by resurrecting a cancelled order', async () => {
+    const order = await orderService.createOrder(
+      { type: 'CUSTOMER', context: { storeId, customerId: customer.id } },
+      { items: [{ productId: product.id, quantity: 1 }] },
+    );
+    const intent = await paymentService.createPaymentIntent(
+      { type: 'CUSTOMER', context: { storeId, customerId: customer.id } },
+      { orderId: order.id },
+    );
+    await intentRepo.updateStatus(storeId, intent.id, 'PROCESSING');
+    await intentRepo.updateStatus(storeId, intent.id, 'SUCCEEDED');
+    await orderService.cancelOrder(
+      { type: 'CUSTOMER', context: { storeId, customerId: customer.id } },
+      order.id,
+    );
+    const payload = {
+      event: 'payment.success',
+      paymentIntentId: intent.id,
+      status: 'SUCCEEDED',
+    };
+    await eventRepo.create({
+      id: 'evt_existing_cancelled_replay',
+      storeId,
+      paymentIntentId: intent.id,
+      paymentAttemptId: null,
+      provider: 'TIPZY',
+      eventId: 'evt_existing_cancelled_replay',
+      eventType: 'payment.success',
+      payload,
+      processingStatus: 'PROCESSED',
+      processedAt: new Date().toISOString(),
+      createdAt: new Date().toISOString(),
+    });
+
+    const result = await paymentService.processPaymentWebhook({
+      provider: 'TIPZY',
+      eventId: 'evt_existing_cancelled_replay',
+      headers: { 'x-webhook-signature': 'valid_secure_signature_123' },
+      payload,
+    });
+
+    expect(result.isDuplicate).toBe(true);
+    expect(result.processingStatus).toBe('FAILED');
+    expect(
+      (
+        await orderService.getOrderById(
+          { type: 'CUSTOMER', context: { storeId, customerId: customer.id } },
+          order.id,
+        )
+      ).status,
+    ).toBe('CANCELLED');
   });
 
   it('Replaying exact duplicate webhook is idempotent and returns isDuplicate: true', async () => {

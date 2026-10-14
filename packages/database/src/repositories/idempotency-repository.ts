@@ -64,13 +64,23 @@ export class SupabaseIdempotencyRepository {
     this.client = client;
   }
 
-  public computeHash(payload: unknown): string {
+  public async computeHash(payload: unknown): Promise<string> {
+    const serialized = JSON.stringify(payload ?? {});
+    const data = new TextEncoder().encode(serialized);
+    const digest = await globalThis.crypto.subtle.digest('SHA-256', data);
+    const hex = Array.from(new Uint8Array(digest), (byte) =>
+      byte.toString(16).padStart(2, '0'),
+    ).join('');
+    return `sha256:${hex}`;
+  }
+
+  private computeLegacyHash(payload: unknown): string {
     const serialized = JSON.stringify(payload ?? {});
     let hash = 0;
     for (let i = 0; i < serialized.length; i++) {
       const char = serialized.charCodeAt(i);
       hash = (hash << 5) - hash + char;
-      hash |= 0; // Convert to 32bit integer
+      hash |= 0;
     }
     return `hash_${Math.abs(hash).toString(16)}`;
   }
@@ -82,7 +92,8 @@ export class SupabaseIdempotencyRepository {
     storeId?: string,
     ttlSeconds = 86400,
   ): Promise<AcquireIdempotencyResult> {
-    const requestHash = this.computeHash(payload);
+    const requestHash = await this.computeHash(payload);
+    const legacyHash = this.computeLegacyHash(payload);
 
     // 1. Check existing record (scoped to storeId if provided)
     let query = this.client
@@ -98,8 +109,11 @@ export class SupabaseIdempotencyRepository {
     const existing = await query.maybeSingle();
 
     if (existing) {
-      // If hash differs, reject with conflict error
-      if (existing.request_hash !== requestHash) {
+      // Accept only the exact legacy fingerprints written by earlier versions.
+      const matchesLegacy =
+        existing.request_hash === legacyHash ||
+        (typeof payload === 'string' && existing.request_hash === payload);
+      if (existing.request_hash !== requestHash && !matchesLegacy) {
         throw new IdempotencyPayloadConflictError(
           `Idempotency key "${key}" in scope "${scope}" was previously used with a different payload.`,
         );
@@ -123,14 +137,21 @@ export class SupabaseIdempotencyRepository {
 
       // If failed or expired pending, allow re-acquisition by updating status to PENDING
       const expiresAt = new Date(now.getTime() + ttlSeconds * 1000).toISOString();
-      await this.client
+      const updatedRows = await this.client
         .from<DbIdempotencyRecord>('idempotency_records')
         .eq('id', existing.id)
+        .eq('status', existing.status)
+        .eq('expires_at', existing.expires_at)
         .update({
           status: 'PENDING',
           request_hash: requestHash,
           expires_at: expiresAt,
         });
+
+      if (!updatedRows || updatedRows.length === 0) {
+        // Concurrent worker won race; retry acquisition
+        return this.acquire(scope, key, payload, storeId, ttlSeconds);
+      }
 
       return { acquired: true };
     }
@@ -177,6 +198,15 @@ export class SupabaseIdempotencyRepository {
           acquired: false,
           cachedResponse: rechecked.response_payload,
         };
+      }
+
+      // If the conflicting record has failed or expired, attempt recovery
+      const nowCheck = new Date();
+      if (
+        rechecked.status === 'FAILED' ||
+        (rechecked.status === 'PENDING' && new Date(rechecked.expires_at) <= nowCheck)
+      ) {
+        return this.acquire(scope, key, payload, storeId, ttlSeconds);
       }
 
       throw new IdempotencyInFlightError(
@@ -253,13 +283,40 @@ export class SupabaseIdempotencyRepository {
  */
 export class OrdersIdempotencyAdapter implements OrdersIdempotencyRepository {
   private readonly client: PostgrestClient;
+  private readonly repo: SupabaseIdempotencyRepository;
 
   constructor(client: PostgrestClient) {
     this.client = client;
+    this.repo = new SupabaseIdempotencyRepository(client);
   }
 
   private compositeKey(actorId: string, key: string): string {
     return `${actorId}:${key}`;
+  }
+
+  async acquire(
+    storeId: string,
+    actorId: string,
+    key: string,
+    requestHash: string,
+    ttlSeconds = 86400,
+  ): Promise<{ readonly acquired: boolean; readonly cachedResponse?: unknown }> {
+    const composite = this.compositeKey(actorId, key);
+    const result = await this.repo.acquire('checkout', composite, requestHash, storeId, ttlSeconds);
+    return {
+      acquired: result.acquired,
+      cachedResponse: result.cachedResponse,
+    };
+  }
+
+  async fail(
+    storeId: string,
+    actorId: string,
+    key: string,
+    errorPayload?: Record<string, unknown>,
+  ): Promise<void> {
+    const composite = this.compositeKey(actorId, key);
+    await this.repo.fail('checkout', composite, errorPayload ?? {}, storeId);
   }
 
   async get(
@@ -276,7 +333,7 @@ export class OrdersIdempotencyAdapter implements OrdersIdempotencyRepository {
       .eq('idempotency_key', composite)
       .maybeSingle();
 
-    if (!row || row.status !== 'COMPLETED') {
+    if (!row) {
       return null;
     }
 
@@ -286,6 +343,7 @@ export class OrdersIdempotencyAdapter implements OrdersIdempotencyRepository {
       actorId,
       requestHash: row.request_hash,
       response: row.response_payload,
+      status: row.status,
       createdAt: row.created_at,
       expiresAt: row.expires_at,
     };
@@ -293,6 +351,7 @@ export class OrdersIdempotencyAdapter implements OrdersIdempotencyRepository {
 
   async set(record: OrdersIdempotencyRecord): Promise<void> {
     const composite = this.compositeKey(record.actorId, record.key);
+    const requestHash = await this.repo.computeHash(record.requestHash);
     const expiresAt = record.expiresAt ?? new Date(Date.now() + 86400 * 1000).toISOString();
 
     const existing = await this.client
@@ -309,7 +368,7 @@ export class OrdersIdempotencyAdapter implements OrdersIdempotencyRepository {
         .eq('id', existing.id)
         .update({
           status: 'COMPLETED',
-          request_hash: record.requestHash,
+          request_hash: requestHash,
           response_payload: (record.response ?? {}) as Record<string, unknown>,
           expires_at: expiresAt,
         });
@@ -318,7 +377,7 @@ export class OrdersIdempotencyAdapter implements OrdersIdempotencyRepository {
         scope: 'checkout',
         store_id: record.storeId,
         idempotency_key: composite,
-        request_hash: record.requestHash,
+        request_hash: requestHash,
         status: 'COMPLETED',
         response_payload: (record.response ?? {}) as Record<string, unknown>,
         expires_at: expiresAt,

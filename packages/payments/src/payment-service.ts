@@ -515,63 +515,86 @@ export class PaymentService {
     input: CreatePaymentAttemptInput,
   ): Promise<PaymentAttempt> {
     const storeId = caller.context.storeId;
-    const intent = await this.getPaymentIntentById(caller, input.paymentIntentId);
+    const releaseLock = await this.acquireInFlightLock(
+      `payment-intent:${storeId}:${input.paymentIntentId}:attempt`,
+    );
+    try {
+      const intent = await this.getPaymentIntentById(caller, input.paymentIntentId);
 
-    if (intent.status === 'SUCCEEDED' || intent.status === 'REFUNDED') {
-      throw new PaymentError(
-        `Cannot create payment attempt for intent in terminal status ${intent.status}`,
-      );
+      if (intent.status === 'SUCCEEDED' || intent.status === 'REFUNDED') {
+        throw new PaymentError(
+          `Cannot create payment attempt for intent in terminal status ${intent.status}`,
+        );
+      }
+
+      const account = await this.accountRepo.findById(storeId, intent.paymentAccountId);
+      if (!account) {
+        throw new PaymentAccountNotFoundError(intent.paymentAccountId);
+      }
+
+      const adapter = this.getAdapter(account.provider);
+      const existingAttempts = await this.attemptRepo.findByIntentId(storeId, intent.id);
+      if (existingAttempts.some((existing) => existing.status !== 'FAILED')) {
+        throw new PaymentError(
+          `Payment attempt for intent "${intent.id}" is still active or has an unknown provider outcome; reconcile it before retrying.`,
+          'PAYMENT_RECONCILIATION_REQUIRED',
+          409,
+        );
+      }
+      const attemptNumber = existingAttempts.length + 1;
+      const attemptId = generateUUID();
+      const now = new Date().toISOString();
+      const pendingAttempt: PaymentAttempt = {
+        id: attemptId,
+        storeId,
+        paymentIntentId: intent.id,
+        attemptNumber,
+        provider: account.provider,
+        providerReference: null,
+        paymentUrl: null,
+        amount: intent.amount,
+        currency: intent.currency,
+        status: 'PENDING',
+        failureCode: null,
+        failureReason: null,
+        createdAt: now,
+        updatedAt: now,
+      };
+
+      // Persist the attempt before crossing the provider boundary so an unknown result can be reconciled.
+      await this.attemptRepo.create(storeId, pendingAttempt);
+      if (intent.status === 'PENDING') {
+        await this.intentRepo.updateStatus(storeId, intent.id, 'PROCESSING');
+      }
+
+      let providerResult;
+      try {
+        providerResult = await adapter.createPayment({
+          storeId,
+          paymentIntentId: intent.id,
+          attemptId,
+          orderId: intent.orderId,
+          amount: intent.amount,
+          currency: intent.currency,
+          customerId: intent.customerId,
+          credentialReference: account.credentialReference,
+          metadata: input.metadata,
+        });
+      } catch (error) {
+        await this.attemptRepo.updateStatus(storeId, attemptId, 'PROCESSING', {
+          failureReason:
+            'Provider outcome is unknown. Reconcile with the provider before retrying.',
+        });
+        throw error;
+      }
+
+      return await this.attemptRepo.updateStatus(storeId, attemptId, providerResult.status, {
+        providerReference: providerResult.providerReference,
+        paymentUrl: providerResult.paymentUrl,
+      });
+    } finally {
+      releaseLock();
     }
-
-    const account = await this.accountRepo.findById(storeId, intent.paymentAccountId);
-    if (!account) {
-      throw new PaymentAccountNotFoundError(intent.paymentAccountId);
-    }
-
-    const adapter = this.getAdapter(account.provider);
-    const existingAttempts = await this.attemptRepo.findByIntentId(storeId, intent.id);
-    const attemptNumber = existingAttempts.length + 1;
-    const attemptId = generateUUID();
-
-    // Call provider adapter
-    const providerResult = await adapter.createPayment({
-      storeId,
-      paymentIntentId: intent.id,
-      attemptId,
-      orderId: intent.orderId,
-      amount: intent.amount,
-      currency: intent.currency,
-      customerId: intent.customerId,
-      credentialReference: account.credentialReference,
-      metadata: input.metadata,
-    });
-
-    const now = new Date().toISOString();
-    const attempt: PaymentAttempt = {
-      id: attemptId,
-      storeId,
-      paymentIntentId: intent.id,
-      attemptNumber,
-      provider: account.provider,
-      providerReference: providerResult.providerReference,
-      paymentUrl: providerResult.paymentUrl,
-      amount: intent.amount,
-      currency: intent.currency,
-      status: providerResult.status,
-      failureCode: null,
-      failureReason: null,
-      createdAt: now,
-      updatedAt: now,
-    };
-
-    const createdAttempt = await this.attemptRepo.create(storeId, attempt);
-
-    // If intent was PENDING, transition it to PROCESSING
-    if (intent.status === 'PENDING') {
-      await this.intentRepo.updateStatus(storeId, intent.id, 'PROCESSING');
-    }
-
-    return createdAttempt;
   }
 
   /**
@@ -639,11 +662,26 @@ export class PaymentService {
             };
 
             const order = await this.orderService.getOrderById(orderCaller, intent.orderId);
-            if (order && order.status !== 'PAID') {
+            if (order && order.status === 'PENDING_PAYMENT') {
               await this.orderService.transitionStatus(systemContext, intent.orderId, 'PAID', {
                 paymentIntentId: intent.id,
                 provider,
               });
+            } else if (order && !['PAID', 'PROCESSING', 'FULFILLED'].includes(order.status)) {
+              await this.eventRepo.updateProcessingStatus(
+                existingEvent.id,
+                'FAILED',
+                new Date().toISOString(),
+              );
+              return {
+                eventId: input.eventId,
+                provider,
+                processingStatus: 'FAILED',
+                paymentIntentId: intent.id,
+                previousStatus: intent.status,
+                currentStatus: intent.status,
+                isDuplicate: true,
+              };
             }
           }
         }
@@ -782,8 +820,58 @@ export class PaymentService {
       const previousStatus = intent.status;
       let currentStatus = previousStatus;
 
-      // 8. Execute State Transitions & Event Persistence
+      // A successful provider event cannot resurrect a closed order or terminal payment.
+      // Preserve the event as failed ingress work so it remains visible for reconciliation,
+      // but do not mutate payment or inventory state based on this webhook alone.
+      let orderBeforeSuccess: Awaited<ReturnType<OrderService['getOrderById']>> | null = null;
       if (parsed.status === 'SUCCEEDED') {
+        const systemContext = createAuthenticatedStoreContext({
+          storeId,
+          userId: `system:payment-engine:${storeId}`,
+          membershipId: `sys_pay_${storeId}`,
+          role: 'STORE_ADMIN',
+        });
+        const orderCaller: OrderCaller = { type: 'SELLER', context: systemContext };
+        orderBeforeSuccess = await this.orderService.getOrderById(orderCaller, intent.orderId);
+
+        const orderCanAcceptPayment =
+          orderBeforeSuccess.status === 'PENDING_PAYMENT' ||
+          orderBeforeSuccess.status === 'PAID' ||
+          orderBeforeSuccess.status === 'PROCESSING' ||
+          orderBeforeSuccess.status === 'FULFILLED';
+        const intentCanAcceptSuccess =
+          intent.status === 'PENDING' ||
+          intent.status === 'PROCESSING' ||
+          intent.status === 'SUCCEEDED';
+        const attemptCanAcceptSuccess =
+          !attempt ||
+          attempt.status === 'PENDING' ||
+          attempt.status === 'PROCESSING' ||
+          attempt.status === 'SUCCEEDED';
+
+        if (!orderCanAcceptPayment || !intentCanAcceptSuccess || !attemptCanAcceptSuccess) {
+          const failedAt = new Date().toISOString();
+          await this.eventRepo.create({
+            id: generateUUID(),
+            storeId,
+            paymentIntentId: intent.id,
+            paymentAttemptId: attempt?.id ?? null,
+            provider,
+            eventId: input.eventId,
+            eventType: input.eventType ?? parsed.eventType,
+            payload: Object.freeze({ ...input.payload }),
+            processingStatus: 'FAILED',
+            processedAt: failedAt,
+            createdAt: failedAt,
+          });
+          throw new OrderNotPayableError(
+            intent.orderId,
+            orderCanAcceptPayment
+              ? `${orderBeforeSuccess.status}/${intent.status}/${attempt?.status ?? 'NO_ATTEMPT'}`
+              : orderBeforeSuccess.status,
+          );
+        }
+
         if (attempt && attempt.status !== 'SUCCEEDED') {
           await this.attemptRepo.updateStatus(storeId, attempt.id, 'SUCCEEDED');
         }

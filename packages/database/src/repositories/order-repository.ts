@@ -50,6 +50,7 @@ function toDomainItem(row: DbOrderItem): OrderItem {
 
 export class SupabaseOrderRepository implements OrderRepository {
   private readonly client: PostgrestClient;
+  readonly supportsAtomicStockReservation = true;
 
   constructor(client: PostgrestClient) {
     this.client = client;
@@ -59,7 +60,7 @@ export class SupabaseOrderRepository implements OrderRepository {
     storeId: string,
     order: Order,
     items: readonly OrderItem[],
-    reserveStock = false,
+    reserveStock = true,
   ): Promise<OrderWithItems> {
     const metadata = {
       ...(order.metadata ?? {}),
@@ -113,7 +114,12 @@ export class SupabaseOrderRepository implements OrderRepository {
       if (!isMissingRpcError(err)) {
         throw err;
       }
-      // If RPC is unavailable (e.g. mocked test environments), fallback to sequential insert
+      // Sequential inserts cannot preserve order and inventory consistency.
+      if (reserveStock) {
+        throw new Error(
+          'Atomic order creation is unavailable; checkout is disabled until rpc_create_order_atomic is installed.',
+        );
+      }
     }
 
     const insertedOrders = await this.client.from<DbOrder>('orders').insert(orderPayload);

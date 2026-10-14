@@ -257,12 +257,24 @@ export class PostgrestClient {
   async ping(): Promise<{ ok: boolean; latencyMs: number; error?: string }> {
     const start = Date.now();
     try {
-      // Light query to verify connection and credentials
-      const url = `${this.restBaseUrl}/stores?select=id&limit=1`;
-      const res = await this.fetchFn(url, {
+      // Light query to verify connection and credentials:
+      // Try core table or fallback to idempotency records or root schema
+      let res = await this.fetchFn(`${this.restBaseUrl}/stores?select=id&limit=1`, {
         method: 'GET',
         headers: this.defaultHeaders,
       });
+      if (!res.ok && res.status === 403) {
+        res = await this.fetchFn(`${this.restBaseUrl}/idempotency_records?select=id&limit=1`, {
+          method: 'GET',
+          headers: this.defaultHeaders,
+        });
+      }
+      if (!res.ok && (res.status === 403 || res.status === 404)) {
+        res = await this.fetchFn(`${this.restBaseUrl}/`, {
+          method: 'GET',
+          headers: this.defaultHeaders,
+        });
+      }
       const latencyMs = Date.now() - start;
       if (res.ok) {
         return { ok: true, latencyMs };

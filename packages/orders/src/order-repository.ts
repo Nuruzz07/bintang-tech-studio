@@ -6,9 +6,21 @@ import { Order, OrderItem, OrderWithItems, OrderFilter, OrderStatus } from './ty
  */
 export interface OrderRepository {
   /**
-   * Persists an order aggregate and its line item snapshots atomically.
+   * Indicates whether the underlying persistence layer handles atomic inventory reservation
+   * in the same database transaction (e.g. PostgreSQL RPC rpc_create_order_atomic).
    */
-  create(storeId: string, order: Order, items: readonly OrderItem[]): Promise<OrderWithItems>;
+  readonly supportsAtomicStockReservation?: boolean | undefined;
+
+  /**
+   * Persists an order aggregate and its line item snapshots atomically.
+   * If reserveStock is true and supported, inventory reservation is executed in the same transaction.
+   */
+  create(
+    storeId: string,
+    order: Order,
+    items: readonly OrderItem[],
+    reserveStock?: boolean,
+  ): Promise<OrderWithItems>;
 
   /**
    * Retrieves an order with its line items by primary ID within a store boundary.

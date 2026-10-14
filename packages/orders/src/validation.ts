@@ -27,8 +27,10 @@ export function validateOrderQuantity(quantity: number, fieldName = 'quantity'):
  */
 const VALID_TRANSITIONS: Record<OrderStatus, ReadonlySet<OrderStatus>> = {
   PENDING_PAYMENT: new Set<OrderStatus>(['PAID', 'CANCELLED', 'EXPIRED', 'FAILED']),
-  PAID: new Set<OrderStatus>(['PROCESSING', 'CANCELLED']),
-  PROCESSING: new Set<OrderStatus>(['FULFILLED', 'CANCELLED', 'FAILED']),
+  // Paid orders must not be cancelled through generic lifecycle updates: refund/void needs
+  // an explicit provider-confirmed path before order state or reserved inventory changes.
+  PAID: new Set<OrderStatus>(['PROCESSING']),
+  PROCESSING: new Set<OrderStatus>(['FULFILLED', 'FAILED']),
   FULFILLED: new Set<OrderStatus>(),
   CANCELLED: new Set<OrderStatus>(),
   EXPIRED: new Set<OrderStatus>(),

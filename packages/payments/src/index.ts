@@ -90,6 +90,12 @@ export {
   type MockPaymentProviderAdapterOptions,
 } from './mock-provider-adapter.js';
 
+export {
+  TipzyPaymentProviderAdapter,
+  type TipzyPaymentProviderAdapterOptions,
+  type TipzyCredentials,
+} from './tipzy-provider-adapter.js';
+
 // Repositories
 export { type PaymentAccountRepository } from './payment-account-repository.js';
 export { type PaymentIntentRepository } from './payment-intent-repository.js';

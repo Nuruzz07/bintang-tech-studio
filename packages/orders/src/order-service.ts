@@ -24,6 +24,7 @@ import {
   ProductUnavailableError,
   EmptyOrderItemsError,
   IdempotencyConflictError,
+  IdempotencyInFlightError,
   CustomerOrderAccessDeniedError,
   OrderAlreadyCancelledError,
   OrderAlreadyFulfilledError,
@@ -152,7 +153,7 @@ export class OrderService {
     }
 
     try {
-      // 3. Idempotency Check
+      // 3. Idempotency Check & In-flight lease acquisition
       let requestPayloadHash = '';
       if (input.idempotencyKey && this.idempotencyRepo) {
         requestPayloadHash = JSON.stringify({
@@ -162,18 +163,35 @@ export class OrderService {
           currency: input.currency ?? 'IDR',
         });
 
-        const existingRecord = await this.idempotencyRepo.get(
-          storeId,
-          actorId,
-          input.idempotencyKey,
-        );
-        if (existingRecord) {
-          if (existingRecord.requestHash !== requestPayloadHash) {
-            throw new IdempotencyConflictError(
-              `Idempotency key "${input.idempotencyKey}" was previously used with a different request payload`,
-            );
+        if (typeof this.idempotencyRepo.acquire === 'function') {
+          const acquireResult = await this.idempotencyRepo.acquire(
+            storeId,
+            actorId,
+            input.idempotencyKey,
+            requestPayloadHash,
+          );
+          if (!acquireResult.acquired && acquireResult.cachedResponse) {
+            return acquireResult.cachedResponse as OrderWithItems;
           }
-          return existingRecord.response as OrderWithItems;
+        } else {
+          const existingRecord = await this.idempotencyRepo.get(
+            storeId,
+            actorId,
+            input.idempotencyKey,
+          );
+          if (existingRecord) {
+            if (existingRecord.requestHash !== requestPayloadHash) {
+              throw new IdempotencyConflictError(
+                `Idempotency key "${input.idempotencyKey}" was previously used with a different request payload`,
+              );
+            }
+            if (existingRecord.status === 'PENDING') {
+              throw new IdempotencyInFlightError(
+                `Request with idempotency key "${input.idempotencyKey}" is currently being processed`,
+              );
+            }
+            return existingRecord.response as OrderWithItems;
+          }
         }
       }
 
@@ -246,18 +264,24 @@ export class OrderService {
       const grandTotal = subtractMoney(orderSubtotal, discountTotal);
       const currency = input.currency ?? 'IDR';
 
-      // 7. Atomic Inventory Reservations & Order Persistence (With Compensating Rollback on Failure)
+      // 7. Atomic Inventory Reservations & Order Persistence
       const orderId = generateUUID();
       const reservedItems: Array<{ productId: string; quantity: number }> = [];
 
       try {
-        for (const line of lineItemSnapshots) {
-          if (line.stockMode === 'TRACKED') {
-            await this.inventoryService.reserveStock(inventoryCtx, line.productId, {
-              amount: line.quantity,
-              orderId,
-            });
-            reservedItems.push({ productId: line.productId, quantity: line.quantity });
+        const delegatesAtomicStock = Boolean(this.orderRepo.supportsAtomicStockReservation);
+
+        // If repository does not handle atomic stock reservation (e.g. in-memory adapter),
+        // perform pre-reservation via inventory service with compensating rollback
+        if (!delegatesAtomicStock) {
+          for (const line of lineItemSnapshots) {
+            if (line.stockMode === 'TRACKED') {
+              await this.inventoryService.reserveStock(inventoryCtx, line.productId, {
+                amount: line.quantity,
+                orderId,
+              });
+              reservedItems.push({ productId: line.productId, quantity: line.quantity });
+            }
           }
         }
 
@@ -295,7 +319,12 @@ export class OrderService {
           createdAt: now,
         }));
 
-        const createdOrder = await this.orderRepo.create(storeId, order, orderItems);
+        const createdOrder = await this.orderRepo.create(
+          storeId,
+          order,
+          orderItems,
+          delegatesAtomicStock ? true : false,
+        );
 
         // 9. Store Idempotency
         if (input.idempotencyKey && this.idempotencyRepo) {
@@ -305,6 +334,7 @@ export class OrderService {
             actorId,
             requestHash: requestPayloadHash,
             response: createdOrder,
+            status: 'COMPLETED',
             createdAt: now,
           });
         }
@@ -321,6 +351,22 @@ export class OrderService {
             });
           } catch (rbError) {
             rollbackFailures.push({ productId: rollback.productId, error: rbError });
+          }
+        }
+
+        // Notify idempotency repository of failure if supported so key is marked FAILED rather than hanging
+        if (
+          input.idempotencyKey &&
+          this.idempotencyRepo &&
+          typeof this.idempotencyRepo.fail === 'function'
+        ) {
+          try {
+            await this.idempotencyRepo.fail(storeId, actorId, input.idempotencyKey, {
+              error:
+                operationError instanceof Error ? operationError.message : String(operationError),
+            });
+          } catch {
+            // Ignore best-effort failure notification error
           }
         }
 

@@ -91,6 +91,15 @@ export class IdempotencyConflictError extends ConflictError {
   }
 }
 
+export class IdempotencyInFlightError extends ConflictError {
+  constructor(
+    message = 'A request with this idempotency key is currently in flight',
+    details?: unknown,
+  ) {
+    super(message, details);
+  }
+}
+
 export class EmptyOrderItemsError extends ValidationError {
   constructor(message = 'Order must contain at least one item') {
     super(message);

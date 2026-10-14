@@ -36,6 +36,7 @@ export {
   ProductUnavailableError,
   OrderCreationConflictError,
   IdempotencyConflictError,
+  IdempotencyInFlightError,
   EmptyOrderItemsError,
 } from './errors.js';
 

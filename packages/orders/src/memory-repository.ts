@@ -36,6 +36,7 @@ export class InMemoryOrderRepository implements OrderRepository {
     storeId: string,
     order: Order,
     items: readonly OrderItem[],
+    _reserveStock?: boolean,
   ): Promise<OrderWithItems> {
     if (order.storeId !== storeId) {
       throw new Error(

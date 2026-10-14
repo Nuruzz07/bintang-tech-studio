@@ -2,6 +2,7 @@ import { describe, it, expect, vi } from 'vitest';
 import { PostgrestClient } from '../src/client.js';
 import {
   SupabaseIdempotencyRepository,
+  OrdersIdempotencyAdapter,
   IdempotencyPayloadConflictError,
   IdempotencyInFlightError,
 } from '../src/repositories/idempotency-repository.js';
@@ -83,6 +84,155 @@ describe('M15 Hardening — Durable Idempotency, Sessions, and Worker', () => {
       await expect(repo.acquire('checkout', 'key-123', { total: 99999 })).rejects.toThrow(
         IdempotencyPayloadConflictError,
       );
+    });
+
+    it('allows only one worker to recover the same expired PENDING lease', async () => {
+      const expiredAt = '2020-01-01T00:00:00.000Z';
+      const row: DbIdempotencyRecord = {
+        id: 'idem-expired-race',
+        store_id: 'store-race',
+        scope: 'checkout',
+        idempotency_key: 'cust-race:retry-key',
+        request_hash: await new SupabaseIdempotencyRepository(
+          {} as unknown as PostgrestClient,
+        ).computeHash('payload'),
+        status: 'PENDING',
+        response_payload: null,
+        error_payload: null,
+        created_at: expiredAt,
+        expires_at: expiredAt,
+      };
+      let getCount = 0;
+      let releaseGets!: () => void;
+      const bothRead = new Promise<void>((resolve) => {
+        releaseGets = resolve;
+      });
+
+      const mockFetch = vi
+        .fn()
+        .mockImplementation(async (input: RequestInfo | URL, init?: RequestInit) => {
+          const url = new URL(String(input));
+          if (init?.method === 'GET') {
+            const snapshot = { ...row };
+            getCount += 1;
+            if (getCount === 2) releaseGets();
+            await bothRead;
+            return new Response(JSON.stringify([snapshot]), { status: 200 });
+          }
+          if (init?.method === 'PATCH') {
+            const expectedStatus = url.searchParams.get('status')?.slice(3);
+            const expectedExpiry = url.searchParams.get('expires_at')?.slice(3);
+            if (
+              row.status === expectedStatus &&
+              (!expectedExpiry || row.expires_at === expectedExpiry)
+            ) {
+              Object.assign(row, JSON.parse(init.body as string));
+              return new Response(JSON.stringify([row]), { status: 200 });
+            }
+            return new Response('[]', { status: 200 });
+          }
+          return new Response('[]', { status: 200 });
+        });
+      const makeAdapter = () =>
+        new OrdersIdempotencyAdapter(
+          new PostgrestClient({
+            supabaseUrl: 'https://unit.test',
+            supabaseKey: 'test-key',
+            fetch: mockFetch as unknown as typeof fetch,
+          }),
+        );
+      const adapters = [makeAdapter(), makeAdapter()];
+
+      const results = await Promise.allSettled(
+        adapters.map((adapter) =>
+          adapter.acquire('store-race', 'cust-race', 'retry-key', 'payload'),
+        ),
+      );
+      expect(results.filter((result) => result.status === 'fulfilled')).toHaveLength(1);
+      expect(results.filter((result) => result.status === 'rejected')).toHaveLength(1);
+      expect(results.find((result) => result.status === 'rejected')).toMatchObject({
+        reason: expect.objectContaining({ name: 'IdempotencyInFlightError' }),
+      });
+    });
+
+    it('replays a completed checkout after the acquire and set adapter boundary', async () => {
+      const records = new Map<string, DbIdempotencyRecord>();
+      const recordKey = (
+        row: Pick<DbIdempotencyRecord, 'scope' | 'store_id' | 'idempotency_key'>,
+      ) => `${row.scope}:${row.store_id}:${row.idempotency_key}`;
+
+      const mockFetch = vi
+        .fn()
+        .mockImplementation(async (input: RequestInfo | URL, init?: RequestInit) => {
+          const url = new URL(String(input));
+          if (init?.method === 'GET') {
+            const scope = url.searchParams.get('scope')?.slice(3);
+            const key = url.searchParams.get('idempotency_key')?.slice(3);
+            const storeId = url.searchParams.get('store_id')?.slice(3) ?? null;
+            const row = Array.from(records.values()).find(
+              (entry) =>
+                entry.scope === scope &&
+                entry.idempotency_key === key &&
+                entry.store_id === storeId,
+            );
+            return new Response(JSON.stringify(row ? [row] : []), { status: 200 });
+          }
+          if (init?.method === 'POST') {
+            const body = JSON.parse(init.body as string)[0] as Partial<DbIdempotencyRecord>;
+            const row: DbIdempotencyRecord = {
+              id: 'idem-checkout-replay',
+              store_id: body.store_id ?? null,
+              scope: body.scope!,
+              idempotency_key: body.idempotency_key!,
+              request_hash: body.request_hash!,
+              status: body.status as DbIdempotencyRecord['status'],
+              response_payload: body.response_payload ?? null,
+              error_payload: null,
+              created_at: new Date().toISOString(),
+              expires_at: body.expires_at!,
+            };
+            records.set(recordKey(row), row);
+            return new Response(JSON.stringify([row]), { status: 201 });
+          }
+          if (init?.method === 'PATCH') {
+            const id = url.searchParams.get('id')?.slice(3);
+            const row = Array.from(records.values()).find((entry) => entry.id === id);
+            if (row) Object.assign(row, JSON.parse(init.body as string));
+            return new Response(JSON.stringify(row ? [row] : []), { status: 200 });
+          }
+          return new Response('[]', { status: 200 });
+        });
+
+      const client = new PostgrestClient({
+        supabaseUrl: 'https://unit.test',
+        supabaseKey: 'test-key',
+        fetch: mockFetch as unknown as typeof fetch,
+      });
+      const adapter = new OrdersIdempotencyAdapter(client);
+      const requestHash = JSON.stringify({
+        storeId: 'store-replay',
+        customerId: 'cust-replay',
+        items: [{ productId: 'prod-1', quantity: 1 }],
+        currency: 'IDR',
+      });
+      const first = await adapter.acquire('store-replay', 'cust-replay', 'retry-key', requestHash);
+      expect(first.acquired).toBe(true);
+
+      await adapter.set({
+        key: 'retry-key',
+        storeId: 'store-replay',
+        actorId: 'cust-replay',
+        requestHash,
+        response: { orderId: 'ord-replay' },
+        status: 'COMPLETED',
+        createdAt: new Date().toISOString(),
+        expiresAt: new Date(Date.now() + 86400_000).toISOString(),
+      });
+      expect(Array.from(records.values())[0]?.status).toBe('COMPLETED');
+
+      await expect(
+        adapter.acquire('store-replay', 'cust-replay', 'retry-key', requestHash),
+      ).resolves.toMatchObject({ acquired: false, cachedResponse: { orderId: 'ord-replay' } });
     });
   });
 
