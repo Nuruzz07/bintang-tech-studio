@@ -185,7 +185,10 @@ export function openAuthModal({ defaultTab = 'login', onSuccess = null } = {}) {
         btnGoogle.disabled = true;
         btnGoogle.innerHTML = `<span>Menghubungkan ke Google...</span>`;
         try {
-          const res = await fetch('/api/v1/auth/google-url');
+          const redirectTo = encodeURIComponent(
+            window.location.origin + window.location.pathname + '#admin',
+          );
+          const res = await fetch(`/api/v1/auth/google-url?redirect_to=${redirectTo}`);
           if (res.ok) {
             const data = await res.json();
             const url = data.data?.url;
@@ -197,7 +200,7 @@ export function openAuthModal({ defaultTab = 'login', onSuccess = null } = {}) {
         } catch {
           // fallback
         }
-        showToast('Google OAuth siap diaktifkan di Supabase Settings', 'info');
+        showToast('Gagal menghubungi server Google OAuth', 'error');
         btnGoogle.disabled = false;
         btnGoogle.innerHTML = `${GOOGLE_ICON_SVG}<span>Lanjutkan Langsung dengan Google (Gmail)</span>`;
       });

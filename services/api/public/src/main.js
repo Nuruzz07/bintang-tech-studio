@@ -3,6 +3,7 @@
 
 import { store } from './state/store.js';
 import { renderDemoNavbar, initDemoNavbarEvents } from './components/demo-navbar.js';
+import { showToast } from './utils/helpers.js';
 import { renderLandingPage } from './pages/landing.js';
 import { renderTelegramBotPage, initTelegramBotEvents } from './pages/telegram-bot.js';
 import { renderWebAppPage, initWebAppEvents } from './pages/webapp.js';
@@ -38,9 +39,58 @@ const ROUTES = {
   },
 };
 
+function handleOAuthCallback() {
+  const fullHash = window.location.hash;
+  if (!fullHash) return;
+
+  if (fullHash.includes('error_description=')) {
+    const match = fullHash.match(/error_description=([^&]+)/);
+    const desc = match ? decodeURIComponent(match[1].replace(/\+/g, ' ')) : 'Google sign-in gagal';
+    showToast(desc, 'error');
+    window.location.hash = '#landing';
+    return;
+  }
+
+  if (fullHash.includes('access_token=')) {
+    const tokenMatch = fullHash.match(/access_token=([^&]+)/);
+    if (tokenMatch) {
+      const accessToken = tokenMatch[1];
+      try {
+        const base64Url = accessToken.split('.')[1];
+        const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+        const jsonPayload = decodeURIComponent(
+          atob(base64)
+            .split('')
+            .map((c) => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
+            .join(''),
+        );
+        const payload = JSON.parse(jsonPayload);
+        const user = {
+          id: payload.sub,
+          email: payload.email,
+          fullName:
+            payload.user_metadata?.full_name ||
+            payload.user_metadata?.name ||
+            payload.email?.split('@')[0] ||
+            'Seller Bintang',
+          avatarUrl: payload.user_metadata?.avatar_url || null,
+          provider: 'google',
+        };
+        localStorage.setItem('bts_auth_user', JSON.stringify(user));
+        localStorage.setItem('bts_access_token', accessToken);
+        showToast(`Selamat datang, ${user.fullName}! Login Google berhasil.`, 'success');
+        window.location.hash = '#admin';
+      } catch (e) {
+        console.error('Failed to parse Supabase token from hash', e);
+      }
+    }
+  }
+}
+
 function getActiveRoute() {
-  const hash = window.location.hash.replace('#', '').trim().toLowerCase();
-  if (ROUTES[hash]) return hash;
+  const rawHash = window.location.hash.replace(/^#+/, '').trim().toLowerCase();
+  const routeKey = rawHash.split(/[#&]/)[0];
+  if (ROUTES[routeKey]) return routeKey;
   return 'landing';
 }
 
@@ -84,10 +134,12 @@ function mountCurrentView() {
 
 // Global initialization
 document.addEventListener('DOMContentLoaded', () => {
+  handleOAuthCallback();
   mountCurrentView();
 
   // Listen to hash routing
   window.addEventListener('hashchange', () => {
+    handleOAuthCallback();
     mountCurrentView();
   });
 

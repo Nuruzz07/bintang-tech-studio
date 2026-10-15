@@ -54,12 +54,37 @@ export function renderDemoNavbar(currentView = 'landing') {
 
         <!-- Actions: Auth & Reset Demo -->
         <div class="flex items-center gap-1.5 shrink-0">
-          <button id="btn-open-auth-modal"
-                  type="button"
-                  title="Masuk atau daftar akun seller"
-                  class="flex items-center gap-1 px-2.5 py-1 rounded-md text-[11px] font-heading font-bold text-white bg-terracotta-600 hover:bg-terracotta-700 shadow-xs transition-colors">
-            <span>Masuk / Daftar</span>
-          </button>
+          ${(() => {
+            let authUser = null;
+            try {
+              authUser = JSON.parse(localStorage.getItem('bts_auth_user') || 'null');
+            } catch {}
+
+            if (authUser) {
+              return `
+                <div class="flex items-center gap-1.5">
+                  <span class="text-[11px] font-mono text-stone-300 hidden sm:inline max-w-[130px] truncate" title="${authUser.email || ''}">
+                    👤 ${authUser.fullName || authUser.email || 'Seller'}
+                  </span>
+                  <button id="btn-logout-auth"
+                          type="button"
+                          title="Keluar dari akun seller"
+                          class="flex items-center gap-1 px-2 py-1 rounded-md text-[10px] font-mono text-stone-400 hover:text-white hover:bg-stone-800 border border-stone-800 transition-colors">
+                    <span>Keluar</span>
+                  </button>
+                </div>
+              `;
+            }
+
+            return `
+              <button id="btn-open-auth-modal"
+                      type="button"
+                      title="Masuk atau daftar akun seller"
+                      class="flex items-center gap-1 px-2.5 py-1 rounded-md text-[11px] font-heading font-bold text-white bg-terracotta-600 hover:bg-terracotta-700 shadow-xs transition-colors">
+                <span>Masuk / Daftar</span>
+              </button>
+            `;
+          })()}
           <button id="btn-reset-demo"
                   type="button"
                   title="Reset seluruh data simulasi ke awal"
@@ -78,6 +103,19 @@ export function initDemoNavbarEvents() {
   if (btnAuth) {
     btnAuth.addEventListener('click', () => {
       openAuthModal({ defaultTab: 'login' });
+    });
+  }
+
+  const btnLogout = document.getElementById('btn-logout-auth');
+  if (btnLogout) {
+    btnLogout.addEventListener('click', () => {
+      localStorage.removeItem('bts_auth_user');
+      localStorage.removeItem('bts_access_token');
+      localStorage.removeItem('bts_refresh_token');
+      showToast('Anda telah keluar dari akun.', 'info');
+      setTimeout(() => {
+        window.location.reload();
+      }, 300);
     });
   }
 
