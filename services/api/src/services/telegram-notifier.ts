@@ -119,6 +119,29 @@ export async function notifyNewOrder(params: {
   return sendTelegramMessage(message);
 }
 
+export async function notifySupportRequest(params: {
+  customerName: string;
+  customerContact: string;
+  messageText: string;
+  channel?: string;
+}): Promise<boolean> {
+  const cleanPhone = params.customerContact.replace(/[^0-9]/g, '');
+  const waDirectLink = `https://wa.me/${cleanPhone}`;
+
+  const message =
+    `🚨 <b>[BANTUAN CS & HUMAN TAKEOVER]</b>\n\n` +
+    `Ada pembeli yang membutuhkan bantuan CS / admin:\n\n` +
+    `👤 <b>Nama:</b> ${params.customerName}\n` +
+    `📱 <b>Kontak:</b> <code>${params.customerContact}</code>\n` +
+    `💬 <b>Pesan:</b> <i>"${params.messageText}"</i>\n\n` +
+    `━━━━━━━━━━━━━━━━━━━\n` +
+    `👉 <b>Tindakan Cepat:</b>\n` +
+    `• <a href="${waDirectLink}">Chat Langsung Pembeli di WhatsApp</a>\n` +
+    `• Bot WhatsApp otomatis menahan balasan otomatis selama 15 menit agar kamu bisa mengobrol santai dengan pembeli tanpa disela bot!`;
+
+  return sendTelegramMessage(message);
+}
+
 export async function notifyPaymentSuccess(params: {
   orderId: string;
   amount: number | string;

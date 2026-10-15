@@ -140,7 +140,24 @@ function renderAdminOverviewTab() {
           </div>
         </div>
 
-        <!-- KPI 2: Orders -->
+        <!-- KPI 2: WhatsApp & Telegram Bot Engine -->
+        <div class="bg-white p-5 rounded-2xl border border-emerald-200 shadow-sm space-y-2 bg-gradient-to-br from-white to-emerald-50/30">
+          <div class="flex items-center justify-between text-stone-500">
+            <span class="text-xs font-mono uppercase font-bold text-emerald-700">Multi-Channel Bot</span>
+            <span class="flex h-2.5 w-2.5 relative">
+              <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+              <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
+            </span>
+          </div>
+          <div class="font-heading font-black text-xl text-stone-900 flex items-center gap-2">
+            <span>WA & TG LIVE</span>
+          </div>
+          <div class="text-[11px] text-emerald-700 font-medium flex items-center gap-1">
+            <span>🟢 Zero-Click Fulfillment Aktif</span>
+          </div>
+        </div>
+
+        <!-- KPI 3: Orders -->
         <div class="bg-white p-5 rounded-2xl border border-stone-200/80 shadow-sm space-y-2">
           <div class="flex items-center justify-between text-stone-500">
             <span class="text-xs font-mono uppercase">Orders</span>
@@ -149,18 +166,6 @@ function renderAdminOverviewTab() {
           <div class="font-heading font-black text-2xl text-stone-900">128</div>
           <div class="text-[11px] text-stone-500">
             <span class="font-bold text-stone-800">100%</span> otomatis terkirim
-          </div>
-        </div>
-
-        <!-- KPI 3: Customers -->
-        <div class="bg-white p-5 rounded-2xl border border-stone-200/80 shadow-sm space-y-2">
-          <div class="flex items-center justify-between text-stone-500">
-            <span class="text-xs font-mono uppercase">Customers</span>
-            <span class="p-1.5 rounded-lg bg-purple-50 text-purple-600">${ICONS.users}</span>
-          </div>
-          <div class="font-heading font-black text-2xl text-stone-900">${customers.length * 14 + 3}</div>
-          <div class="text-[11px] text-purple-600 font-semibold">
-            Pelanggan Aktif Telegram & Web
           </div>
         </div>
 

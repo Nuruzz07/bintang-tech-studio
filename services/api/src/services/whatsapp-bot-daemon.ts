@@ -27,7 +27,14 @@ import QRCode from 'qrcode';
 import { resolve } from 'node:path';
 import { existsSync, mkdirSync } from 'node:fs';
 import { TipzyPaymentProviderAdapter } from '@bintang/payments';
-import { notifyNewOrder, notifyPaymentSuccess, sendTelegramPhoto, sendTelegramMessage } from './telegram-notifier.js';
+import {
+  notifyNewOrder,
+  notifyPaymentSuccess,
+  notifySupportRequest,
+  sendTelegramPhoto,
+  sendTelegramMessage,
+} from './telegram-notifier.js';
+import { demoState } from '../demo/state.js';
 
 export interface WhatsAppProductItem {
   id: string;
@@ -144,6 +151,8 @@ export class WhatsAppBotDaemon {
   };
 
   private activeWatchers: Map<string, NodeJS.Timeout> = new Map();
+  // Map of jid -> timestamp until which bot is muted for human takeover
+  private mutedUsers: Map<string, number> = new Map();
 
   constructor() {
     this.sessionDir = resolve('C:/BOT_WEB/Bintang-Tech-Project/wa_auth_session');
@@ -154,6 +163,42 @@ export class WhatsAppBotDaemon {
     const env = typeof process !== 'undefined' ? process.env : {};
     this.storeWebUrl =
       env?.['STORE_WEB_URL'] || 'https://bintang-digital-demo.vercel.app/webapp.html';
+  }
+
+  public getProductsList(): WhatsAppProductItem[] {
+    const liveProds = demoState.getProducts();
+    if (!liveProds || liveProds.length === 0) {
+      return WA_CATALOG_ITEMS;
+    }
+
+    return liveProds.map((p, index) => {
+      let format: 'account' | 'key' | 'link' | 'code' = 'account';
+      if (p.categorySlug === 'software') format = 'key';
+      else if (p.categorySlug === 'gaming') format = 'code';
+      else if (p.categorySlug === 'design' && p.name.toLowerCase().includes('canva')) format = 'link';
+
+      const email = `${p.id.replace('prod_', '')}.vip@bintang.store`;
+      const password = `BTS-VIP-${p.monogram}-2026`;
+      const licenseKey = `BTS-${p.monogram}-8821-KEY-2026`;
+      const code = `VOUCH-${p.monogram}-BTS-8899`;
+      const link = `https://drive.google.com/drive/folders/bintang-store-${p.id}`;
+
+      return {
+        id: p.id,
+        num: index + 1,
+        name: `${p.name} ${p.duration ? `(${p.duration})` : ''}`.trim(),
+        price: p.price,
+        category: p.categorySlug.toUpperCase(),
+        desc: p.shortDescription || p.description,
+        format,
+        email,
+        password,
+        licenseKey,
+        code,
+        link,
+        note: p.importantInfo || 'Garansi aktif 30 hari Bintang Store.',
+      };
+    });
   }
 
   public getStatus(): WhatsAppDaemonStatus {
@@ -282,6 +327,22 @@ export class WhatsAppBotDaemon {
           if (!text.trim()) continue;
 
           const pushName = msg.pushName || 'Pelanggan Bintang';
+
+          // Check if user is currently in Human Takeover / Muted state
+          const muteUntil = this.mutedUsers.get(jid);
+          if (muteUntil && Date.now() < muteUntil) {
+            // Still muted for human CS handover
+            const cleanText = text.trim().toLowerCase();
+            if (cleanText === 'unmute' || cleanText === 'bot' || cleanText === 'menu') {
+              this.mutedUsers.delete(jid);
+              await this.sendMessage(jid, '🤖 *Bot otomatis Bintang Store kembali aktif!*\nSilakan ketik *MENU* untuk melihat layanan.');
+            } else {
+              // Ignore automated responses while seller is chatting
+              console.log(`[WhatsAppDaemon] 🤫 Muted: mengabaikan balasan otomatis untuk ${jid} (Human Takeover aktif)`);
+              continue;
+            }
+          }
+
           await this.handleIncomingMessage(jid, text.trim(), pushName);
         }
       });
@@ -304,11 +365,44 @@ export class WhatsAppBotDaemon {
       text === 'hi' ||
       text === 'p' ||
       text === 'start' ||
-      text === 'bintang' ||
-      text === 'bantuan' ||
-      text === 'help'
+      text === 'bintang'
     ) {
       await this.sendMainMenu(jid, senderName);
+      return;
+    }
+
+    // Support & Human Takeover Handover
+    if (
+      text === '4' ||
+      text === 'bantuan' ||
+      text === 'cs' ||
+      text === 'admin' ||
+      text === 'help' ||
+      text.includes('komplain') ||
+      text.includes('kendala') ||
+      text.includes('garansi') ||
+      text.includes('rusak') ||
+      text.includes('ganti')
+    ) {
+      // Mute bot for this buyer for 15 minutes
+      this.mutedUsers.set(jid, Date.now() + 15 * 60 * 1000);
+
+      // Notify Seller on Telegram with quick link
+      void notifySupportRequest({
+        customerName: senderName,
+        customerContact: jid,
+        messageText: rawText,
+        channel: 'WHATSAPP_BOT',
+      });
+
+      const supportMsg =
+        `👋 Halo Kak *${senderName}*!\n\n` +
+        `Pesan bantuan kamu sudah diteruskan ke *Owner / Admin Bintang Store* via Telegram. 🔔\n\n` +
+        `Admin kami akan segera membalas chat kamu secara langsung di sini.\n` +
+        `_Bot otomatis kami nonaktifkan sementara selama 15 menit agar kamu bisa mengobrol nyaman dengan admin._\n\n` +
+        `*(Ketik *MENU* kapan saja jika ingin mengaktifkan kembali bot transaksi otomatis)*`;
+
+      await this.sendMessage(jid, supportMsg);
       return;
     }
 
@@ -319,25 +413,26 @@ export class WhatsAppBotDaemon {
     }
 
     // 3. Purchase Intent
-    if (text.startsWith('beli') || text.startsWith('order') || /^[1-6]$/.test(text)) {
+    const catalog = this.getProductsList();
+    if (text.startsWith('beli') || text.startsWith('order') || /^[0-9]+$/.test(text)) {
       let targetNum = 0;
-      if (/^[1-6]$/.test(text)) {
+      if (/^[0-9]+$/.test(text)) {
         targetNum = parseInt(text, 10);
       } else {
         const parts = text.split(/\s+/);
         if (parts.length >= 2) {
           const parsed = parseInt(parts[1] ?? '', 10);
-          if (!isNaN(parsed) && parsed >= 1 && parsed <= WA_CATALOG_ITEMS.length) {
+          if (!isNaN(parsed) && parsed >= 1 && parsed <= catalog.length) {
             targetNum = parsed;
           } else {
             const query = parts.slice(1).join(' ');
-            const matched = WA_CATALOG_ITEMS.find((p) => p.name.toLowerCase().includes(query));
+            const matched = catalog.find((p) => p.name.toLowerCase().includes(query));
             if (matched) targetNum = matched.num;
           }
         }
       }
 
-      if (targetNum > 0) {
+      if (targetNum > 0 && targetNum <= catalog.length) {
         await this.initiatePurchase(jid, targetNum, senderName);
         return;
       }
@@ -393,15 +488,19 @@ export class WhatsAppBotDaemon {
   }
 
   private async sendCatalog(jid: string): Promise<void> {
+    const products = this.getProductsList();
     let text =
-      `📦 *KATALOG PRODUK TERLARIS*\n` +
-      `_Pilih produk dengan ketik angkanya saja:_\n\n` +
+      `📦 *KATALOG PRODUK TERSEDIA (${products.length} PRODUK)*\n` +
+      `_Balas dengan nomor produk untuk order instan:_\n\n` +
       `━━━━━━━━━━━━━━━━━━━\n`;
 
-    for (const item of WA_CATALOG_ITEMS) {
+    // Show first 10 top products in chat, and point to webapp for full 36 products
+    const displayProducts = products.slice(0, 10);
+    for (const item of displayProducts) {
+      const stockInfo = demoState.getProductById(item.id)?.stock ?? 10;
       text +=
         `*${item.num}. ${item.name}*\n` +
-        `   💰 *Rp ${item.price.toLocaleString('id-ID')}*\n` +
+        `   💰 *Rp ${item.price.toLocaleString('id-ID')}* · _(Stok: ${stockInfo})_\n` +
         `   ℹ️ ${item.desc}\n` +
         `   👉 Balas: *${item.num}* atau *BELI ${item.num}*\n\n`;
     }
@@ -409,17 +508,29 @@ export class WhatsAppBotDaemon {
     text +=
       `━━━━━━━━━━━━━━━━━━━\n` +
       `⚡ *CARA PESAN:*\n` +
-      `Ketik *1* untuk Spotify, *2* untuk Canva, dst.\n` +
-      `Bot akan langsung kirim kode QRIS pembayarannya.\n\n` +
-      `🌐 *Web Store Resmi:* ${this.storeWebUrl}`;
+      `Ketik angka produk (Contoh: *1* untuk item #1, *2* untuk item #2, dst).\n\n` +
+      `🌐 *Lihat Seluruh 36 Produk di Web Store:*\n${this.storeWebUrl}`;
 
     await this.sendMessage(jid, text);
   }
 
   private async initiatePurchase(jid: string, productNum: number, buyerName: string): Promise<void> {
-    const item = WA_CATALOG_ITEMS.find((p) => p.num === productNum);
+    const catalog = this.getProductsList();
+    const item = catalog.find((p) => p.num === productNum);
     if (!item) {
       await this.sendMessage(jid, '⚠️ Nomor produk tidak ditemukan. Ketik *1* untuk melihat katalog.');
+      return;
+    }
+
+    // Check stock from authoritative demoState / database
+    const liveProd = demoState.getProductById(item.id);
+    if (liveProd && liveProd.stock <= 0) {
+      await this.sendMessage(
+        jid,
+        `❌ *MAAF, STOK HABIS!*\n\n` +
+          `Produk *${item.name}* saat ini sedang habis terjual.\n` +
+          `Admin kami sedang restock. Silakan pilih produk lainnya di katalog (ketik *1*).`,
+      );
       return;
     }
 
@@ -557,18 +668,8 @@ export class WhatsAppBotDaemon {
   }
 
   public async simulatePaymentSettlement(jid: string, orderId: string): Promise<void> {
-    const item = WA_CATALOG_ITEMS[0] ?? {
-      id: 'prod_spotify_prem',
-      num: 1,
-      name: 'Spotify Premium 1 Bulan',
-      price: 19000,
-      category: 'Streaming',
-      desc: 'Akun private bebas iklan.',
-      format: 'account',
-      email: 'bintang.spot.wa99@gmail.com',
-      password: 'SPOT-PREM-PASS-2026',
-      note: 'Login langsung di aplikasi Spotify resmi.',
-    };
+    const catalog = this.getProductsList();
+    const item = catalog[0] || WA_CATALOG_ITEMS[0]!;
 
     if (this.activeWatchers.has(orderId)) {
       clearInterval(this.activeWatchers.get(orderId)!);
@@ -627,21 +728,17 @@ export class WhatsAppBotDaemon {
       productName: item.name,
       fulfillmentSnippet: credentialText,
     });
+
+    // Automatically decrement inventory stock in authoritative demoState / database
+    const liveProd = demoState.getProductById(item.id);
+    if (liveProd && liveProd.stock > 0) {
+      liveProd.stock -= 1;
+    }
   }
 
   private async checkOrderStatus(jid: string, orderId: string): Promise<void> {
-    const item = WA_CATALOG_ITEMS[0] ?? {
-      id: 'prod_spotify_prem',
-      num: 1,
-      name: 'Spotify Premium 1 Bulan',
-      price: 19000,
-      category: 'Streaming',
-      desc: 'Akun private bebas iklan.',
-      format: 'account',
-      email: 'bintang.spot.wa99@gmail.com',
-      password: 'SPOT-PREM-PASS-2026',
-      note: 'Login langsung di aplikasi Spotify resmi.',
-    };
+    const catalog = this.getProductsList();
+    const item = catalog[0] || WA_CATALOG_ITEMS[0]!;
 
     const text =
       `📋 *STATUS PESANAN: \`${orderId}\`*\n\n` +
