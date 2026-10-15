@@ -376,38 +376,42 @@ export class WhatsAppBotDaemon {
 
   private async sendMainMenu(jid: string, senderName: string): Promise<void> {
     const text =
-      `🌟 *BINTANG STORE DIGITAL — OTOMATIS 24 JAM*\n\n` +
-      `Halo Kak *${senderName}*! Selamat datang di bot layanan jual beli produk digital Bintang Tech.\n\n` +
-      `⚡ *Kelebihan Belanja di Sini:*\n` +
-      `• Bayar praktis pakai *QRIS* (Semua m-Banking & E-Wallet)\n` +
-      `• Akun / lisensi *langsung terkirim otomatis di chat ini* detik itu juga!\n` +
-      `• Bergaransi ganti baru selama masa aktif.\n\n` +
-      `Silakan ketik angka menu yang diinginkan:\n` +
-      `1️⃣ *1* — Lihat Katalog & Harga Produk\n` +
-      `2️⃣ *BELI <Nomor>* — Pesan produk (Contoh: *BELI 1*)\n` +
-      `3️⃣ *STATUS <Order>* — Cek pesanan & ambil kredensial\n` +
-      `4️⃣ *BANTUAN* — Kontak garansi & customer service\n\n` +
-      `🌐 *Atau Buka WebApp Lengkap (36 Produk):*\n` +
+      `Halo Kak *${senderName}*, selamat datang di *Bintang Store* ✨\n\n` +
+      `Belanja kebutuhan digital resmi, cepat, dan otomatis 24 jam.\n\n` +
+      `━━━━━━━━━━━━━━━━━━━\n` +
+      `📌 *PILIHAN MENU:*\n\n` +
+      `[1] 📦 *Lihat Katalog & Harga*\n` +
+      `[2] 💳 *Cara Order Cepat*\n` +
+      `[3] 🔍 *Cek Status Pesanan*\n` +
+      `[4] 💬 *Bantuan & Garansi CS*\n` +
+      `━━━━━━━━━━━━━━━━━━━\n\n` +
+      `💡 *Balas chat ini dengan angka [1] sampai [4] ya!*\n\n` +
+      `🌐 *Katalog Lengkap (36 Produk):*\n` +
       `${this.storeWebUrl}`;
 
     await this.sendMessage(jid, text);
   }
 
   private async sendCatalog(jid: string): Promise<void> {
-    let text = `📦 *KATALOG PRODUK DIGITAL TERLARIS*\n\nPilih nomor produk untuk langsung membuat tagihan QRIS:\n\n`;
+    let text =
+      `📦 *KATALOG PRODUK TERLARIS*\n` +
+      `_Pilih produk dengan ketik angkanya saja:_\n\n` +
+      `━━━━━━━━━━━━━━━━━━━\n`;
 
     for (const item of WA_CATALOG_ITEMS) {
       text +=
         `*${item.num}. ${item.name}*\n` +
-        `   💵 Harga: *Rp ${item.price.toLocaleString('id-ID')}*\n` +
-        `   📝 ${item.desc}\n` +
-        `   👉 Ketik: *BELI ${item.num}*\n\n`;
+        `   💰 *Rp ${item.price.toLocaleString('id-ID')}*\n` +
+        `   ℹ️ ${item.desc}\n` +
+        `   👉 Balas: *${item.num}* atau *BELI ${item.num}*\n\n`;
     }
 
     text +=
       `━━━━━━━━━━━━━━━━━━━\n` +
-      `💡 *Cara Beli:* Ketik *BELI 1* untuk Spotify, *BELI 2* untuk Canva, dst.\n` +
-      `🌐 Katalog lengkap 36 produk: ${this.storeWebUrl}`;
+      `⚡ *CARA PESAN:*\n` +
+      `Ketik *1* untuk Spotify, *2* untuk Canva, dst.\n` +
+      `Bot akan langsung kirim kode QRIS pembayarannya.\n\n` +
+      `🌐 *Web Store Resmi:* ${this.storeWebUrl}`;
 
     await this.sendMessage(jid, text);
   }
@@ -479,19 +483,18 @@ export class WhatsAppBotDaemon {
     )}`;
 
     const caption =
-      `🧾 *TAGIHAN QRIS PEMBELIAN RESMI*\n\n` +
-      `• *Nomor Order:* \`${orderId}\`\n` +
-      `• *Produk:* ${item.name}\n` +
+      `🧾 *INVOICE PEMBAYARAN QRIS*\n\n` +
+      `• *ID Order:* \`${orderId}\`\n` +
+      `• *Item:* ${item.name}\n` +
       `• *Total Tagihan:* *Rp ${item.price.toLocaleString('id-ID')}*\n` +
-      `• *Status:* ⏳ Menunggu Pembayaran (Berlaku 10 Menit)\n\n` +
-      `📲 *Langkah Pembayaran:*\n` +
-      `1. Simpan/Screenshot QR Code di atas.\n` +
-      `2. Buka BCA / Mandiri / GoPay / OVO / Dana / ShopeePay.\n` +
-      `3. Pilih Bayar via QRIS lalu upload QR ini.\n\n` +
-      `⚡ *SISTEM OTOMATIS:*\n` +
-      `Begitu pembayaran kamu berhasil, akun/lisensi *akan langsung otomatis dikirim ke chat ini* tanpa perlu konfirmasi manual!\n\n` +
-      `🔗 *Link Pembayaran Alternatif:*\n${paymentUrl || `https://tipzy.id/pay/${orderId}`}\n\n` +
-      `_(Untuk simulasi pengujian tanpa potong saldo, ketik: *SIMULASI BAYAR ${orderId}*)_`;
+      `• *Batas Waktu:* 10 Menit\n\n` +
+      `━━━━━━━━━━━━━━━━━━━\n` +
+      `📲 *CARA BAYAR:*\n` +
+      `1. Scan / Upload gambar QRIS di atas melalui m-Banking (BCA, Mandiri, BRI, BNI) atau E-Wallet (GoPay, OVO, Dana, ShopeePay).\n` +
+      `2. Pastikan nominal pembayaran sesuai.\n` +
+      `3. Setelah pembayaran berhasil, akun/lisensi *otomatis langsung dikirimkan ke chat ini* seketika! 🚀\n\n` +
+      `🔗 *Link Bayar Alternatif:*\n${paymentUrl || `https://tipzy.id/pay/${orderId}`}\n\n` +
+      `_(Ketik *SIMULASI BAYAR ${orderId}* untuk tes langsung tanpa potong saldo)_`;
 
     await this.sendImage(jid, qrImageUrl, caption);
 
