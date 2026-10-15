@@ -23,7 +23,12 @@ import {
   handleProcessPaymentWebhook,
   handleGetOrderFulfillment,
 } from './handlers/payments.js';
-import { handleAuthSignUp, handleAuthVerifyOtp, handleAuthLogin } from './handlers/auth.js';
+import {
+  handleAuthSignUp,
+  handleAuthVerifyOtp,
+  handleAuthLogin,
+  handleAuthResendOtp,
+} from './handlers/auth.js';
 import {
   handleRenderLandingPage,
   handleRenderTelegramMiniApp,
@@ -756,6 +761,13 @@ export function createApiServer(options: ApiServerOptions = {}): ApiServerInstan
 
       if (parsed.method === 'POST' && parsed.pathname === '/api/v1/auth/verify-otp') {
         const result = await handleAuthVerifyOtp(parsed, deps);
+        sendJson(res, result.status, result.body, requestId);
+        logRequest(logger, parsed.method, parsed.pathname, result.status, startTime, requestId);
+        return;
+      }
+
+      if (parsed.method === 'POST' && parsed.pathname === '/api/v1/auth/resend-otp') {
+        const result = await handleAuthResendOtp(parsed, deps);
         sendJson(res, result.status, result.body, requestId);
         logRequest(logger, parsed.method, parsed.pathname, result.status, startTime, requestId);
         return;

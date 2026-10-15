@@ -74,7 +74,55 @@ export async function handleAuthSignUp(
         (data['message'] as string) ||
         (data['error_description'] as string) ||
         'Gagal mendaftar akun';
+
+      // If user already registered, automatically resend confirmation OTP if not yet confirmed
+      if (
+        msg.toLowerCase().includes('already registered') ||
+        msg.toLowerCase().includes('already exists')
+      ) {
+        try {
+          const resendRes = await fetch(`${supabaseUrl}/auth/v1/resend`, {
+            method: 'POST',
+            headers: {
+              apikey: anonKey,
+              Authorization: `Bearer ${anonKey}`,
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ email, type: 'signup' }),
+          });
+
+          if (resendRes.ok) {
+            return {
+              status: 200,
+              body: {
+                data: {
+                  success: true,
+                  email,
+                  isExistingUnconfirmed: true,
+                  message:
+                    'Email ini sudah pernah didaftarkan. Kode verifikasi (OTP) baru telah dikirimkan ke email kamu untuk menyelesaikan aktivasi.',
+                },
+              },
+            };
+          }
+        } catch {
+          // fallback to error below
+        }
+
+        throw new BadRequestError(
+          'Email ini sudah terdaftar dan akun Anda sudah aktif. Silakan masuk menggunakan tab Masuk (Login) atau Lanjutkan dengan Google.',
+        );
+      }
+
       throw new BadRequestError(msg);
+    }
+
+    // Check if user was already confirmed (Supabase returns empty identities array when user already exists & is confirmed)
+    const identities = data['identities'] as Array<unknown> | undefined;
+    if (Array.isArray(identities) && identities.length === 0) {
+      throw new BadRequestError(
+        'Email ini sudah terdaftar dan akun Anda sudah aktif. Silakan masuk menggunakan tab Masuk (Login) atau Lanjutkan dengan Google.',
+      );
     }
 
     return {
@@ -217,5 +265,57 @@ export async function handleAuthLogin(
   } catch (err: unknown) {
     if (err instanceof UnauthorizedError || err instanceof BadRequestError) throw err;
     throw new UnauthorizedError(`Gagal login: ${err instanceof Error ? err.message : String(err)}`);
+  }
+}
+
+export async function handleAuthResendOtp(
+  req: ParsedRequest,
+  _deps: ApiDependencies,
+): Promise<{ status: number; body: ApiResponse<Record<string, unknown>> }> {
+  const body = await req.getBody<{ email?: string; type?: string }>();
+  const email = (body.email || '').trim().toLowerCase();
+  const type = body.type || 'signup';
+
+  if (!email || !email.includes('@')) {
+    throw new BadRequestError('Format alamat email tidak valid');
+  }
+
+  const { supabaseUrl, anonKey } = getSupabaseConfig();
+  try {
+    const res = await fetch(`${supabaseUrl}/auth/v1/resend`, {
+      method: 'POST',
+      headers: {
+        apikey: anonKey,
+        Authorization: `Bearer ${anonKey}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ email, type }),
+    });
+
+    const data = (await res.json()) as Record<string, unknown>;
+    if (!res.ok) {
+      const msg =
+        (data['msg'] as string) ||
+        (data['message'] as string) ||
+        (data['error_description'] as string) ||
+        'Gagal mengirim ulang kode OTP';
+      throw new BadRequestError(msg);
+    }
+
+    return {
+      status: 200,
+      body: {
+        data: {
+          success: true,
+          email,
+          message: 'Kode OTP baru telah dikirimkan ke email kamu!',
+        },
+      },
+    };
+  } catch (err: unknown) {
+    if (err instanceof BadRequestError) throw err;
+    throw new BadRequestError(
+      `Gagal mengirim ulang OTP: ${err instanceof Error ? err.message : String(err)}`,
+    );
   }
 }

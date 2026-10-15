@@ -119,8 +119,8 @@ export function openAuthModal({ defaultTab = 'login', onSuccess = null } = {}) {
               </p>
             </div>
             <div>
-              <label class="block text-[11px] font-mono uppercase text-stone-500 mb-1 text-center">6 Digit Kode Verifikasi (OTP)</label>
-              <input type="text" id="reg-otp-code" maxlength="6" required placeholder="123456" class="w-full px-4 py-3 rounded-xl border-2 border-stone-800 text-center font-mono font-black text-2xl tracking-[0.4em] focus:outline-none focus:border-terracotta-600 uppercase bg-white" />
+              <label class="block text-[11px] font-mono uppercase text-stone-500 mb-1 text-center">Kode Verifikasi (OTP) dari Email</label>
+              <input type="text" id="reg-otp-code" maxlength="12" required placeholder="Ketik / Tempel Kode OTP" class="w-full px-4 py-3 rounded-xl border-2 border-stone-800 text-center font-mono font-black text-xl tracking-[0.2em] focus:outline-none focus:border-terracotta-600 uppercase bg-white" autocomplete="one-time-code" />
             </div>
             <button type="submit" id="btn-submit-otp" class="w-full py-2.5 px-4 rounded-xl font-heading font-bold text-sm bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm transition-all active:scale-98">
               Verifikasi & Buka Dashboard
@@ -327,6 +327,37 @@ export function openAuthModal({ defaultTab = 'login', onSuccess = null } = {}) {
 
         btn.disabled = false;
         btn.innerHTML = `Verifikasi & Buka Dashboard`;
+      });
+    }
+
+    // Resend OTP Button Handler
+    const btnResend = modalEl.querySelector('#btn-resend-otp');
+    if (btnResend && pendingEmail) {
+      btnResend.addEventListener('click', async () => {
+        btnResend.disabled = true;
+        btnResend.innerText = 'Mengirim ulang kode OTP...';
+
+        try {
+          const res = await fetch('/api/v1/auth/resend-otp', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email: pendingEmail, type: 'signup' }),
+          });
+
+          const data = await res.json();
+          if (res.ok && data.data?.success) {
+            showToast('Kode OTP baru telah dikirim ke email kamu!', 'success');
+          } else {
+            showToast(data.error?.message || 'Gagal mengirim ulang OTP', 'error');
+          }
+        } catch {
+          showToast('Koneksi kirim ulang OTP bermasalah', 'error');
+        }
+
+        setTimeout(() => {
+          btnResend.disabled = false;
+          btnResend.innerText = 'Kirim Ulang Kode OTP';
+        }, 30000);
       });
     }
   }
