@@ -125,8 +125,11 @@ export function openAuthModal({ defaultTab = 'login', onSuccess = null } = {}) {
             <button type="submit" id="btn-submit-otp" class="w-full py-2.5 px-4 rounded-xl font-heading font-bold text-sm bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm transition-all active:scale-98">
               Verifikasi & Buka Dashboard
             </button>
-            <div class="text-center">
-              <button type="button" id="btn-resend-otp" class="text-xs text-stone-500 hover:text-stone-800 font-semibold underline">
+            <div class="flex items-center justify-between text-xs px-1">
+              <button type="button" id="btn-back-to-reg" class="text-stone-500 hover:text-stone-800 font-semibold flex items-center gap-1 transition-colors">
+                <span>← Ganti Email</span>
+              </button>
+              <button type="button" id="btn-resend-otp" class="text-terracotta-600 hover:text-terracotta-700 font-semibold underline">
                 Kirim Ulang Kode OTP
               </button>
             </div>
@@ -327,6 +330,16 @@ export function openAuthModal({ defaultTab = 'login', onSuccess = null } = {}) {
 
         btn.disabled = false;
         btn.innerHTML = `Verifikasi & Buka Dashboard`;
+      });
+    }
+
+    // Back to Register Button Handler
+    const btnBack = modalEl.querySelector('#btn-back-to-reg');
+    if (btnBack) {
+      btnBack.addEventListener('click', () => {
+        registerStep = 1;
+        modalEl.querySelector('#auth-modal-wrapper').innerHTML = renderContent();
+        bindEvents(modalEl);
       });
     }
 
