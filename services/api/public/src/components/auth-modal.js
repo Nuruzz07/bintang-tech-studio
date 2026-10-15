@@ -112,7 +112,10 @@ export function openAuthModal({ defaultTab = 'login', onSuccess = null } = {}) {
                 <span>📩 Cek Inbox Gmail Kamu</span>
               </div>
               <p class="text-[11px] text-amber-800 leading-relaxed">
-                Kode 6-digit OTP telah dikirimkan ke: <b>${pendingEmail}</b>. Masukkan kode di bawah untuk mengaktifkan akun.
+                Kode 6-digit OTP telah dikirimkan ke: <b>${pendingEmail}</b>. Masukkan kode di bawah atau klik link di email untuk mengaktifkan akun.
+              </p>
+              <p class="text-[10px] text-stone-500 italic">
+                *Tips: Jika tidak ada di Kotak Masuk (Inbox), silakan cek di folder <b>Spam</b>.
               </p>
             </div>
             <div>
