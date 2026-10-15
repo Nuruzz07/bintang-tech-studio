@@ -14,7 +14,7 @@ import {
   sendTelegramMessage,
 } from './services/telegram-notifier.js';
 import { parseRequest, sendJson, sendHtml } from './router.js';
-import { mapErrorToHttpResponse, NotFoundError } from './errors.js';
+import { mapErrorToHttpResponse, NotFoundError, ValidationError } from './errors.js';
 import { handleHealthCheck } from './handlers/health.js';
 import { handleListProducts, handleGetProduct } from './handlers/catalog.js';
 import { handleCreateOrder, handleGetOrder } from './handlers/orders.js';
@@ -29,6 +29,7 @@ import {
   handleAuthLogin,
   handleAuthResendOtp,
 } from './handlers/auth.js';
+import { globalWhatsAppDaemon } from './services/whatsapp-bot-daemon.js';
 import {
   handleRenderLandingPage,
   handleRenderTelegramMiniApp,
@@ -790,6 +791,127 @@ export function createApiServer(options: ApiServerOptions = {}): ApiServerInstan
         ).trim();
         const googleAuthUrl = `${stagingUrl}/auth/v1/authorize?provider=google&redirect_to=${encodeURIComponent(redirectTo)}`;
         sendJson(res, 200, { data: { url: googleAuthUrl } }, requestId);
+        logRequest(logger, parsed.method, parsed.pathname, 200, startTime, requestId);
+        return;
+      }
+
+      // -----------------------------------------------------------------------
+      // WhatsApp Bot Daemon Endpoints
+      // -----------------------------------------------------------------------
+      if (parsed.method === 'GET' && parsed.pathname === '/api/v1/whatsapp/status') {
+        const status = globalWhatsAppDaemon.getStatus();
+        sendJson(res, 200, { data: status }, requestId);
+        logRequest(logger, parsed.method, parsed.pathname, 200, startTime, requestId);
+        return;
+      }
+
+      if (parsed.method === 'GET' && parsed.pathname === '/api/v1/whatsapp/qr') {
+        const status = globalWhatsAppDaemon.getStatus();
+        if (status.qrDataUrl) {
+          const html = `<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>WhatsApp Bot Pairing — Bintang Tech Studio</title>
+  <meta http-equiv="refresh" content="5">
+  <style>
+    body { background: #0f172a; color: #f8fafc; font-family: system-ui, -apple-system, sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; margin: 0; padding: 20px; text-align: center; }
+    .card { background: #1e293b; padding: 32px; border-radius: 16px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); max-width: 420px; width: 100%; border: 1px solid #334155; }
+    h1 { font-size: 1.25rem; margin-top: 0; color: #38bdf8; }
+    p { font-size: 0.875rem; color: #94a3b8; line-height: 1.5; }
+    img { border-radius: 12px; margin: 16px 0; background: white; padding: 12px; max-width: 260px; height: auto; }
+    .status { display: inline-block; padding: 4px 12px; border-radius: 9999px; font-size: 0.75rem; font-weight: bold; background: #0284c7; color: white; margin-bottom: 12px; }
+    ol { text-align: left; font-size: 0.8rem; color: #cbd5e1; padding-left: 20px; line-height: 1.6; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="status">STATUS: ${status.state}</div>
+    <h1>Scan WhatsApp QR Code</h1>
+    <p>Hubungkan WhatsApp bisnismu ke bot transaksi otomatis Bintang Tech.</p>
+    <img src="${status.qrDataUrl}" alt="WhatsApp QR Code" />
+    <ol>
+      <li>Buka aplikasi WhatsApp di HP kamu</li>
+      <li>Ketuk Menu (titik 3) atau Setelan > <b>Perangkat Tertaut</b></li>
+      <li>Ketuk <b>Tautkan Perangkat</b> lalu arahkan kamera ke QR ini</li>
+    </ol>
+    <p style="font-size: 0.75rem; color: #64748b;">Halaman ini otomatis me-refresh tiap 5 detik.</p>
+  </div>
+</body>
+</html>`;
+          res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
+          res.end(html);
+          logRequest(logger, parsed.method, parsed.pathname, 200, startTime, requestId);
+          return;
+        }
+
+        if (status.state === 'CONNECTED') {
+          const html = `<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>WhatsApp Bot — Connected</title>
+  <style>
+    body { background: #0f172a; color: #f8fafc; font-family: system-ui, sans-serif; display: flex; align-items: center; justify-content: center; min-height: 100vh; margin: 0; }
+    .card { background: #1e293b; padding: 40px; border-radius: 16px; text-align: center; border: 1px solid #22c55e; }
+    h1 { color: #4ade80; margin: 0 0 10px; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>✅ WhatsApp Bot Terhubung!</h1>
+    <p>Bot WhatsApp Bintang Tech Studio saat ini sedang aktif melayani pesanan.</p>
+    <p style="font-size: 0.8rem; color: #94a3b8;">JID: ${status.connectedJid || 'Active'}</p>
+  </div>
+</body>
+</html>`;
+          res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
+          res.end(html);
+          logRequest(logger, parsed.method, parsed.pathname, 200, startTime, requestId);
+          return;
+        }
+
+        const html = `<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="refresh" content="3">
+  <title>WhatsApp Bot — Menunggu QR</title>
+  <style>
+    body { background: #0f172a; color: #f8fafc; font-family: system-ui, sans-serif; display: flex; align-items: center; justify-content: center; min-height: 100vh; margin: 0; }
+    .card { background: #1e293b; padding: 40px; border-radius: 16px; text-align: center; border: 1px solid #334155; }
+    h1 { color: #38bdf8; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>⏳ Menghubungkan WhatsApp...</h1>
+    <p>Sedang membuat sesi QR Code, halaman akan me-refresh dalam 3 detik...</p>
+    <p style="font-size: 0.8rem; color: #94a3b8;">Status: ${status.state}</p>
+  </div>
+</body>
+</html>`;
+        res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
+        res.end(html);
+        logRequest(logger, parsed.method, parsed.pathname, 200, startTime, requestId);
+        return;
+      }
+
+      if (parsed.method === 'POST' && parsed.pathname === '/api/v1/whatsapp/pair-code') {
+        const body = (await parsed.getBody()) as { phoneNumber?: string };
+        if (!body?.phoneNumber) {
+          throw new ValidationError('phoneNumber is required');
+        }
+        const code = await globalWhatsAppDaemon.requestPairingCode(body.phoneNumber);
+        sendJson(res, 200, { data: { pairingCode: code } }, requestId);
+        logRequest(logger, parsed.method, parsed.pathname, 200, startTime, requestId);
+        return;
+      }
+
+      if (parsed.method === 'POST' && parsed.pathname === '/api/v1/whatsapp/start') {
+        void globalWhatsAppDaemon.start();
+        sendJson(res, 200, { data: { message: 'WhatsApp daemon startup initiated' } }, requestId);
         logRequest(logger, parsed.method, parsed.pathname, 200, startTime, requestId);
         return;
       }

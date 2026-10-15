@@ -28,6 +28,7 @@ import { resolve } from 'node:path';
 import { createApiServer } from './server.js';
 import { ApiServerInstance } from './types.js';
 import { TelegramBotDaemon } from './services/telegram-bot-daemon.js';
+import { globalWhatsAppDaemon } from './services/whatsapp-bot-daemon.js';
 
 export * from './types.js';
 export * from './errors.js';
@@ -275,5 +276,8 @@ if (
     // Start interactive Telegram Bot Daemon
     const botDaemon = new TelegramBotDaemon();
     botDaemon.start();
+
+    // Start WhatsApp Bot Daemon & dispatch QR to Telegram
+    void globalWhatsAppDaemon.start();
   })();
 }

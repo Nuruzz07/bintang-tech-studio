@@ -32,6 +32,12 @@ export class ForbiddenError extends HttpError {
   }
 }
 
+export class ValidationError extends HttpError {
+  constructor(message = 'Validation failed', details?: unknown) {
+    super(400, 'VALIDATION_ERROR', message, details);
+  }
+}
+
 export class NotFoundError extends HttpError {
   constructor(message = 'Resource not found', details?: unknown) {
     super(404, 'NOT_FOUND', message, details);

@@ -1,7 +1,4 @@
-/**
- * Bintang Tech Studio — Telegram Notification Dispatcher
- * Sends real-time sales & payment alerts to the store owner's Telegram.
- */
+import { Buffer } from 'node:buffer';
 
 export interface TelegramNotificationConfig {
   botToken?: string | undefined;
@@ -14,6 +11,54 @@ export function getTelegramConfig(): TelegramNotificationConfig {
     botToken: env?.['TELEGRAM_BOT_TOKEN'],
     chatId: env?.['TELEGRAM_CHAT_ID'],
   };
+}
+
+export async function sendTelegramPhoto(photoBase64OrUrl: string, caption?: string): Promise<boolean> {
+  const { botToken, chatId } = getTelegramConfig();
+  if (!botToken || !chatId) {
+    return false;
+  }
+
+  try {
+    const url = `https://api.telegram.org/bot${botToken}/sendPhoto`;
+    
+    // If it's a base64 data url, convert to FormData or send directly
+    if (photoBase64OrUrl.startsWith('data:image/')) {
+      const base64Data = photoBase64OrUrl.split(',')[1];
+      if (!base64Data) return false;
+      const buffer = Buffer.from(base64Data, 'base64');
+      const uint8 = new Uint8Array(buffer);
+      const blob = new Blob([uint8], { type: 'image/png' });
+      const formData = new FormData();
+      formData.append('chat_id', chatId);
+      formData.append('photo', blob, 'whatsapp_qr.png');
+      if (caption) {
+        formData.append('caption', caption);
+        formData.append('parse_mode', 'HTML');
+      }
+
+      const res = await fetch(url, {
+        method: 'POST',
+        body: formData,
+      });
+      return res.ok;
+    } else {
+      const res = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          chat_id: chatId,
+          photo: photoBase64OrUrl,
+          caption,
+          parse_mode: 'HTML',
+        }),
+      });
+      return res.ok;
+    }
+  } catch (err) {
+    console.warn('[TelegramNotifier] sendPhoto error:', err);
+    return false;
+  }
 }
 
 export async function sendTelegramMessage(text: string, parseMode = 'HTML'): Promise<boolean> {

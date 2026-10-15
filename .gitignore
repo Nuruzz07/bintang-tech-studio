@@ -24,6 +24,8 @@ coverage/
 *.pem
 *.key
 *.cert
+wa_auth_session/
+*.session
 
 # Log files
 logs/

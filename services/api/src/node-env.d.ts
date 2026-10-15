@@ -61,6 +61,7 @@ declare interface Buffer {
 
 declare const Buffer: {
   concat(list: readonly Buffer[], totalLength?: number): Buffer;
+  from(data: string, encoding?: string): Buffer;
 };
 
 declare const process: {
