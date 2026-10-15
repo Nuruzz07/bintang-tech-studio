@@ -297,7 +297,7 @@ export function createApiServer(options: ApiServerOptions = {}): ApiServerInstan
       }
 
       // 7. Interactive Bintang Store WebApp (Mounted Live Storefront & Mini App)
-      if (parsed.method === 'GET') {
+      if (parsed.method === 'GET' || parsed.method === 'HEAD') {
         const publicDir = resolve('C:/BOT_WEB/Bintang-Tech-Project/services/api/public');
         const normalizedPath = parsed.pathname.toLowerCase();
         let targetFile: string | null = null;

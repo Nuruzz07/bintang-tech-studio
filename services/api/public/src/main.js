@@ -133,7 +133,7 @@ function mountCurrentView() {
 }
 
 // Global initialization
-document.addEventListener('DOMContentLoaded', () => {
+function initApp() {
   handleOAuthCallback();
   mountCurrentView();
 
@@ -149,4 +149,10 @@ document.addEventListener('DOMContentLoaded', () => {
       mountCurrentView();
     }
   });
-});
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initApp);
+} else {
+  initApp();
+}
