@@ -4,7 +4,7 @@
 import { store } from './state/store.js';
 import { renderDemoNavbar, initDemoNavbarEvents } from './components/demo-navbar.js';
 import { showToast } from './utils/helpers.js';
-import { renderLandingPage } from './pages/landing.js';
+import { renderLandingPage, initLandingEvents } from './pages/landing.js';
 import { renderTelegramBotPage, initTelegramBotEvents } from './pages/telegram-bot.js';
 import { renderWebAppPage, initWebAppEvents } from './pages/webapp.js';
 import { renderAdminPage, initAdminEvents } from './pages/admin.js';
@@ -13,9 +13,9 @@ import { renderTelegramAdminPage, initTelegramAdminEvents } from './pages/telegr
 // View routes mapping
 const ROUTES = {
   landing: {
-    title: 'Template 01: Digital Minimal — Bintang Tech Studio',
+    title: 'Bintang Tech Studio — Platform Sewa Bot Commerce Multi-Tenant',
     render: renderLandingPage,
-    init: () => {},
+    init: initLandingEvents,
   },
   telegram: {
     title: 'Telegram Bot Simulation — Bintang Digital',

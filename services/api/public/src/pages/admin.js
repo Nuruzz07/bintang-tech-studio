@@ -24,25 +24,25 @@ export function renderAdminPage() {
   ];
 
   return `
-    <div class="view-container bg-stone-100/70 min-h-screen text-stone-900 pb-16">
+    <div class="view-container bg-[#08090b] min-h-screen text-[#f8fafc] pb-16 font-sans selection:bg-terracotta-500 selection:text-white">
       
-      <!-- ADMIN HEADER & METRICS SUMMARY -->
-      <header class="bg-white border-b border-stone-200 sticky top-10 z-30 shadow-sm">
+      <!-- ADMIN HEADER & METRICS SUMMARY (Linear Obsidian Workspace) -->
+      <header class="bg-[#0e1015]/90 backdrop-blur-md border-b border-[#22242c] sticky top-10 z-30 shadow-sm">
         <div class="max-w-7xl mx-auto px-4 sm:px-6">
           <div class="h-14 flex items-center justify-between gap-4">
             <!-- Left Branding -->
             <div class="flex items-center gap-3">
-              <span class="w-8 h-8 rounded-xl bg-stone-900 border border-stone-700/80 p-1 flex items-center justify-center shrink-0 shadow-sm">
+              <span class="w-8 h-8 rounded-xl bg-gradient-to-br from-terracotta-500 to-orange-600 p-1 flex items-center justify-center shrink-0 shadow-sm shadow-terracotta-500/20">
                 ${BRAND_LOGO_SVG}
               </span>
               <div>
                 <div class="flex items-center gap-2">
-                  <h1 class="font-heading font-extrabold text-sm sm:text-base text-stone-900">Admin Store Control</h1>
-                  <span class="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
-                    Live Demo
+                  <h1 class="font-heading font-extrabold text-sm sm:text-base text-white">Seller Control Center</h1>
+                  <span class="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                    Live Engine
                   </span>
                 </div>
-                <p class="text-[11px] text-stone-500 hidden sm:block">${escapeHtml(settings.storeName)} · Sistem Digital Otomatis</p>
+                <p class="text-[11px] text-[#94a3b8] hidden sm:block">${escapeHtml(settings.storeName)} · Sistem Digital Autopilot</p>
               </div>
             </div>
 
@@ -50,7 +50,7 @@ export function renderAdminPage() {
             <div class="flex items-center gap-2">
               <button id="btn-admin-add-product"
                       type="button"
-                      class="px-3.5 py-1.5 rounded-xl text-xs font-bold bg-terracotta-500 hover:bg-terracotta-600 text-white shadow-sm flex items-center gap-1.5 transition-colors">
+                      class="px-3.5 py-1.5 rounded-xl text-xs font-bold bg-gradient-to-r from-terracotta-500 to-orange-500 hover:from-terracotta-600 hover:to-orange-600 text-white shadow-sm transition-all hover:scale-[1.02] active:scale-[0.98] flex items-center gap-1.5">
                 ${ICONS.plus}
                 <span>Tambah Produk</span>
               </button>
@@ -58,16 +58,16 @@ export function renderAdminPage() {
           </div>
 
           <!-- ADMIN NAVIGATION TABS -->
-          <nav class="flex items-center gap-1 overflow-x-auto border-t border-stone-100 py-2 scrollbar-none" aria-label="Admin tabs">
+          <nav class="flex items-center gap-1 overflow-x-auto border-t border-[#1a1c23] py-2 scrollbar-none" aria-label="Admin tabs">
             ${tabs
               .map((t) => {
                 const isActive = adminActiveTab === t.id;
                 return `
                 <button type="button"
-                        class="btn-admin-tab flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-colors ${
+                        class="btn-admin-tab flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-all ${
                           isActive
-                            ? 'bg-stone-900 text-white shadow-sm'
-                            : 'text-stone-600 hover:text-stone-900 hover:bg-stone-100'
+                            ? 'bg-[#22242c] text-white shadow-sm ring-1 ring-white/10'
+                            : 'text-[#94a3b8] hover:text-white hover:bg-[#14161e]'
                         }"
                         data-tab="${t.id}">
                   <span>${t.icon}</span>
@@ -128,55 +128,55 @@ function renderAdminOverviewTab() {
       <!-- 4 KEY KPI CARDS -->
       <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
         <!-- KPI 1: Total Sales -->
-        <div class="bg-white p-5 rounded-2xl border border-stone-200/80 shadow-sm space-y-2">
-          <div class="flex items-center justify-between text-stone-500">
+        <div class="bg-[#101217] p-5 rounded-2xl border border-[#22242c] shadow-sm space-y-2 card-hover-raycast">
+          <div class="flex items-center justify-between text-[#94a3b8]">
             <span class="text-xs font-mono uppercase">Total Sales</span>
-            <span class="p-1.5 rounded-lg bg-emerald-50 text-emerald-600">${ICONS.trendingUp}</span>
+            <span class="p-1.5 rounded-lg bg-emerald-500/10 text-emerald-400">${ICONS.trendingUp}</span>
           </div>
-          <div class="font-heading font-black text-2xl text-stone-900">Rp2.450.000</div>
-          <div class="text-[11px] text-emerald-600 font-semibold flex items-center gap-1">
+          <div class="font-heading font-black text-2xl text-white">Rp2.450.000</div>
+          <div class="text-[11px] text-emerald-400 font-semibold flex items-center gap-1">
             <span>↑ 18.4%</span>
-            <span class="text-stone-400 font-normal">dari minggu lalu</span>
+            <span class="text-[#64748b] font-normal">dari minggu lalu</span>
           </div>
         </div>
 
         <!-- KPI 2: WhatsApp & Telegram Bot Engine -->
-        <div class="bg-white p-5 rounded-2xl border border-emerald-200 shadow-sm space-y-2 bg-gradient-to-br from-white to-emerald-50/30">
-          <div class="flex items-center justify-between text-stone-500">
-            <span class="text-xs font-mono uppercase font-bold text-emerald-700">Multi-Channel Bot</span>
+        <div class="bg-[#101217] p-5 rounded-2xl border border-emerald-500/30 shadow-sm space-y-2 card-hover-raycast">
+          <div class="flex items-center justify-between text-[#94a3b8]">
+            <span class="text-xs font-mono uppercase font-bold text-emerald-400">Multi-Channel Bot</span>
             <span class="flex h-2.5 w-2.5 relative">
               <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
               <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
             </span>
           </div>
-          <div class="font-heading font-black text-xl text-stone-900 flex items-center gap-2">
+          <div class="font-heading font-black text-xl text-white flex items-center gap-2">
             <span>WA & TG LIVE</span>
           </div>
-          <div class="text-[11px] text-emerald-700 font-medium flex items-center gap-1">
+          <div class="text-[11px] text-emerald-400 font-medium flex items-center gap-1">
             <span>🟢 Zero-Click Fulfillment Aktif</span>
           </div>
         </div>
 
         <!-- KPI 3: Orders -->
-        <div class="bg-white p-5 rounded-2xl border border-stone-200/80 shadow-sm space-y-2">
-          <div class="flex items-center justify-between text-stone-500">
+        <div class="bg-[#101217] p-5 rounded-2xl border border-[#22242c] shadow-sm space-y-2 card-hover-raycast">
+          <div class="flex items-center justify-between text-[#94a3b8]">
             <span class="text-xs font-mono uppercase">Orders</span>
-            <span class="p-1.5 rounded-lg bg-blue-50 text-blue-600">${ICONS.shoppingBag}</span>
+            <span class="p-1.5 rounded-lg bg-blue-500/10 text-blue-400">${ICONS.shoppingBag}</span>
           </div>
-          <div class="font-heading font-black text-2xl text-stone-900">128</div>
-          <div class="text-[11px] text-stone-500">
-            <span class="font-bold text-stone-800">100%</span> otomatis terkirim
+          <div class="font-heading font-black text-2xl text-white">128</div>
+          <div class="text-[11px] text-[#94a3b8]">
+            <span class="font-bold text-white">100%</span> otomatis terkirim
           </div>
         </div>
 
         <!-- KPI 4: Active Products -->
-        <div class="bg-white p-5 rounded-2xl border border-stone-200/80 shadow-sm space-y-2">
-          <div class="flex items-center justify-between text-stone-500">
+        <div class="bg-[#101217] p-5 rounded-2xl border border-[#22242c] shadow-sm space-y-2 card-hover-raycast">
+          <div class="flex items-center justify-between text-[#94a3b8]">
             <span class="text-xs font-mono uppercase">Products</span>
-            <span class="p-1.5 rounded-lg bg-amber-50 text-amber-600">${ICONS.package}</span>
+            <span class="p-1.5 rounded-lg bg-amber-500/10 text-amber-400">${ICONS.package}</span>
           </div>
-          <div class="font-heading font-black text-2xl text-stone-900">${activeCount} <span class="text-sm font-normal text-stone-400">/ ${products.length}</span></div>
-          <div class="text-[11px] text-stone-500">
+          <div class="font-heading font-black text-2xl text-white">${activeCount} <span class="text-sm font-normal text-[#64748b]">/ ${products.length}</span></div>
+          <div class="text-[11px] text-[#94a3b8]">
             ${lowStock.length} produk stok menipis
           </div>
         </div>
@@ -186,17 +186,17 @@ function renderAdminOverviewTab() {
       <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
         
         <!-- Sales Overview Visual Chart -->
-        <div class="lg:col-span-8 bg-white p-5 rounded-2xl border border-stone-200/80 shadow-sm space-y-4">
+        <div class="lg:col-span-8 bg-[#101217] p-5 rounded-2xl border border-[#22242c] shadow-sm space-y-4">
           <div class="flex items-center justify-between">
             <div>
-              <h3 class="font-heading font-bold text-sm text-stone-900">Sales Overview (7 Hari Terakhir)</h3>
-              <p class="text-xs text-stone-400">Grafik transaksi penjualan produk digital harian.</p>
+              <h3 class="font-heading font-bold text-sm text-white">Sales Overview (7 Hari Terakhir)</h3>
+              <p class="text-xs text-[#94a3b8]">Grafik transaksi penjualan produk digital harian.</p>
             </div>
-            <span class="text-xs font-mono text-terracotta-600 font-bold bg-terracotta-50 px-2 py-1 rounded">Rata-rata Rp350K/hari</span>
+            <span class="text-xs font-mono text-terracotta-400 font-bold bg-terracotta-500/10 border border-terracotta-500/20 px-2 py-1 rounded">Rata-rata Rp350K/hari</span>
           </div>
 
           <!-- CSS Bar Chart Visualization -->
-          <div class="h-44 flex items-end justify-between gap-2 pt-6 pb-2 px-2 border-b border-stone-100">
+          <div class="h-44 flex items-end justify-between gap-2 pt-6 pb-2 px-2 border-b border-[#22242c]">
             ${[
               { day: 'Sen', val: 320, pct: '64%' },
               { day: 'Sel', val: 410, pct: '82%' },
@@ -209,11 +209,11 @@ function renderAdminOverviewTab() {
               .map(
                 (col) => `
               <div class="flex-1 flex flex-col items-center gap-1.5 group h-full justify-end">
-                <div class="text-[10px] font-mono text-stone-400 opacity-0 group-hover:opacity-100 transition-opacity">
+                <div class="text-[10px] font-mono text-[#64748b] opacity-0 group-hover:opacity-100 transition-opacity">
                   ${col.val}k
                 </div>
-                <div class="w-full max-w-[36px] bg-stone-100 group-hover:bg-terracotta-500 rounded-t-lg transition-all" style="height: ${col.pct};"></div>
-                <span class="text-[11px] font-mono text-stone-500">${col.day}</span>
+                <div class="w-full max-w-[36px] bg-[#1a1d26] group-hover:bg-terracotta-500 rounded-t-lg transition-all" style="height: ${col.pct};"></div>
+                <span class="text-[11px] font-mono text-[#94a3b8]">${col.day}</span>
               </div>
             `,
               )
@@ -222,22 +222,22 @@ function renderAdminOverviewTab() {
         </div>
 
         <!-- Low Stock Alerts -->
-        <div class="lg:col-span-4 bg-white p-5 rounded-2xl border border-stone-200/80 shadow-sm space-y-4 flex flex-col justify-between">
+        <div class="lg:col-span-4 bg-[#101217] p-5 rounded-2xl border border-[#22242c] shadow-sm space-y-4 flex flex-col justify-between">
           <div>
             <div class="flex items-center justify-between mb-3">
-              <h3 class="font-heading font-bold text-sm text-stone-900">Stok Menipis (Low Stock)</h3>
+              <h3 class="font-heading font-bold text-sm text-white">Stok Menipis (Low Stock)</h3>
               <span class="w-2 h-2 rounded-full bg-red-500"></span>
             </div>
             <div class="space-y-2.5">
               ${lowStock
                 .map(
                   (p) => `
-                <div class="flex items-center justify-between p-2.5 rounded-xl bg-stone-50 border border-stone-100 text-xs">
+                <div class="flex items-center justify-between p-2.5 rounded-xl bg-[#14161e] border border-[#22242c] text-xs">
                   <div>
-                    <div class="font-bold text-stone-900">${escapeHtml(p.name)}</div>
-                    <div class="text-[10px] text-stone-400 font-mono">${p.category}</div>
+                    <div class="font-bold text-white">${escapeHtml(p.name)}</div>
+                    <div class="text-[10px] text-[#94a3b8] font-mono">${p.category}</div>
                   </div>
-                  <span class="px-2 py-0.5 rounded text-[11px] font-bold font-mono bg-red-100 text-red-700">
+                  <span class="px-2 py-0.5 rounded text-[11px] font-bold font-mono bg-red-500/10 text-red-400 border border-red-500/20">
                     Sisa ${p.stock}
                   </span>
                 </div>
@@ -246,27 +246,27 @@ function renderAdminOverviewTab() {
                 .join('')}
             </div>
           </div>
-          <button type="button" class="btn-goto-inventory w-full py-2 rounded-xl text-xs font-semibold bg-stone-100 hover:bg-stone-200 text-stone-800 transition-colors">
+          <button type="button" class="btn-goto-inventory w-full mt-3 py-2 rounded-xl text-xs font-semibold text-[#94a3b8] hover:text-white bg-[#14161e] hover:bg-[#1a1c26] border border-[#22242c] transition-colors text-center">
             Kelola Stok di Inventori →
           </button>
         </div>
 
       </div>
 
-      <!-- RECENT ORDERS TABLE -->
-      <div class="bg-white rounded-2xl border border-stone-200/80 shadow-sm overflow-hidden">
-        <div class="p-5 border-b border-stone-100 flex items-center justify-between">
+      <!-- RECENT ORDERS TABLE (Linear Table Style) -->
+      <div class="bg-[#101217] rounded-2xl border border-[#22242c] shadow-sm overflow-hidden">
+        <div class="p-5 border-b border-[#22242c] flex items-center justify-between">
           <div>
-            <h3 class="font-heading font-bold text-sm text-stone-900">Recent Orders (Transaksi Terbaru)</h3>
-            <p class="text-xs text-stone-400">Daftar transaksi masuk dan status fulfillment otomatis.</p>
+            <h3 class="font-heading font-bold text-sm text-white">Recent Orders (Transaksi Masuk)</h3>
+            <p class="text-xs text-[#94a3b8]">Daftar transaksi masuk dan status fulfillment otomatis lintas channel.</p>
           </div>
-          <button type="button" class="btn-goto-orders text-xs font-bold text-terracotta-600 hover:underline">
+          <button type="button" class="btn-goto-orders text-xs font-bold text-terracotta-400 hover:underline">
             Lihat Semua Pesanan →
           </button>
         </div>
         <div class="overflow-x-auto">
-          <table class="w-full text-left text-xs text-stone-600">
-            <thead class="bg-stone-50 font-mono uppercase text-[10px] text-stone-400 border-b border-stone-200">
+          <table class="w-full text-left text-xs text-[#94a3b8]">
+            <thead class="bg-[#14161e] font-mono uppercase text-[10px] text-[#64748b] border-b border-[#22242c]">
               <tr>
                 <th class="px-4 py-3">Order ID</th>
                 <th class="px-4 py-3">Customer</th>
@@ -276,29 +276,29 @@ function renderAdminOverviewTab() {
                 <th class="px-4 py-3">Fulfillment</th>
               </tr>
             </thead>
-            <tbody class="divide-y divide-stone-100">
+            <tbody class="divide-y divide-[#1c1f26]">
               ${orders
                 .slice(0, 5)
                 .map(
                   (o) => `
-                <tr class="hover:bg-stone-50/80 transition-colors">
-                  <td class="px-4 py-3 font-mono font-bold text-stone-900">${o.id}</td>
+                <tr class="hover:bg-[#161821] transition-colors">
+                  <td class="px-4 py-3 font-mono font-bold text-white">${o.id}</td>
                   <td class="px-4 py-3">
-                    <div class="font-semibold text-stone-900">${escapeHtml(o.customer.name)}</div>
-                    <div class="text-[11px] text-stone-400 font-mono">${escapeHtml(o.customer.telegram)}</div>
+                    <div class="font-semibold text-white">${escapeHtml(o.customer.name)}</div>
+                    <div class="text-[11px] text-[#64748b] font-mono">${escapeHtml(o.customer.telegram)}</div>
                   </td>
-                  <td class="px-4 py-3 font-medium text-stone-800">${escapeHtml(o.product.name)}</td>
-                  <td class="px-4 py-3 font-mono font-bold text-stone-900">${formatRupiah(o.total)}</td>
+                  <td class="px-4 py-3 font-medium text-white">${escapeHtml(o.product.name)}</td>
+                  <td class="px-4 py-3 font-mono font-bold text-terracotta-400">${formatRupiah(o.total)}</td>
                   <td class="px-4 py-3 font-mono">
-                    <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                    <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
                       ${o.paymentStatus}
                     </span>
                   </td>
                   <td class="px-4 py-3">
                     <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold ${
                       o.fulfillmentStatus === 'FULFILLED'
-                        ? 'bg-emerald-100 text-emerald-800'
-                        : 'bg-amber-100 text-amber-800'
+                        ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20'
+                        : 'bg-amber-500/10 text-amber-400 border border-amber-500/20'
                     }">
                       ${o.fulfillmentStatus}
                     </span>
