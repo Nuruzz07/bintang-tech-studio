@@ -309,6 +309,7 @@ export function createApiServer(options: ApiServerOptions = {}): ApiServerInstan
         let targetFile: string | null = null;
 
         if (
+          normalizedPath === '/' ||
           normalizedPath === '/app' ||
           normalizedPath === '/app/' ||
           normalizedPath === '/live' ||

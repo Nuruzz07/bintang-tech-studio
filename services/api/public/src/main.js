@@ -4,6 +4,7 @@
 import { store } from './state/store.js';
 import { renderDemoNavbar, initDemoNavbarEvents } from './components/demo-navbar.js';
 import { showToast } from './utils/helpers.js';
+import { openAuthModal } from './components/auth-modal.js';
 import { renderLandingPage, initLandingEvents } from './pages/landing.js';
 import { renderTelegramBotPage, initTelegramBotEvents } from './pages/telegram-bot.js';
 import { renderWebAppPage, initWebAppEvents } from './pages/webapp.js';
@@ -126,6 +127,13 @@ function mountCurrentView() {
   if (appRoot) {
     appRoot.innerHTML = routeConfig.render();
     routeConfig.init();
+  }
+
+  // Open Auth Modal if requested via route
+  if (window.location.hash.includes('auth')) {
+    setTimeout(() => {
+      openAuthModal({ defaultTab: 'login' });
+    }, 50);
   }
 
   // Smooth scroll to top on route change

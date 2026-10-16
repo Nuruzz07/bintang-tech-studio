@@ -76,6 +76,10 @@ function getProductTileMeta(product) {
 }
 
 export function renderProductCard(product, options = { showAddToCart: true }) {
+  const isDark =
+    options.isDark !== undefined
+      ? options.isDark
+      : (localStorage.getItem('bts_store_template') || 'dark') === 'dark';
   const isAvailable = product.active && product.stock > 0;
   const isLowStock = isAvailable && product.stock <= 5;
   const isSoldOut = !isAvailable;
@@ -96,12 +100,18 @@ export function renderProductCard(product, options = { showAddToCart: true }) {
   };
 
   return `
-    <article class="product-card group relative bg-white rounded-2xl border border-stone-200/90 hover:border-terracotta-500/60 hover:shadow-lg transition-all duration-200 flex flex-col overflow-hidden select-none cursor-pointer ${
-      isSoldOut ? 'opacity-60 bg-stone-50' : ''
+    <article class="product-card group relative ${
+      isDark
+        ? 'bg-[#101114] border-white/[0.08] hover:border-white/[0.2] text-[#F7F8F8]'
+        : 'bg-white border-stone-200/90 hover:border-terracotta-500/60 text-stone-900'
+    } rounded-2xl border hover:shadow-lg transition-all duration-200 flex flex-col overflow-hidden select-none cursor-pointer ${
+      isSoldOut ? 'opacity-60 bg-stone-900/40' : ''
     }" data-product-id="${product.id}">
       
       <!-- 1. COMPACT PRODUCT VISUAL TILE -->
-      <div class="relative w-full h-20 sm:h-24 bg-[#0C0E14] overflow-hidden flex flex-col justify-between p-2 sm:p-2.5 border-b border-stone-100">
+      <div class="relative w-full h-20 sm:h-24 bg-[#0C0E14] overflow-hidden flex flex-col justify-between p-2 sm:p-2.5 border-b ${
+        isDark ? 'border-white/[0.06]' : 'border-stone-100'
+      }">
         <!-- Tile Subtle Radial Background Glow -->
         <div class="absolute inset-0 bg-gradient-to-br ${tile.accentBg} pointer-events-none"></div>
 
@@ -131,7 +141,7 @@ export function renderProductCard(product, options = { showAddToCart: true }) {
           </div>
           
           <!-- Category Chip -->
-          <div class="text-[9px] font-mono text-stone-400 uppercase bg-stone-900/80 px-1.5 py-0.5 rounded border border-stone-800/80 truncate max-w-[80px] text-right">
+          <div class="text-[9px] font-mono ${isDark ? 'text-[#8A8F98] bg-black/60 border-white/[0.08]' : 'text-stone-400 bg-stone-900/80 border-stone-800/80'} uppercase px-1.5 py-0.5 rounded border truncate max-w-[110px] text-right">
             ${escapeHtml(product.category)}
           </div>
         </div>
@@ -141,20 +151,22 @@ export function renderProductCard(product, options = { showAddToCart: true }) {
       <div class="p-2.5 sm:p-3 flex-1 flex flex-col justify-between space-y-1.5 sm:space-y-2">
         <div>
           <!-- Product Name (Comfortable 2-line wrap without clipping) -->
-          <h3 class="font-heading font-bold text-xs sm:text-sm text-stone-900 group-hover:text-terracotta-600 transition-colors line-clamp-2 leading-snug min-h-[2rem] sm:min-h-[2.4rem]">
+          <h3 class="font-heading font-bold text-xs sm:text-sm ${
+            isDark ? 'text-white group-hover:text-terracotta-400' : 'text-stone-900 group-hover:text-terracotta-600'
+          } transition-colors line-clamp-2 leading-snug min-h-[2rem] sm:min-h-[2.4rem]">
             ${escapeHtml(product.name)}
           </h3>
           
           <!-- Duration / Variant & Availability -->
           <div class="flex items-center justify-between gap-1 mt-1 text-[10px] sm:text-[11px] font-mono">
-            <span class="text-stone-400 truncate">${escapeHtml(product.duration || 'Digital')}</span>
+            <span class="${isDark ? 'text-[#8A8F98]' : 'text-stone-400'} truncate">${escapeHtml(product.duration || 'Digital')}</span>
             <!-- Availability Pill -->
             <span class="shrink-0 font-medium ${
               isSoldOut
                 ? 'text-red-500 font-bold'
                 : isLowStock
-                  ? 'text-amber-600 font-bold'
-                  : 'text-emerald-600'
+                  ? 'text-amber-500 font-bold'
+                  : 'text-emerald-400'
             }">
               ${isSoldOut ? '● Habis' : isLowStock ? `● Sisa ${product.stock}` : '✓ Tersedia'}
             </span>
@@ -162,14 +174,18 @@ export function renderProductCard(product, options = { showAddToCart: true }) {
         </div>
 
         <!-- Price & Action Bar (Zero Truncation on Price) -->
-        <div class="pt-1.5 border-t border-stone-100 flex items-center justify-between gap-1.5">
+        <div class="pt-1.5 border-t ${isDark ? 'border-white/[0.06]' : 'border-stone-100'} flex items-center justify-between gap-1.5">
           <div class="flex-1 min-w-0 pr-0.5">
-            <div class="font-heading font-extrabold text-xs sm:text-sm text-stone-950 leading-tight whitespace-nowrap">
+            <div class="font-heading font-extrabold text-xs sm:text-sm ${
+              isDark ? 'text-white' : 'text-stone-950'
+            } leading-tight whitespace-nowrap">
               ${formatRupiah(product.price)}
             </div>
             ${
               product.originalPrice && product.originalPrice > product.price
-                ? `<div class="text-[9px] sm:text-[10px] text-stone-400 line-through leading-tight truncate">
+                ? `<div class="text-[9px] sm:text-[10px] ${
+                    isDark ? 'text-zinc-500' : 'text-stone-400'
+                  } line-through leading-tight truncate">
                     ${formatRupiah(product.originalPrice)}
                   </div>`
                 : ''
@@ -179,7 +195,11 @@ export function renderProductCard(product, options = { showAddToCart: true }) {
           <!-- CTAs: Detail & Cart -->
           <div class="flex items-center gap-1 shrink-0">
             <button type="button"
-                    class="btn-view-product hidden sm:inline-flex px-2 py-1 rounded-lg text-[11px] font-semibold bg-stone-100 text-stone-800 hover:bg-stone-200 transition-colors"
+                    class="btn-view-product hidden sm:inline-flex px-2 py-1 rounded-lg text-[11px] font-semibold ${
+                      isDark
+                        ? 'bg-white/[0.08] text-white hover:bg-white/[0.15]'
+                        : 'bg-stone-100 text-stone-800 hover:bg-stone-200'
+                    } transition-colors"
                     data-id="${product.id}"
                     aria-label="Lihat detail ${escapeHtml(product.name)}">
               Lihat
@@ -194,7 +214,9 @@ export function renderProductCard(product, options = { showAddToCart: true }) {
                     <span class="w-3.5 h-3.5 flex items-center justify-center">${ICONS.cart}</span>
                    </button>`
                 : `<button type="button"
-                           class="btn-view-product sm:hidden w-7 h-7 rounded-lg text-stone-600 bg-stone-100 hover:bg-stone-200 flex items-center justify-center"
+                           class="btn-view-product sm:hidden w-7 h-7 rounded-lg text-stone-600 ${
+                             isDark ? 'bg-white/[0.06] text-white' : 'bg-stone-100'
+                           } hover:bg-stone-200 flex items-center justify-center"
                            data-id="${product.id}"
                            aria-label="Lihat detail ${escapeHtml(product.name)}">
                     <span class="w-3.5 h-3.5 flex items-center justify-center">${ICONS.arrowRight}</span>

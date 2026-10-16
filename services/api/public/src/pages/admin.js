@@ -15,34 +15,34 @@ export function renderAdminPage() {
   const settings = store.getSettings();
 
   const tabs = [
-    { id: 'overview', label: 'Overview', icon: '📊' },
-    { id: 'products', label: 'Products', icon: '📦' },
-    { id: 'inventory', label: 'Inventory', icon: '📋' },
-    { id: 'orders', label: 'Orders', icon: '📑' },
-    { id: 'customers', label: 'Customers', icon: '👥' },
-    { id: 'settings', label: 'Settings', icon: '⚙️' },
+    { id: 'overview', label: 'Overview' },
+    { id: 'products', label: 'Products' },
+    { id: 'inventory', label: 'Inventory' },
+    { id: 'orders', label: 'Orders' },
+    { id: 'customers', label: 'Customers' },
+    { id: 'settings', label: 'Settings' },
   ];
 
   return `
-    <div class="view-container bg-[#0a0a0c] min-h-screen text-[#f7f8f8] pb-16 font-sans selection:bg-[#5e6ad2] selection:text-white">
+    <div class="view-container bg-[#08090A] min-h-screen text-[#F7F8F8] pb-16 font-sans selection:bg-[#5E6AD2]/30 selection:text-white">
       
-      <!-- ADMIN HEADER & METRICS SUMMARY (Linear Workspace Style) -->
-      <header class="bg-[#0a0a0c]/80 backdrop-blur-md border-b border-[#22232a] sticky top-10 z-30 shadow-sm">
+      <!-- ADMIN HEADER & WORKSPACE BANNER (Linear Workspace Style) -->
+      <header class="border-b border-white/[0.06] bg-[#08090A]/60 backdrop-blur-md">
         <div class="max-w-7xl mx-auto px-4 sm:px-6">
-          <div class="h-14 flex items-center justify-between gap-4">
-            <!-- Left Branding -->
+          <div class="h-16 flex items-center justify-between gap-4">
+            <!-- Left Branding & Workspace Info -->
             <div class="flex items-center gap-3">
-              <span class="w-7 h-7 rounded-lg bg-[#5e6ad2] p-1 flex items-center justify-center shrink-0 shadow-sm text-white font-bold text-xs">
-                L
-              </span>
+              <div class="w-8 h-8 rounded-lg bg-gradient-to-tr from-[#5E6AD2] to-indigo-400 p-0.5 flex items-center justify-center shrink-0 shadow-sm">
+                <span class="w-2.5 h-2.5 rounded-full bg-white"></span>
+              </div>
               <div>
                 <div class="flex items-center gap-2">
-                  <h1 class="font-bold text-sm sm:text-base text-white">Linear Seller Workspace</h1>
-                  <span class="px-2 py-0.5 rounded-full text-[10px] font-mono bg-[#16181d] text-emerald-400 border border-[#22232a]">
-                    Engine Live
+                  <h1 class="font-semibold text-sm sm:text-base text-[#F7F8F8] tracking-tight">Seller Workspace</h1>
+                  <span class="px-2 py-0.5 rounded-full text-[10px] font-mono bg-white/[0.04] text-[#A1A1AA] border border-white/[0.08]">
+                    Bintang Store · 36 Produk
                   </span>
                 </div>
-                <p class="text-[11px] text-[#8a8f98] hidden sm:block">${escapeHtml(settings.storeName)} · Automated Sales System</p>
+                <p class="text-[12px] text-[#8A8F98] hidden sm:block">Automated Multi-Channel Sales System (WhatsApp & Telegram)</p>
               </div>
             </div>
 
@@ -50,27 +50,26 @@ export function renderAdminPage() {
             <div class="flex items-center gap-2">
               <button id="btn-admin-add-product"
                       type="button"
-                      class="px-3.5 py-1.5 rounded-full text-xs font-medium bg-white hover:bg-gray-100 text-black shadow-sm transition-all flex items-center gap-1.5">
+                      class="px-4 py-1.5 rounded-full text-xs font-semibold bg-white hover:bg-zinc-200 text-black shadow-sm transition-all flex items-center gap-1.5">
                 <i class="fas fa-plus text-[10px]"></i>
                 <span>Tambah Produk</span>
               </button>
             </div>
           </div>
 
-          <!-- ADMIN NAVIGATION TABS -->
-          <nav class="flex items-center gap-1 overflow-x-auto border-t border-[#1a1c23] py-2 scrollbar-none" aria-label="Admin tabs">
+          <!-- ADMIN NAVIGATION TABS (No Emojis - Pure Linear) -->
+          <nav class="flex items-center gap-1 overflow-x-auto border-t border-white/[0.06] py-2 scrollbar-none" aria-label="Admin tabs">
             ${tabs
               .map((t) => {
                 const isActive = adminActiveTab === t.id;
                 return `
                 <button type="button"
-                        class="btn-admin-tab flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap transition-all ${
+                        class="btn-admin-tab flex items-center gap-1.5 px-3 py-1.5 rounded-md text-[13px] font-medium whitespace-nowrap transition-colors ${
                           isActive
-                            ? 'bg-[#1c1e24] text-white shadow-sm ring-1 ring-white/10'
-                            : 'text-[#8a8f98] hover:text-white hover:bg-[#14151b]'
+                            ? 'bg-white/[0.08] text-[#F7F8F8] shadow-sm ring-1 ring-white/10'
+                            : 'text-[#8A8F98] hover:text-[#F7F8F8] hover:bg-white/[0.04]'
                         }"
                         data-tab="${t.id}">
-                  <span>${t.icon}</span>
                   <span>${t.label}</span>
                 </button>
               `;
@@ -128,55 +127,56 @@ function renderAdminOverviewTab() {
       <!-- 4 KEY KPI CARDS -->
       <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
         <!-- KPI 1: Total Sales -->
-        <div class="bg-[#101217] p-5 rounded-2xl border border-[#22242c] shadow-sm space-y-2 card-hover-raycast">
-          <div class="flex items-center justify-between text-[#94a3b8]">
-            <span class="text-xs font-mono uppercase">Total Sales</span>
-            <span class="p-1.5 rounded-lg bg-emerald-500/10 text-emerald-400">${ICONS.trendingUp}</span>
+        <div class="bg-[#101114] p-5 rounded-xl border border-white/[0.08] shadow-sm space-y-2">
+          <div class="flex items-center justify-between text-[#8A8F98]">
+            <span class="text-[11px] font-mono uppercase tracking-wider">Total Sales</span>
+            <span class="p-1 rounded-md bg-emerald-500/10 text-emerald-400 text-xs">${ICONS.trendingUp}</span>
           </div>
-          <div class="font-heading font-black text-2xl text-white">Rp2.450.000</div>
-          <div class="text-[11px] text-emerald-400 font-semibold flex items-center gap-1">
+          <div class="font-bold text-2xl text-white tracking-tight">Rp2.450.000</div>
+          <div class="text-[11px] text-emerald-400 font-medium flex items-center gap-1">
             <span>↑ 18.4%</span>
-            <span class="text-[#64748b] font-normal">dari minggu lalu</span>
+            <span class="text-[#64748B] font-normal">dari minggu lalu</span>
           </div>
         </div>
 
         <!-- KPI 2: WhatsApp & Telegram Bot Engine -->
-        <div class="bg-[#101217] p-5 rounded-2xl border border-emerald-500/30 shadow-sm space-y-2 card-hover-raycast">
-          <div class="flex items-center justify-between text-[#94a3b8]">
-            <span class="text-xs font-mono uppercase font-bold text-emerald-400">Multi-Channel Bot</span>
-            <span class="flex h-2.5 w-2.5 relative">
+        <div class="bg-[#101114] p-5 rounded-xl border border-emerald-500/30 shadow-sm space-y-2">
+          <div class="flex items-center justify-between text-[#8A8F98]">
+            <span class="text-[11px] font-mono uppercase tracking-wider font-semibold text-emerald-400">Multi-Channel Bot</span>
+            <span class="flex h-2 w-2 relative">
               <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-              <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
+              <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
             </span>
           </div>
-          <div class="font-heading font-black text-xl text-white flex items-center gap-2">
+          <div class="font-bold text-xl text-white tracking-tight flex items-center gap-2">
             <span>WA & TG LIVE</span>
           </div>
-          <div class="text-[11px] text-emerald-400 font-medium flex items-center gap-1">
-            <span>🟢 Zero-Click Fulfillment Aktif</span>
+          <div class="text-[11px] text-emerald-400 font-medium flex items-center gap-1.5">
+            <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+            <span>Zero-Click Fulfillment Aktif</span>
           </div>
         </div>
 
         <!-- KPI 3: Orders -->
-        <div class="bg-[#101217] p-5 rounded-2xl border border-[#22242c] shadow-sm space-y-2 card-hover-raycast">
-          <div class="flex items-center justify-between text-[#94a3b8]">
-            <span class="text-xs font-mono uppercase">Orders</span>
-            <span class="p-1.5 rounded-lg bg-blue-500/10 text-blue-400">${ICONS.shoppingBag}</span>
+        <div class="bg-[#101114] p-5 rounded-xl border border-white/[0.08] shadow-sm space-y-2">
+          <div class="flex items-center justify-between text-[#8A8F98]">
+            <span class="text-[11px] font-mono uppercase tracking-wider">Orders</span>
+            <span class="p-1 rounded-md bg-blue-500/10 text-blue-400 text-xs">${ICONS.shoppingBag}</span>
           </div>
-          <div class="font-heading font-black text-2xl text-white">128</div>
-          <div class="text-[11px] text-[#94a3b8]">
-            <span class="font-bold text-white">100%</span> otomatis terkirim
+          <div class="font-bold text-2xl text-white tracking-tight">128</div>
+          <div class="text-[11px] text-[#8A8F98]">
+            <span class="font-semibold text-white">100%</span> otomatis terkirim
           </div>
         </div>
 
         <!-- KPI 4: Active Products -->
-        <div class="bg-[#101217] p-5 rounded-2xl border border-[#22242c] shadow-sm space-y-2 card-hover-raycast">
-          <div class="flex items-center justify-between text-[#94a3b8]">
-            <span class="text-xs font-mono uppercase">Products</span>
-            <span class="p-1.5 rounded-lg bg-amber-500/10 text-amber-400">${ICONS.package}</span>
+        <div class="bg-[#101114] p-5 rounded-xl border border-white/[0.08] shadow-sm space-y-2">
+          <div class="flex items-center justify-between text-[#8A8F98]">
+            <span class="text-[11px] font-mono uppercase tracking-wider">Products</span>
+            <span class="p-1 rounded-md bg-amber-500/10 text-amber-400 text-xs">${ICONS.package}</span>
           </div>
-          <div class="font-heading font-black text-2xl text-white">${activeCount} <span class="text-sm font-normal text-[#64748b]">/ ${products.length}</span></div>
-          <div class="text-[11px] text-[#94a3b8]">
+          <div class="font-bold text-2xl text-white tracking-tight">${activeCount} <span class="text-sm font-normal text-[#64748B]">/ ${products.length}</span></div>
+          <div class="text-[11px] text-[#8A8F98]">
             ${lowStock.length} produk stok menipis
           </div>
         </div>
@@ -186,17 +186,17 @@ function renderAdminOverviewTab() {
       <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
         
         <!-- Sales Overview Visual Chart -->
-        <div class="lg:col-span-8 bg-[#101217] p-5 rounded-2xl border border-[#22242c] shadow-sm space-y-4">
+        <div class="lg:col-span-8 bg-[#101114] p-5 rounded-xl border border-white/[0.08] shadow-sm space-y-4">
           <div class="flex items-center justify-between">
             <div>
-              <h3 class="font-heading font-bold text-sm text-white">Sales Overview (7 Hari Terakhir)</h3>
-              <p class="text-xs text-[#94a3b8]">Grafik transaksi penjualan produk digital harian.</p>
+              <h3 class="font-semibold text-sm text-white">Sales Overview (7 Hari Terakhir)</h3>
+              <p class="text-xs text-[#8A8F98]">Grafik transaksi penjualan produk digital harian.</p>
             </div>
-            <span class="text-xs font-mono text-terracotta-400 font-bold bg-terracotta-500/10 border border-terracotta-500/20 px-2 py-1 rounded">Rata-rata Rp350K/hari</span>
+            <span class="text-xs font-mono text-[#D0D6E0] bg-white/[0.06] border border-white/[0.08] px-2.5 py-1 rounded-md">Rata-rata Rp350K/hari</span>
           </div>
 
           <!-- CSS Bar Chart Visualization -->
-          <div class="h-44 flex items-end justify-between gap-2 pt-6 pb-2 px-2 border-b border-[#22242c]">
+          <div class="h-44 flex items-end justify-between gap-2 pt-6 pb-2 px-2 border-b border-white/[0.06]">
             ${[
               { day: 'Sen', val: 320, pct: '64%' },
               { day: 'Sel', val: 410, pct: '82%' },
@@ -209,11 +209,11 @@ function renderAdminOverviewTab() {
               .map(
                 (col) => `
               <div class="flex-1 flex flex-col items-center gap-1.5 group h-full justify-end">
-                <div class="text-[10px] font-mono text-[#64748b] opacity-0 group-hover:opacity-100 transition-opacity">
+                <div class="text-[10px] font-mono text-[#64748B] opacity-0 group-hover:opacity-100 transition-opacity">
                   ${col.val}k
                 </div>
-                <div class="w-full max-w-[36px] bg-[#1a1d26] group-hover:bg-terracotta-500 rounded-t-lg transition-all" style="height: ${col.pct};"></div>
-                <span class="text-[11px] font-mono text-[#94a3b8]">${col.day}</span>
+                <div class="w-full max-w-[36px] bg-white/[0.06] group-hover:bg-[#5E6AD2] rounded-t-md transition-colors" style="height: ${col.pct};"></div>
+                <span class="text-[11px] font-mono text-[#8A8F98]">${col.day}</span>
               </div>
             `,
               )
@@ -222,31 +222,39 @@ function renderAdminOverviewTab() {
         </div>
 
         <!-- Low Stock Alerts -->
-        <div class="lg:col-span-4 bg-[#101217] p-5 rounded-2xl border border-[#22242c] shadow-sm space-y-4 flex flex-col justify-between">
+        <div class="lg:col-span-4 bg-[#101114] p-5 rounded-xl border border-white/[0.08] shadow-sm space-y-4 flex flex-col justify-between">
           <div>
             <div class="flex items-center justify-between mb-3">
-              <h3 class="font-heading font-bold text-sm text-white">Stok Menipis (Low Stock)</h3>
-              <span class="w-2 h-2 rounded-full bg-red-500"></span>
+              <h3 class="font-semibold text-sm text-white">Stok Menipis (Low Stock)</h3>
+              <span class="w-2 h-2 rounded-full ${lowStock.length > 0 ? 'bg-red-500' : 'bg-emerald-400'}"></span>
             </div>
             <div class="space-y-2.5">
-              ${lowStock
-                .map(
-                  (p) => `
-                <div class="flex items-center justify-between p-2.5 rounded-xl bg-[#14161e] border border-[#22242c] text-xs">
+              ${
+                lowStock.length > 0
+                  ? lowStock
+                      .map(
+                        (p) => `
+                <div class="flex items-center justify-between p-2.5 rounded-lg bg-[#0C0D0F] border border-white/[0.06] text-xs">
                   <div>
-                    <div class="font-bold text-white">${escapeHtml(p.name)}</div>
-                    <div class="text-[10px] text-[#94a3b8] font-mono">${p.category}</div>
+                    <div class="font-medium text-white">${escapeHtml(p.name)}</div>
+                    <div class="text-[10px] text-[#8A8F98] font-mono">${p.category}</div>
                   </div>
-                  <span class="px-2 py-0.5 rounded text-[11px] font-bold font-mono bg-red-500/10 text-red-400 border border-red-500/20">
+                  <span class="px-2 py-0.5 rounded text-[11px] font-mono bg-red-500/10 text-red-400 border border-red-500/20">
                     Sisa ${p.stock}
                   </span>
                 </div>
               `,
-                )
-                .join('')}
+                      )
+                      .join('')
+                  : `
+                <div class="p-6 text-center text-xs text-[#8A8F98] font-mono bg-[#0C0D0F] rounded-lg border border-white/[0.04]">
+                  ✓ Semua stok produk aman (36/36)
+                </div>
+              `
+              }
             </div>
           </div>
-          <button type="button" class="btn-goto-inventory w-full mt-3 py-2 rounded-xl text-xs font-semibold text-[#94a3b8] hover:text-white bg-[#14161e] hover:bg-[#1a1c26] border border-[#22242c] transition-colors text-center">
+          <button type="button" class="btn-goto-inventory w-full mt-3 py-2 rounded-lg text-xs font-medium text-[#8A8F98] hover:text-white bg-[#0C0D0F] hover:bg-white/[0.06] border border-white/[0.06] transition-colors text-center">
             Kelola Stok di Inventori →
           </button>
         </div>
@@ -254,19 +262,19 @@ function renderAdminOverviewTab() {
       </div>
 
       <!-- RECENT ORDERS TABLE (Linear Table Style) -->
-      <div class="bg-[#101217] rounded-2xl border border-[#22242c] shadow-sm overflow-hidden">
-        <div class="p-5 border-b border-[#22242c] flex items-center justify-between">
+      <div class="bg-[#101114] rounded-xl border border-white/[0.08] shadow-sm overflow-hidden">
+        <div class="p-5 border-b border-white/[0.06] flex items-center justify-between">
           <div>
-            <h3 class="font-heading font-bold text-sm text-white">Recent Orders (Transaksi Masuk)</h3>
-            <p class="text-xs text-[#94a3b8]">Daftar transaksi masuk dan status fulfillment otomatis lintas channel.</p>
+            <h3 class="font-semibold text-sm text-white">Recent Orders (Transaksi Masuk)</h3>
+            <p class="text-xs text-[#8A8F98]">Daftar transaksi masuk dan status fulfillment otomatis lintas channel.</p>
           </div>
-          <button type="button" class="btn-goto-orders text-xs font-bold text-terracotta-400 hover:underline">
+          <button type="button" class="btn-goto-orders text-xs font-medium text-[#F7F8F8] hover:underline">
             Lihat Semua Pesanan →
           </button>
         </div>
         <div class="overflow-x-auto">
-          <table class="w-full text-left text-xs text-[#94a3b8]">
-            <thead class="bg-[#14161e] font-mono uppercase text-[10px] text-[#64748b] border-b border-[#22242c]">
+          <table class="w-full text-left text-xs text-[#8A8F98]">
+            <thead class="bg-[#0C0D0F] font-mono uppercase text-[10px] text-[#64748B] border-b border-white/[0.06]">
               <tr>
                 <th class="px-4 py-3">Order ID</th>
                 <th class="px-4 py-3">Customer</th>

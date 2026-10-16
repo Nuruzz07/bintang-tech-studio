@@ -9,25 +9,37 @@ export function openModal({
   maxWidth = 'max-w-lg',
   showClose = true,
   onOpen = null,
+  theme = 'dark',
 }) {
   closeModal();
 
+  const isDark = theme === 'dark';
   const modalOverlay = document.createElement('div');
   modalOverlay.id = 'app-modal-overlay';
   modalOverlay.className =
-    'fixed inset-0 z-[9990] flex items-center justify-center p-4 modal-backdrop transition-opacity duration-200 opacity-0';
+    'fixed inset-0 z-[9990] flex items-center justify-center p-4 bg-black/75 backdrop-blur-md transition-opacity duration-200 opacity-0';
   modalOverlay.setAttribute('role', 'dialog');
   modalOverlay.setAttribute('aria-modal', 'true');
 
   modalOverlay.innerHTML = `
-    <div class="relative w-full ${maxWidth} bg-white rounded-2xl shadow-2xl border border-stone-200 overflow-hidden transform transition-all duration-200 scale-95 opacity-0 flex flex-col max-h-[90vh]">
+    <div class="relative w-full ${maxWidth} ${
+      isDark
+        ? 'bg-[#101114] text-[#F7F8F8] border border-white/[0.09] shadow-[0_24px_60px_-12px_rgba(0,0,0,0.9)]'
+        : 'bg-white text-stone-900 border border-stone-200 shadow-2xl'
+    } rounded-2xl overflow-hidden transform transition-all duration-200 scale-95 opacity-0 flex flex-col max-h-[90vh]">
       ${
         title || showClose
-          ? `<div class="px-5 py-4 border-b border-stone-100 flex items-center justify-between shrink-0 bg-stone-50/50">
-              <h3 class="font-heading font-bold text-stone-900 text-base">${title}</h3>
+          ? `<div class="px-5 py-4 ${
+              isDark ? 'border-b border-white/[0.06] bg-[#0C0D0F]/60' : 'border-b border-stone-100 bg-stone-50/50'
+            } flex items-center justify-between shrink-0">
+              <h3 class="font-heading font-bold ${isDark ? 'text-white' : 'text-stone-900'} text-base">${title}</h3>
               ${
                 showClose
-                  ? `<button type="button" class="btn-close-modal p-1.5 rounded-lg text-stone-400 hover:text-stone-700 hover:bg-stone-200/60 transition-colors" aria-label="Tutup modal">
+                  ? `<button type="button" class="btn-close-modal p-1.5 rounded-lg ${
+                      isDark
+                        ? 'text-[#8A8F98] hover:text-white hover:bg-white/[0.06]'
+                        : 'text-stone-400 hover:text-stone-700 hover:bg-stone-200/60'
+                    } transition-colors" aria-label="Tutup modal">
                       ${ICONS.close}
                     </button>`
                   : ''
@@ -35,7 +47,7 @@ export function openModal({
             </div>`
           : ''
       }
-      <div class="p-5 overflow-y-auto flex-1">
+      <div class="p-6 overflow-y-auto flex-1">
         ${content}
       </div>
     </div>

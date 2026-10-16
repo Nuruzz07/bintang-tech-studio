@@ -20,6 +20,7 @@ import { openModal, closeModal } from '../components/modal.js';
 import { showPaymentSimulation } from '../components/qris-modal.js';
 
 // Page local UI state
+let currentStoreTemplate = localStorage.getItem('bts_store_template') || 'dark'; // 'dark' | 'ivory'
 let currentActiveCategory = 'Semua';
 let currentSearchTerm = '';
 let currentSortBy = 'popular'; // 'popular' | 'price_asc' | 'price_desc' | 'discount'
@@ -29,9 +30,12 @@ let ordersFilter = 'Semua'; // 'Semua' | 'menunggu' | 'proses' | 'selesai' | 'ba
 export function renderWebAppPage() {
   const settings = store.getSettings();
   const cartCount = store.getCartCount();
+  const isDark = currentStoreTemplate === 'dark';
 
   return `
-    <div class="view-container bg-[#FAF7F2] min-h-screen text-stone-900 pb-24 sm:pb-20 relative overflow-x-hidden selection:bg-terracotta-500 selection:text-white">
+    <div class="view-container ${
+      isDark ? 'bg-[#08090A] text-[#F7F8F8]' : 'bg-[#FAF7F2] text-stone-900'
+    } min-h-screen pb-24 sm:pb-20 relative overflow-x-hidden selection:bg-[#5E6AD2]/30 selection:text-white">
       
       <!-- SUBTLE BRAND WATERMARK (~2% Opacity - Organic Brand Texture) -->
       <div class="fixed right-3 bottom-20 w-72 sm:w-80 h-72 sm:h-80 opacity-[0.02] pointer-events-none select-none -z-0">
@@ -39,30 +43,56 @@ export function renderWebAppPage() {
       </div>
 
       <!-- 1. BINTANG STORE STOREFRONT HEADER -->
-      <header class="sticky top-0 z-30 bg-white/95 backdrop-blur-md border-b border-stone-200/90 shadow-sm">
+      <header class="sticky top-0 z-30 ${
+        isDark ? 'bg-[#08090A]/90 border-white/[0.06]' : 'bg-white/95 border-stone-200/90'
+      } backdrop-blur-md border-b shadow-sm">
         
-        <!-- Store Brand Bar: Bintang Store + Cart -->
+        <!-- Store Brand Bar: Bintang Store + Template Switcher + Cart -->
         <div class="max-w-6xl mx-auto px-3 sm:px-6 py-2.5 flex items-center justify-between gap-3">
           
           <!-- Logo & Store Name -->
           <button id="webapp-nav-home-btn" class="flex items-center gap-2.5 text-left group cursor-pointer">
-            <span class="w-8 h-8 rounded-xl bg-stone-950 border border-stone-800 p-1 flex items-center justify-center shrink-0 shadow-sm group-hover:scale-105 transition-transform">
+            <span class="w-8 h-8 rounded-xl ${
+              isDark ? 'bg-[#16181D] border-white/[0.08]' : 'bg-stone-950 border-stone-800'
+            } border p-1 flex items-center justify-center shrink-0 shadow-sm group-hover:scale-105 transition-transform">
               ${BRAND_LOGO_SVG}
             </span>
             <div>
-              <h1 class="font-heading font-black text-sm sm:text-base leading-tight text-stone-950 group-hover:text-terracotta-600 transition-colors">
+              <h1 class="font-heading font-black text-sm sm:text-base leading-tight ${
+                isDark ? 'text-white' : 'text-stone-950'
+              } group-hover:text-terracotta-500 transition-colors">
                 ${escapeHtml(settings.storeName)}
               </h1>
-              <p class="text-[10px] text-stone-500 hidden sm:block leading-tight font-normal">
+              <p class="text-[10px] ${isDark ? 'text-[#8A8F98]' : 'text-stone-500'} hidden sm:block leading-tight font-normal">
                 ${escapeHtml(settings.tagline)}
               </p>
             </div>
           </button>
 
+          <!-- Middle: Template Switcher -->
+          <div class="inline-flex items-center gap-1 p-0.5 rounded-full ${
+            isDark ? 'bg-white/[0.04] border border-white/[0.08]' : 'bg-stone-100 border border-stone-200'
+          } text-[11px] font-mono">
+            <button id="btn-switch-tpl-dark" type="button" class="px-2.5 py-0.5 rounded-full transition-colors ${
+              isDark ? 'bg-white text-black font-semibold shadow-xs' : 'text-stone-500 hover:text-stone-900'
+            }">
+              Dark
+            </button>
+            <button id="btn-switch-tpl-ivory" type="button" class="px-2.5 py-0.5 rounded-full transition-colors ${
+              !isDark ? 'bg-stone-900 text-white font-semibold shadow-xs' : 'text-[#8A8F98] hover:text-white'
+            }">
+              Ivory
+            </button>
+          </div>
+
           <!-- Cart Trigger with Counter Badge -->
           <button id="btn-open-cart"
                   type="button"
-                  class="relative p-2 sm:px-3 sm:py-2 rounded-xl bg-stone-100 hover:bg-stone-200 active:scale-95 text-stone-800 transition-all flex items-center gap-1.5 shrink-0 cursor-pointer"
+                  class="relative p-2 sm:px-3 sm:py-2 rounded-xl ${
+                    isDark
+                      ? 'bg-[#101114] hover:bg-[#16181D] text-white border border-white/[0.08]'
+                      : 'bg-stone-100 hover:bg-stone-200 text-stone-800'
+                  } active:scale-95 transition-all flex items-center gap-1.5 shrink-0 cursor-pointer"
                   aria-label="Keranjang Belanja">
             <span class="w-4 h-4 flex items-center justify-center">${ICONS.cart}</span>
             <span class="hidden sm:inline text-xs font-semibold">Keranjang</span>
@@ -78,17 +108,25 @@ export function renderWebAppPage() {
         <!-- Search Bar -->
         <div class="max-w-6xl mx-auto px-3 sm:px-6 pb-2">
           <div class="relative">
-            <span class="absolute inset-y-0 left-2.5 flex items-center text-stone-400 pointer-events-none w-3.5 h-3.5">
+            <span class="absolute inset-y-0 left-2.5 flex items-center ${
+              isDark ? 'text-zinc-500' : 'text-stone-400'
+            } pointer-events-none w-3.5 h-3.5">
               ${ICONS.search}
             </span>
             <input id="webapp-search-input"
                    type="text"
                    placeholder="Cari 36+ produk (Spotify, Canva, AI)..."
                    value="${escapeHtml(currentSearchTerm)}"
-                   class="w-full pl-8 pr-7 py-1.5 text-xs bg-stone-100 rounded-xl border border-stone-200/80 focus:bg-white focus:border-terracotta-500 focus:outline-none transition-all">
+                   class="w-full pl-8 pr-7 py-2 text-xs ${
+                     isDark
+                       ? 'bg-[#0C0D0F] text-white border-white/[0.08] focus:bg-[#101114] focus:border-[#5E6AD2]'
+                       : 'bg-stone-100 text-stone-900 border-stone-200/80 focus:bg-white focus:border-terracotta-500'
+                   } rounded-xl border focus:outline-none transition-all">
             ${
               currentSearchTerm
-                ? `<button id="btn-clear-search" class="absolute inset-y-0 right-2 flex items-center text-stone-400 hover:text-stone-700 cursor-pointer">
+                ? `<button id="btn-clear-search" class="absolute inset-y-0 right-2 flex items-center ${
+                    isDark ? 'text-zinc-400 hover:text-white' : 'text-stone-400 hover:text-stone-700'
+                  } cursor-pointer">
                     <span class="w-3.5 h-3.5 flex items-center justify-center">${ICONS.close}</span>
                    </button>`
                 : ''
@@ -98,46 +136,66 @@ export function renderWebAppPage() {
       </header>
 
       <!-- 2. MAIN CONTAINER TABS -->
-      <main class="max-w-6xl mx-auto px-3 sm:px-6 pt-3.5 sm:pt-5 pb-12">
+      <main class="max-w-6xl mx-auto px-3 sm:px-6 pt-3.5 sm:pt-5 pb-36">
         <div id="webapp-tab-content">
           ${renderTabContent(currentSubTab)}
         </div>
       </main>
 
       <!-- 3. CUSTOMER-ONLY BOTTOM NAVIGATION -->
-      <nav class="fixed bottom-0 inset-x-0 z-40 bg-white/95 backdrop-blur-md border-t border-stone-200 py-1.5 px-4 sm:px-6 flex justify-between items-center shadow-lg select-none">
+      <nav class="fixed bottom-0 inset-x-0 z-40 ${
+        isDark
+          ? 'bg-[#08090A]/95 backdrop-blur-md border-t border-white/[0.06] text-[#8A8F98]'
+          : 'bg-white/95 backdrop-blur-md border-t border-stone-200 text-stone-400'
+      } py-2 px-4 sm:px-6 flex justify-between items-center shadow-lg select-none">
         <div class="max-w-md mx-auto w-full flex justify-between items-center">
-          <button type="button" class="btn-webapp-tab flex flex-col items-center gap-0.5 text-[11px] font-medium py-1 px-3 rounded-xl transition-colors cursor-pointer ${
+          <button type="button" class="btn-webapp-tab flex flex-col items-center gap-1 text-[11px] font-medium py-1 px-3 rounded-xl transition-colors cursor-pointer ${
             currentSubTab === 'home'
-              ? 'text-terracotta-600 font-bold'
-              : 'text-stone-400 hover:text-stone-700'
+              ? isDark
+                ? 'text-white font-bold'
+                : 'text-terracotta-600 font-bold'
+              : isDark
+                ? 'text-[#8A8F98] hover:text-white'
+                : 'text-stone-400 hover:text-stone-700'
           }" data-tab="home">
             <span class="w-5 h-5 flex items-center justify-center">${ICONS.home}</span>
             <span>Home</span>
           </button>
 
-          <button type="button" class="btn-webapp-tab flex flex-col items-center gap-0.5 text-[11px] font-medium py-1 px-3 rounded-xl transition-colors cursor-pointer ${
+          <button type="button" class="btn-webapp-tab flex flex-col items-center gap-1 text-[11px] font-medium py-1 px-3 rounded-xl transition-colors cursor-pointer ${
             currentSubTab === 'products'
-              ? 'text-terracotta-600 font-bold'
-              : 'text-stone-400 hover:text-stone-700'
+              ? isDark
+                ? 'text-white font-bold'
+                : 'text-terracotta-600 font-bold'
+              : isDark
+                ? 'text-[#8A8F98] hover:text-white'
+                : 'text-stone-400 hover:text-stone-700'
           }" data-tab="products">
             <span class="w-5 h-5 flex items-center justify-center">${ICONS.package}</span>
             <span>Produk</span>
           </button>
 
-          <button type="button" class="btn-webapp-tab flex flex-col items-center gap-0.5 text-[11px] font-medium py-1 px-3 rounded-xl transition-colors cursor-pointer ${
+          <button type="button" class="btn-webapp-tab flex flex-col items-center gap-1 text-[11px] font-medium py-1 px-3 rounded-xl transition-colors cursor-pointer ${
             currentSubTab === 'orders'
-              ? 'text-terracotta-600 font-bold'
-              : 'text-stone-400 hover:text-stone-700'
+              ? isDark
+                ? 'text-white font-bold'
+                : 'text-terracotta-600 font-bold'
+              : isDark
+                ? 'text-[#8A8F98] hover:text-white'
+                : 'text-stone-400 hover:text-stone-700'
           }" data-tab="orders">
-            <span class="w-5 h-5 flex items-center justify-center">${ICONS.history}</span>
+            <span class="w-5 h-5 flex items-center justify-center">${ICONS.orders}</span>
             <span>Pesanan</span>
           </button>
 
-          <button type="button" class="btn-webapp-tab flex flex-col items-center gap-0.5 text-[11px] font-medium py-1 px-3 rounded-xl transition-colors cursor-pointer ${
+          <button type="button" class="btn-webapp-tab flex flex-col items-center gap-1 text-[11px] font-medium py-1 px-3 rounded-xl transition-colors cursor-pointer ${
             currentSubTab === 'account'
-              ? 'text-terracotta-600 font-bold'
-              : 'text-stone-400 hover:text-stone-700'
+              ? isDark
+                ? 'text-white font-bold'
+                : 'text-terracotta-600 font-bold'
+              : isDark
+                ? 'text-[#8A8F98] hover:text-white'
+                : 'text-stone-400 hover:text-stone-700'
           }" data-tab="account">
             <span class="w-5 h-5 flex items-center justify-center">${ICONS.user}</span>
             <span>Akun</span>
@@ -168,6 +226,7 @@ function renderTabContent(tab) {
 // 1. HOME TAB (Commercial Homepage)
 // ==========================================
 function renderHomeTab() {
+  const isDark = currentStoreTemplate === 'dark';
   const bestSellers = store.getBestSellers(4);
   const recommended = store.getRecommendedProducts(4);
   const promotional = store.getPromotionalProducts(4);
@@ -177,7 +236,11 @@ function renderHomeTab() {
     <div class="space-y-7">
       
       <!-- HERO PROMOTIONAL BANNER -->
-      <section class="relative overflow-hidden rounded-3xl bg-gradient-to-r from-stone-950 via-[#181D26] to-terracotta-950 text-white p-4 sm:p-7 shadow-lg border border-stone-800">
+      <section class="relative overflow-hidden rounded-3xl ${
+        isDark
+          ? 'bg-[#101114] border border-white/[0.08]'
+          : 'bg-gradient-to-r from-stone-950 via-[#181D26] to-terracotta-950 border border-stone-800'
+      } text-white p-4 sm:p-7 shadow-lg">
         <!-- Brand Watermark in Background (~4% Opacity) -->
         <div class="absolute -right-6 -bottom-6 w-44 sm:w-48 h-44 sm:h-48 opacity-[0.04] pointer-events-none select-none">
           ${BRAND_LOGO_SVG}
@@ -190,7 +253,7 @@ function renderHomeTab() {
           <h2 class="font-heading font-black text-xl sm:text-2xl text-white tracking-tight leading-snug">
             Produk Digital, Langsung Beres.
           </h2>
-          <p class="text-xs sm:text-sm text-stone-300 max-w-lg leading-relaxed">
+          <p class="text-xs sm:text-sm ${isDark ? 'text-[#A1A1AA]' : 'text-stone-300'} max-w-lg leading-relaxed">
             Temukan produk digital pilihan dengan proses pembelian yang simpel dan cepat.
           </p>
 
@@ -205,22 +268,34 @@ function renderHomeTab() {
       </section>
 
       <!-- ACTIVE VOUCHER CALLOUT CARD -->
-      <section class="bg-white rounded-2xl border border-stone-200/90 p-3.5 sm:p-4 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+      <section class="${
+        isDark
+          ? 'bg-[#101114] border border-white/[0.08] text-white'
+          : 'bg-white border border-stone-200/90 text-stone-900'
+      } rounded-2xl p-3.5 sm:p-4 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div class="flex items-center gap-3">
-          <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-amber-500/10 text-amber-600 flex items-center justify-center shrink-0 border border-amber-500/20">
+          <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl ${
+            isDark ? 'bg-amber-400/10 text-amber-300 border border-amber-400/20' : 'bg-amber-500/10 text-amber-600 border border-amber-500/20'
+          } flex items-center justify-center shrink-0">
             ${ICONS.voucher}
           </div>
           <div>
             <div class="flex items-center gap-2">
-              <span class="font-heading font-bold text-xs sm:text-sm text-stone-900">Voucher Promo Aktif:</span>
-              <code class="font-mono font-bold text-xs bg-amber-100 text-amber-900 px-2 py-0.5 rounded border border-amber-300">BINTANG10</code>
+              <span class="font-bold text-xs sm:text-sm ${isDark ? 'text-white' : 'text-stone-900'}">Voucher Promo Aktif:</span>
+              <code class="font-mono font-bold text-xs ${
+                isDark ? 'bg-[#16181D] text-amber-300 border border-white/[0.08]' : 'bg-amber-100 text-amber-900 border border-amber-300'
+              } px-2 py-0.5 rounded">BINTANG10</code>
             </div>
-            <p class="text-[11px] sm:text-xs text-stone-500 mt-0.5">Diskon 10% untuk semua produk digital. Berlaku di halaman checkout.</p>
+            <p class="text-[11px] sm:text-xs ${isDark ? 'text-[#8A8F98]' : 'text-stone-500'} mt-0.5">Diskon 10% untuk semua produk digital. Berlaku di halaman checkout.</p>
           </div>
         </div>
         <button type="button"
                 id="btn-copy-promo-voucher"
-                class="self-start sm:self-center px-3.5 py-1.5 rounded-xl text-xs font-bold bg-stone-900 hover:bg-stone-800 active:scale-95 text-white transition-all flex items-center gap-1.5 shrink-0 cursor-pointer min-h-[36px]">
+                class="self-start sm:self-center px-3.5 py-1.5 rounded-xl text-xs font-semibold ${
+                  isDark
+                    ? 'bg-white hover:bg-zinc-200 text-black shadow-sm'
+                    : 'bg-stone-900 hover:bg-stone-800 text-white'
+                } active:scale-95 transition-all flex items-center gap-1.5 shrink-0 cursor-pointer min-h-[36px]">
           ${ICONS.copy}
           <span>Salin Voucher</span>
         </button>
@@ -229,10 +304,10 @@ function renderHomeTab() {
       <!-- CATEGORY QUICK SELECTOR -->
       <section class="space-y-3">
         <div class="flex items-center justify-between">
-          <h2 class="font-heading font-bold text-xs sm:text-base text-stone-900 uppercase tracking-wider">
+          <h2 class="font-semibold text-xs sm:text-base ${isDark ? 'text-white' : 'text-stone-900'} uppercase tracking-wider font-mono">
             Kategori Pilihan
           </h2>
-          <button type="button" class="btn-switch-to-catalog text-xs font-semibold text-terracotta-600 hover:underline cursor-pointer">
+          <button type="button" class="btn-switch-to-catalog text-xs font-medium text-terracotta-500 hover:underline cursor-pointer">
             Lihat Semua →
           </button>
         </div>
@@ -242,17 +317,23 @@ function renderHomeTab() {
             const count = store.getProductsByCategory(c.name).length;
             return `
               <button type="button"
-                      class="btn-category-card p-2.5 sm:p-3 rounded-2xl bg-white border border-stone-200/80 hover:border-terracotta-500/60 hover:shadow-md transition-all text-left flex flex-col justify-between space-y-1.5 group cursor-pointer"
+                      class="btn-category-card p-2.5 sm:p-3 rounded-2xl ${
+                        isDark
+                          ? 'bg-[#101114] border border-white/[0.08] hover:border-white/[0.2]'
+                          : 'bg-white border border-stone-200/80 hover:border-terracotta-500/60'
+                      } hover:shadow-md transition-all text-left flex flex-col justify-between space-y-1.5 group cursor-pointer"
                       data-category="${c.name}">
                 <div class="flex items-center justify-between">
-                  <span class="w-6 h-6 sm:w-7 sm:h-7 rounded-lg bg-stone-100 text-stone-700 flex items-center justify-center text-xs group-hover:bg-terracotta-500/10 group-hover:text-terracotta-600 transition-colors">
+                  <span class="w-6 h-6 sm:w-7 sm:h-7 rounded-lg ${
+                    isDark ? 'bg-[#16181D] text-[#D0D6E0]' : 'bg-stone-100 text-stone-700'
+                  } flex items-center justify-center text-xs group-hover:scale-105 transition-transform">
                     ${c.name.substring(0, 2).toUpperCase()}
                   </span>
-                  <span class="text-[10px] font-mono text-stone-400">${count} item</span>
+                  <span class="text-[10px] font-mono ${isDark ? 'text-[#8A8F98]' : 'text-stone-400'}">${count} item</span>
                 </div>
                 <div>
-                  <h3 class="font-heading font-bold text-xs text-stone-900 group-hover:text-terracotta-600 transition-colors">${c.name}</h3>
-                  <p class="text-[10px] text-stone-400 line-clamp-1">${c.badge}</p>
+                  <h3 class="font-semibold text-xs ${isDark ? 'text-white group-hover:text-terracotta-400' : 'text-stone-900 group-hover:text-terracotta-600'} transition-colors">${c.name}</h3>
+                  <p class="text-[10px] ${isDark ? 'text-[#8A8F98]' : 'text-stone-400'} line-clamp-1">${c.badge}</p>
                 </div>
               </button>
             `;
@@ -265,16 +346,16 @@ function renderHomeTab() {
         <div class="flex items-center justify-between">
           <div class="flex items-center gap-2">
             <span class="text-amber-500">⭐</span>
-            <h2 class="font-heading font-extrabold text-sm sm:text-base text-stone-900">
+            <h2 class="font-bold text-sm sm:text-base ${isDark ? 'text-white' : 'text-stone-900'}">
               Produk Terlaris (Best Seller)
             </h2>
           </div>
-          <button type="button" class="btn-filter-category text-xs font-semibold text-terracotta-600 hover:underline cursor-pointer" data-category="Semua">
+          <button type="button" class="btn-filter-category text-xs font-medium text-terracotta-500 hover:underline cursor-pointer" data-category="Semua">
             Semua →
           </button>
         </div>
         <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2.5 sm:gap-4">
-          ${bestSellers.map((p) => renderProductCard(p)).join('')}
+          ${bestSellers.map((p) => renderProductCard(p, { isDark })).join('')}
         </div>
       </section>
 
@@ -283,16 +364,16 @@ function renderHomeTab() {
         <div class="flex items-center justify-between">
           <div class="flex items-center gap-2">
             <span class="text-rose-500">🔥</span>
-            <h2 class="font-heading font-extrabold text-sm sm:text-base text-stone-900">
+            <h2 class="font-bold text-sm sm:text-base ${isDark ? 'text-white' : 'text-stone-900'}">
               Rekomendasi Pilihan
             </h2>
           </div>
-          <button type="button" class="btn-filter-category text-xs font-semibold text-terracotta-600 hover:underline cursor-pointer" data-category="AI & Productivity">
+          <button type="button" class="btn-filter-category text-xs font-medium text-terracotta-500 hover:underline cursor-pointer" data-category="AI & Productivity">
             AI Tools →
           </button>
         </div>
         <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2.5 sm:gap-4">
-          ${recommended.map((p) => renderProductCard(p)).join('')}
+          ${recommended.map((p) => renderProductCard(p, { isDark })).join('')}
         </div>
       </section>
 
@@ -301,16 +382,16 @@ function renderHomeTab() {
         <div class="flex items-center justify-between">
           <div class="flex items-center gap-2">
             <span class="text-emerald-500">🏷️</span>
-            <h2 class="font-heading font-extrabold text-sm sm:text-base text-stone-900">
+            <h2 class="font-bold text-sm sm:text-base ${isDark ? 'text-white' : 'text-stone-900'}">
               Promo & Diskon Terbesar
             </h2>
           </div>
-          <button type="button" class="btn-switch-to-catalog text-xs font-semibold text-terracotta-600 hover:underline cursor-pointer">
+          <button type="button" class="btn-switch-to-catalog text-xs font-medium text-terracotta-500 hover:underline cursor-pointer">
             Katalog →
           </button>
         </div>
         <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2.5 sm:gap-4">
-          ${promotional.map((p) => renderProductCard(p)).join('')}
+          ${promotional.map((p) => renderProductCard(p, { isDark })).join('')}
         </div>
       </section>
 
@@ -319,42 +400,50 @@ function renderHomeTab() {
         <div class="flex items-center justify-between">
           <div class="flex items-center gap-2">
             <span class="text-sky-500">✨</span>
-            <h2 class="font-heading font-extrabold text-sm sm:text-base text-stone-900">
+            <h2 class="font-bold text-sm sm:text-base ${isDark ? 'text-white' : 'text-stone-900'}">
               Produk Baru Ditambahkan
             </h2>
           </div>
         </div>
         <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2.5 sm:gap-4">
-          ${newProducts.map((p) => renderProductCard(p)).join('')}
+          ${newProducts.map((p) => renderProductCard(p, { isDark })).join('')}
         </div>
       </section>
 
       <!-- TRUST & GUARANTEE SECTION -->
-      <section class="rounded-2xl bg-white border border-stone-200/90 p-4 sm:p-5 shadow-sm space-y-3 sm:space-y-4">
-        <h3 class="font-heading font-bold text-xs uppercase tracking-wider text-stone-400 text-center">
+      <section class="rounded-2xl ${
+        isDark ? 'bg-[#101114] border-white/[0.08] text-white' : 'bg-white border-stone-200/90 text-stone-900'
+      } border p-4 sm:p-5 shadow-sm space-y-3 sm:space-y-4">
+        <h3 class="font-bold text-xs uppercase tracking-wider ${isDark ? 'text-[#8A8F98]' : 'text-stone-400'} text-center font-mono">
           Layanan Bintang Store
         </h3>
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 text-center">
           <div class="space-y-1">
-            <div class="w-8 h-8 sm:w-9 sm:h-9 mx-auto rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center">
+            <div class="w-8 h-8 sm:w-9 sm:h-9 mx-auto rounded-xl ${
+              isDark ? 'bg-emerald-500/10 text-emerald-400' : 'bg-emerald-50 text-emerald-600'
+            } flex items-center justify-center">
               ${ICONS.shieldCheck}
             </div>
-            <h4 class="font-heading font-bold text-xs text-stone-900">Garansi Layanan</h4>
-            <p class="text-[11px] text-stone-500">Bantuan ganti baru atau solusi penuh bila produk berkendala selama masa aktif.</p>
+            <h4 class="font-bold text-xs ${isDark ? 'text-white' : 'text-stone-900'}">Garansi Layanan</h4>
+            <p class="text-[11px] ${isDark ? 'text-[#8A8F98]' : 'text-stone-500'}">Bantuan ganti baru atau solusi penuh bila produk berkendala selama masa aktif.</p>
           </div>
           <div class="space-y-1">
-            <div class="w-8 h-8 sm:w-9 sm:h-9 mx-auto rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center">
+            <div class="w-8 h-8 sm:w-9 sm:h-9 mx-auto rounded-xl ${
+              isDark ? 'bg-amber-500/10 text-amber-400' : 'bg-amber-50 text-amber-600'
+            } flex items-center justify-center">
               ${ICONS.zap}
             </div>
-            <h4 class="font-heading font-bold text-xs text-stone-900">Akses Cepat</h4>
-            <p class="text-[11px] text-stone-500">Kredensial dan petunjuk aktivasi otomatis siap setelah pembayaran diverifikasi.</p>
+            <h4 class="font-bold text-xs ${isDark ? 'text-white' : 'text-stone-900'}">Akses Cepat</h4>
+            <p class="text-[11px] ${isDark ? 'text-[#8A8F98]' : 'text-stone-500'}">Kredensial dan petunjuk aktivasi otomatis siap setelah pembayaran diverifikasi.</p>
           </div>
           <div class="space-y-1">
-            <div class="w-8 h-8 sm:w-9 sm:h-9 mx-auto rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center">
+            <div class="w-8 h-8 sm:w-9 sm:h-9 mx-auto rounded-xl ${
+              isDark ? 'bg-purple-500/10 text-purple-400' : 'bg-purple-50 text-purple-600'
+            } flex items-center justify-center">
               ${ICONS.help}
             </div>
-            <h4 class="font-heading font-bold text-xs text-stone-900">Bantuan Pelanggan</h4>
-            <p class="text-[11px] text-stone-500">Bantuan aktivasi dan tanya jawab siap dipandu via Telegram Customer Care.</p>
+            <h4 class="font-bold text-xs ${isDark ? 'text-white' : 'text-stone-900'}">Bantuan Pelanggan</h4>
+            <p class="text-[11px] ${isDark ? 'text-[#8A8F98]' : 'text-stone-500'}">Bantuan aktivasi dan tanya jawab siap dipandu via Telegram Customer Care.</p>
           </div>
         </div>
       </section>
@@ -1937,6 +2026,30 @@ export function initWebAppEvents() {
       if (tab) switchToSubTab(tab);
     });
   });
+
+  // Template Switcher (Dark Obsidian vs Ivory Minimal)
+  const btnTplDark = document.getElementById('btn-switch-tpl-dark');
+  const btnTplIvory = document.getElementById('btn-switch-tpl-ivory');
+  if (btnTplDark && btnTplIvory) {
+    btnTplDark.addEventListener('click', () => {
+      currentStoreTemplate = 'dark';
+      localStorage.setItem('bts_store_template', 'dark');
+      const root = document.getElementById('app-root');
+      if (root) {
+        root.innerHTML = renderWebAppPage();
+        initWebAppEvents();
+      }
+    });
+    btnTplIvory.addEventListener('click', () => {
+      currentStoreTemplate = 'ivory';
+      localStorage.setItem('bts_store_template', 'ivory');
+      const root = document.getElementById('app-root');
+      if (root) {
+        root.innerHTML = renderWebAppPage();
+        initWebAppEvents();
+      }
+    });
+  }
 
   // Bind initial tab events
   bindEventsForCurrentTab();

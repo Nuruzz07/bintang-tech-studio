@@ -21,16 +21,18 @@ export function openAuthModal({ defaultTab = 'login', onSuccess = null } = {}) {
 
   function renderContent() {
     return `
-      <div id="auth-modal-container" class="space-y-5">
+      <div id="auth-modal-container" class="space-y-5 text-[#F7F8F8]">
         <!-- Brand Header -->
         <div class="text-center space-y-1">
-          <div class="w-10 h-10 mx-auto mb-2">
-            ${BRAND_LOGO_SVG}
+          <div class="w-10 h-10 mx-auto mb-2 flex items-center justify-center rounded-xl bg-[#16181D] border border-white/[0.08] shadow-sm">
+            <div class="w-4 h-4 rounded-full bg-gradient-to-tr from-[#5E6AD2] to-indigo-400 flex items-center justify-center">
+              <span class="w-1.5 h-1.5 rounded-full bg-white"></span>
+            </div>
           </div>
-          <h2 class="font-heading font-black text-xl text-stone-900">
+          <h2 class="font-bold text-lg text-white tracking-tight">
             ${activeTab === 'login' ? 'Masuk ke Dashboard Seller' : 'Daftar Akun Seller Baru'}
           </h2>
-          <p class="text-xs text-stone-500">
+          <p class="text-xs text-[#8A8F98]">
             ${
               activeTab === 'login'
                 ? 'Kelola toko digital, pantau omset & kirim produk otomatis'
@@ -40,22 +42,22 @@ export function openAuthModal({ defaultTab = 'login', onSuccess = null } = {}) {
         </div>
 
         <!-- Tab Switcher -->
-        <div class="flex p-1 bg-stone-100 rounded-xl gap-1">
+        <div class="flex p-1 bg-[#0C0D0F] border border-white/[0.06] rounded-xl gap-1">
           <button type="button"
                   id="tab-btn-login"
-                  class="flex-1 py-1.5 text-xs font-semibold rounded-lg transition-all ${
+                  class="flex-1 py-1.5 text-xs font-medium rounded-lg transition-all ${
                     activeTab === 'login'
-                      ? 'bg-white text-stone-900 shadow-xs'
-                      : 'text-stone-500 hover:text-stone-800'
+                      ? 'bg-white/[0.1] border border-white/[0.12] text-white shadow-sm'
+                      : 'text-[#8A8F98] hover:text-white'
                   }">
             Masuk (Login)
           </button>
           <button type="button"
                   id="tab-btn-register"
-                  class="flex-1 py-1.5 text-xs font-semibold rounded-lg transition-all ${
+                  class="flex-1 py-1.5 text-xs font-medium rounded-lg transition-all ${
                     activeTab === 'register'
-                      ? 'bg-white text-stone-900 shadow-xs'
-                      : 'text-stone-500 hover:text-stone-800'
+                      ? 'bg-white/[0.1] border border-white/[0.12] text-white shadow-sm'
+                      : 'text-[#8A8F98] hover:text-white'
                   }">
             Daftar Baru
           </button>
@@ -65,16 +67,16 @@ export function openAuthModal({ defaultTab = 'login', onSuccess = null } = {}) {
           activeTab === 'login'
             ? `
           <!-- FORM LOGIN -->
-          <form id="form-auth-login" class="space-y-3.5">
+          <form id="form-auth-login" class="space-y-4">
             <div>
-              <label class="block text-[11px] font-mono uppercase text-stone-500 mb-1">Email Akun (Gmail / Email)</label>
-              <input type="email" id="login-email" required placeholder="seller@gmail.com" class="w-full px-3.5 py-2.5 rounded-xl border border-stone-200 focus:outline-none focus:border-terracotta-500 text-sm bg-white" />
+              <label class="block text-[11px] font-sans font-medium tracking-wider uppercase text-[#8A8F98] mb-1.5">Email Akun (Gmail / Email)</label>
+              <input type="email" id="login-email" required placeholder="seller@gmail.com" class="w-full px-3.5 py-2.5 rounded-xl border border-white/[0.08] focus:outline-none focus:border-[#5E6AD2] focus:ring-1 focus:ring-[#5E6AD2]/30 text-xs bg-[#0C0D0F] text-white placeholder-[#555]" />
             </div>
             <div>
-              <label class="block text-[11px] font-mono uppercase text-stone-500 mb-1">Password</label>
-              <input type="password" id="login-password" required placeholder="••••••••" class="w-full px-3.5 py-2.5 rounded-xl border border-stone-200 focus:outline-none focus:border-terracotta-500 text-sm bg-white" />
+              <label class="block text-[11px] font-sans font-medium tracking-wider uppercase text-[#8A8F98] mb-1.5">Password</label>
+              <input type="password" id="login-password" required placeholder="••••••••" class="w-full px-3.5 py-2.5 rounded-xl border border-white/[0.08] focus:outline-none focus:border-[#5E6AD2] focus:ring-1 focus:ring-[#5E6AD2]/30 text-xs bg-[#0C0D0F] text-white placeholder-[#555]" />
             </div>
-            <button type="submit" id="btn-submit-login" class="w-full py-2.5 px-4 rounded-xl font-heading font-bold text-sm bg-stone-900 hover:bg-stone-800 text-white shadow-sm transition-all active:scale-98">
+            <button type="submit" id="btn-submit-login" class="w-full py-2.5 px-4 rounded-xl font-semibold text-xs bg-white hover:bg-zinc-200 text-black shadow-sm transition-all active:scale-98">
               Masuk ke Dashboard
             </button>
           </form>
@@ -82,24 +84,24 @@ export function openAuthModal({ defaultTab = 'login', onSuccess = null } = {}) {
             : registerStep === 1
               ? `
           <!-- FORM DAFTAR STEP 1 -->
-          <form id="form-auth-register" class="space-y-3">
+          <form id="form-auth-register" class="space-y-3.5">
             <div>
-              <label class="block text-[11px] font-mono uppercase text-stone-500 mb-1">Nama Lengkap</label>
-              <input type="text" id="reg-name" required placeholder="Nama Anda" class="w-full px-3 py-2 rounded-xl border border-stone-200 focus:outline-none focus:border-terracotta-500 text-sm bg-white" />
+              <label class="block text-[11px] font-sans font-medium tracking-wider uppercase text-[#8A8F98] mb-1">Nama Lengkap</label>
+              <input type="text" id="reg-name" required placeholder="Nama Anda" class="w-full px-3.5 py-2 rounded-xl border border-white/[0.08] focus:outline-none focus:border-[#5E6AD2] focus:ring-1 focus:ring-[#5E6AD2]/30 text-xs bg-[#0C0D0F] text-white placeholder-[#555]" />
             </div>
             <div>
-              <label class="block text-[11px] font-mono uppercase text-stone-500 mb-1">Nama Toko Digital</label>
-              <input type="text" id="reg-store" required placeholder="Contoh: Bintang Store Digital" class="w-full px-3 py-2 rounded-xl border border-stone-200 focus:outline-none focus:border-terracotta-500 text-sm bg-white" />
+              <label class="block text-[11px] font-sans font-medium tracking-wider uppercase text-[#8A8F98] mb-1">Nama Toko Digital</label>
+              <input type="text" id="reg-store" required placeholder="Contoh: Bintang Store Digital" class="w-full px-3.5 py-2 rounded-xl border border-white/[0.08] focus:outline-none focus:border-[#5E6AD2] focus:ring-1 focus:ring-[#5E6AD2]/30 text-xs bg-[#0C0D0F] text-white placeholder-[#555]" />
             </div>
             <div>
-              <label class="block text-[11px] font-mono uppercase text-stone-500 mb-1">Alamat Email (Gmail)</label>
-              <input type="email" id="reg-email" required placeholder="nama@gmail.com" class="w-full px-3 py-2 rounded-xl border border-stone-200 focus:outline-none focus:border-terracotta-500 text-sm bg-white" />
+              <label class="block text-[11px] font-sans font-medium tracking-wider uppercase text-[#8A8F98] mb-1">Alamat Email (Gmail)</label>
+              <input type="email" id="reg-email" required placeholder="nama@gmail.com" class="w-full px-3.5 py-2 rounded-xl border border-white/[0.08] focus:outline-none focus:border-[#5E6AD2] focus:ring-1 focus:ring-[#5E6AD2]/30 text-xs bg-[#0C0D0F] text-white placeholder-[#555]" />
             </div>
             <div>
-              <label class="block text-[11px] font-mono uppercase text-stone-500 mb-1">Password Baru (min 6 karakter)</label>
-              <input type="password" id="reg-password" minlength="6" required placeholder="••••••••" class="w-full px-3 py-2 rounded-xl border border-stone-200 focus:outline-none focus:border-terracotta-500 text-sm bg-white" />
+              <label class="block text-[11px] font-sans font-medium tracking-wider uppercase text-[#8A8F98] mb-1">Password Baru (min 6 karakter)</label>
+              <input type="password" id="reg-password" minlength="6" required placeholder="••••••••" class="w-full px-3.5 py-2 rounded-xl border border-white/[0.08] focus:outline-none focus:border-[#5E6AD2] focus:ring-1 focus:ring-[#5E6AD2]/30 text-xs bg-[#0C0D0F] text-white placeholder-[#555]" />
             </div>
-            <button type="submit" id="btn-submit-register" class="w-full py-2.5 px-4 rounded-xl font-heading font-bold text-sm bg-terracotta-600 hover:bg-terracotta-700 text-white shadow-sm transition-all active:scale-98">
+            <button type="submit" id="btn-submit-register" class="w-full py-2.5 px-4 rounded-xl font-semibold text-xs bg-white hover:bg-zinc-200 text-black shadow-sm transition-all active:scale-98">
               Daftar & Kirim Kode OTP ke Gmail
             </button>
           </form>
@@ -107,29 +109,29 @@ export function openAuthModal({ defaultTab = 'login', onSuccess = null } = {}) {
               : `
           <!-- FORM VERIFIKASI OTP STEP 2 -->
           <form id="form-auth-otp" class="space-y-4">
-            <div class="p-3 bg-amber-50 rounded-xl border border-amber-200/80 text-xs text-amber-900 space-y-1">
-              <div class="font-bold flex items-center gap-1.5">
+            <div class="p-3 bg-indigo-950/40 rounded-xl border border-indigo-500/30 text-xs text-indigo-200 space-y-1">
+              <div class="font-bold flex items-center gap-1.5 text-white">
                 <span>📩 Cek Inbox Gmail Kamu</span>
               </div>
-              <p class="text-[11px] text-amber-800 leading-relaxed">
+              <p class="text-[11px] text-[#A5B4FC] leading-relaxed">
                 Kode 6-digit OTP telah dikirimkan ke: <b>${pendingEmail}</b>. Masukkan kode di bawah atau klik link di email untuk mengaktifkan akun.
               </p>
-              <p class="text-[10px] text-stone-500 italic">
+              <p class="text-[10px] text-[#8A8F98] italic">
                 *Tips: Jika tidak ada di Kotak Masuk (Inbox), silakan cek di folder <b>Spam</b>.
               </p>
             </div>
             <div>
-              <label class="block text-[11px] font-mono uppercase text-stone-500 mb-1 text-center">Kode Verifikasi (OTP) dari Email</label>
-              <input type="text" id="reg-otp-code" maxlength="12" required placeholder="Ketik / Tempel Kode OTP" class="w-full px-4 py-3 rounded-xl border-2 border-stone-800 text-center font-mono font-black text-xl tracking-[0.2em] focus:outline-none focus:border-terracotta-600 uppercase bg-white" autocomplete="one-time-code" />
+              <label class="block text-[11px] font-sans font-medium tracking-wider uppercase text-[#8A8F98] mb-1 text-center">Kode Verifikasi (OTP) dari Email</label>
+              <input type="text" id="reg-otp-code" maxlength="12" required placeholder="Ketik / Tempel Kode OTP" class="w-full px-4 py-3 rounded-xl border border-white/[0.18] text-center font-mono font-black text-xl tracking-[0.25em] focus:outline-none focus:border-indigo-400 uppercase bg-[#0C0D0F] text-white" autocomplete="one-time-code" />
             </div>
-            <button type="submit" id="btn-submit-otp" class="w-full py-2.5 px-4 rounded-xl font-heading font-bold text-sm bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm transition-all active:scale-98">
+            <button type="submit" id="btn-submit-otp" class="w-full py-2.5 px-4 rounded-xl font-semibold text-xs bg-emerald-500 hover:bg-emerald-400 text-black shadow-sm transition-all active:scale-98">
               Verifikasi & Buka Dashboard
             </button>
             <div class="flex items-center justify-between text-xs px-1">
-              <button type="button" id="btn-back-to-reg" class="text-stone-500 hover:text-stone-800 font-semibold flex items-center gap-1 transition-colors">
+              <button type="button" id="btn-back-to-reg" class="text-[#8A8F98] hover:text-white font-medium flex items-center gap-1 transition-colors">
                 <span>← Ganti Email</span>
               </button>
-              <button type="button" id="btn-resend-otp" class="text-terracotta-600 hover:text-terracotta-700 font-semibold underline">
+              <button type="button" id="btn-resend-otp" class="text-indigo-400 hover:text-indigo-300 font-medium underline">
                 Kirim Ulang Kode OTP
               </button>
             </div>
@@ -138,23 +140,23 @@ export function openAuthModal({ defaultTab = 'login', onSuccess = null } = {}) {
         }
 
         <!-- Divider -->
-        <div class="relative flex items-center justify-center">
-          <div class="border-t border-stone-200 w-full"></div>
-          <span class="bg-white px-3 text-[11px] font-mono uppercase text-stone-400 absolute">atau</span>
+        <div class="relative flex items-center justify-center my-4">
+          <div class="border-t border-white/[0.06] w-full"></div>
+          <span class="bg-[#101114] px-3 text-[10px] font-mono uppercase text-[#64748B] absolute">atau</span>
         </div>
 
         <!-- Direct Google OAuth Sign-in Button -->
         <div>
           <button type="button"
                   id="btn-google-oauth"
-                  class="w-full py-2.5 px-4 rounded-xl border border-stone-200 hover:bg-stone-50 text-stone-700 font-heading font-bold text-xs flex items-center justify-center gap-2.5 shadow-xs transition-all active:scale-98">
+                  class="w-full py-2.5 px-4 rounded-xl border border-white/[0.08] bg-[#16181D] hover:bg-white/[0.06] text-white font-medium text-xs flex items-center justify-center gap-2.5 shadow-sm transition-all active:scale-98">
             ${GOOGLE_ICON_SVG}
             <span>Lanjutkan Langsung dengan Google (Gmail)</span>
           </button>
         </div>
 
         <!-- Privacy & Security Notice -->
-        <div class="text-center text-[10px] text-stone-400 leading-tight">
+        <div class="text-center text-[10px] text-[#64748B] leading-tight font-mono">
           Terlindungi dengan enkripsi Supabase Auth & PostgreSQL RLS isolation.
         </div>
       </div>
