@@ -41,6 +41,38 @@ samp,
   background: #323642;
 }
 
+/* Linear Staggered Blur-In Animation */
+@keyframes linearBlurIn {
+  0% {
+    opacity: 0;
+    filter: blur(12px);
+    transform: translateY(8px);
+  }
+  100% {
+    opacity: 1;
+    filter: blur(0px);
+    transform: translateY(0);
+  }
+}
+
+.animate-blur-in {
+  animation: linearBlurIn 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Linear Dropdown Mega Menu Transitions */
+.dropdown-menu-enter {
+  opacity: 0;
+  transform: translateY(-4px) scale(0.98);
+  pointer-events: none;
+  transition: opacity 0.16s cubic-bezier(0.16, 1, 0.3, 1), transform 0.16s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.dropdown-menu-enter.active {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  pointer-events: auto;
+}
+
 /* Linear & Raycast Exact Styles from Reference Code */
 .glow-effect {
   background: radial-gradient(circle at 50% 0%, rgba(94, 106, 210, 0.15) 0%, transparent 60%);

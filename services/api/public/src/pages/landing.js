@@ -1,781 +1,925 @@
-// Bintang Tech Studio — High-End Engineering Design System
-// Strictly modeled after Linear (#0a0a0c, #121316, #22232a), Resend (#0f0f0f, #222222), and Raycast (#121215, #27272a)
+// Bintang Tech Studio — Pure Linear Experience
+// Replicated from C:\BOT_WEB\Patokan contoh animasi home bintang.txt
+// Complete with Staggered Blur-In, Mega-Menu Dropdowns, Interactive View Switching & Linear App Mockup
 
 import { store } from '../state/store.js';
 import { formatRupiah } from '../utils/currency.js';
 import { escapeHtml } from '../utils/helpers.js';
 import { openAuthModal } from '../components/auth-modal.js';
 
-let activeCategoryFilter = 'all';
-let searchQuery = '';
-let billingCycle = 'monthly'; // 'monthly' | 'yearly'
-let selectedAddons = new Set();
+let activeLandingTab = 'home'; // 'home' | 'customers' | 'pricing' | 'contact'
+let customerFilter = 'Featured';
+let billingYearly = true;
 
-const TEMPLATES_CATALOG = [
+const LINEAR_LOGO_SVG = `<svg class="w-[18px] h-[18px]" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <path d="M50 0C22.3858 0 0 22.3858 0 50C0 53.658 0.392822 57.2244 1.1391 60.6591L39.3409 98.8609C42.7756 99.6072 46.342 100 50 100C77.6142 100 100 77.6142 100 50C100 22.3858 77.6142 0 50 0ZM5.36212 73.1167C8.11346 78.4193 11.7973 83.1539 16.2121 87.1194L12.8806 83.7879C16.8461 88.2027 21.5807 91.8865 26.8833 94.6379L5.36212 73.1167ZM3.1066 66.8548L33.1452 96.8934C30.4071 95.9082 27.7819 94.6776 25.2927 93.2249L6.77508 74.7073C5.32239 72.2181 4.0918 69.5929 3.1066 66.8548ZM0.320892 55.7024C0.108276 53.8339 0 51.9298 0 50C0 47.4194 0.195557 44.8837 0.572754 42.4075L57.5925 99.4272C55.1163 99.8044 52.5806 100 50 100C48.0702 100 46.1661 99.8917 44.2976 99.6791L0.320892 55.7024ZM2.50153 33.7603C3.58813 30.5831 5.00879 27.5629 6.72302 24.7393L75.2607 93.277C72.4371 94.9912 69.4169 96.4119 66.2397 97.4985L2.50153 33.7603ZM11.7209 17.8551C14.1837 14.9225 16.9685 12.2756 20.022 9.96729L90.0327 79.978C87.7244 83.0315 85.0775 85.8163 82.1449 88.2791L11.7209 17.8551Z" fill="currentColor"/>
+</svg>`;
+
+const CUSTOMER_STORIES = [
   {
-    id: 'tpl_streaming_vault',
-    name: 'Streaming & Accounts',
+    id: 'story_ramp',
     category: 'streaming',
-    badge: 'STARTER',
-    iconText: 'SP',
-    description: 'Instant account delivery engine for Spotify, Netflix, YouTube Premium with credentials vault.',
-    features: ['36 Preloaded SKUs', 'Tipzy QRIS Integration', 'Telegram & WA Dispatch', 'Account Pool Manager'],
-    author: 'Bintang Studio Team',
-    tier: 'starter',
-  },
-  {
-    id: 'tpl_gaming_vault',
-    name: 'Game Top-Up & Vouchers',
-    category: 'game',
+    tag: 'STREAMING MERCHANT',
+    title: 'The coding agent behind 75% of Ramp\'s merged PRs',
+    subtitle: 'Toko digital streaming mengotomasi 100% verifikasi mutasi QRIS dan serah-terima akun privat tanpa jeda.',
+    metric: '1.1s',
+    metricLabel: 'Average delivery latency',
+    ctaText: 'Read story →',
     badge: 'POPULAR',
-    iconText: 'ML',
-    description: 'Automatic redeem voucher code dispatcher for MLBB, Free Fire, and gaming gift cards.',
-    features: ['Instant Code Release', 'Server ID Parsing', 'Live Balance Inquiry', 'Zero-touch Delivery'],
-    author: 'Bintang Gaming Lab',
-    tier: 'pro',
+    logoSvg: `<svg class="w-7 h-7 text-white" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14H9V8h2v8zm4 0h-2V8h2v8z"/></svg>`,
   },
   {
-    id: 'tpl_software_vault',
-    name: 'Software License Vault',
-    category: 'software',
+    id: 'story_openai',
+    category: 'gaming',
+    tag: 'GAMING VOUCHERS',
+    title: 'Why Top-Up stores chose Bintang Tech and scaled to 3,000+ buyers',
+    subtitle: 'Pengiriman serial voucher MLBB & Free Fire otomatis dengan validasi User ID & Server ID secara real-time.',
+    metric: '99.9%',
+    metricLabel: 'Settlement reliability',
+    ctaText: 'Read story →',
     badge: 'ENTERPRISE',
-    iconText: 'OS',
-    description: 'Secure digital serial license key single-use pool for Windows 11, Office, and productivity tools.',
-    features: ['Single-use Key Isolation', 'Activation Instructions', 'Automated Verification', 'License Key Warranty'],
-    author: 'Bintang Infra Core',
-    tier: 'pro',
+    logoSvg: `<svg class="w-7 h-7 text-white" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>`,
   },
   {
-    id: 'tpl_custom_bot',
-    name: 'Bespoke Commerce Engine',
-    category: 'custom',
-    badge: 'CUSTOM',
-    iconText: 'CX',
-    description: 'Custom multi-tenant bot architecture with tailored workflows, custom domain, and dedicated SLA.',
-    features: ['Tailored Dialog Tree', 'Custom Hostname (.com/.id)', 'Multi-Agent Support Handover', 'Dedicated Database Pool'],
-    author: 'Bintang Solutions',
-    tier: 'enterprise',
+    id: 'story_coinbase',
+    category: 'software',
+    tag: 'SOFTWARE LICENSES',
+    title: 'Zero-touch digital delivery for retail software licenses and cloud keys',
+    subtitle: 'Sistem single-use pool mengisolasi serial key Windows 11 & Office agar tidak tumpang tindih antar pembeli.',
+    metric: '0',
+    metricLabel: 'Manual chat required',
+    ctaText: 'Read story →',
+    badge: 'AUTOMATED',
+    logoSvg: `<svg class="w-7 h-7 text-white" viewBox="0 0 24 24" fill="currentColor"><path d="M4 4h7v7H4V4zm0 9h7v7H4v-7zm9-9h7v7h-7V4zm0 9h7v7h-7v-7z"/></svg>`,
   },
 ];
 
 export function renderLandingPage() {
-  const products = store.getActiveProducts();
-  const settings = store.getSettings();
-  const orders = store.getOrders();
-  const totalSales = orders.reduce(
-    (sum, o) => sum + (o.paymentStatus === 'PAID' ? o.total : 0),
-    2450000,
-  );
-
   return `
-    <div class="view-container bg-[#0a0a0c] text-[#f7f8f8] flex flex-col justify-between selection:bg-[#5e6ad2] selection:text-white relative overflow-hidden font-sans">
+    <div class="min-h-screen bg-[#08090A] text-[#F7F8F8] font-sans antialiased selection:bg-[#5E6AD2]/30 overflow-x-hidden relative">
       
-      <!-- Linear Glow Effect (Pure from LINEAR.txt) -->
-      <div class="glow-effect absolute top-0 left-0 right-0 h-[600px] pointer-events-none -z-0"></div>
+      <!-- Linear Header Glow Effect -->
+      <div class="glow-effect absolute top-0 left-0 right-0 h-[650px] pointer-events-none -z-0"></div>
       
-      <!-- Linear Grid Pattern -->
+      <!-- Linear 40px Grid Pattern -->
       <div class="grid-pattern absolute inset-0 pointer-events-none opacity-40 -z-0"></div>
 
-      <!-- NAVBAR (Exact match to LINEAR.txt header) -->
-      <header class="sticky top-0 z-50 bg-[#0a0a0c]/80 backdrop-blur-md border-b border-[#22232a]">
-        <div class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
-          <div class="flex items-center space-x-8">
-            <a href="#" class="flex items-center space-x-2.5 text-white font-semibold text-lg tracking-tight">
-              <svg class="w-5 h-5 text-white" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-13h2v6h-2zm0 8h2v2h-2z"/>
-              </svg>
-              <span class="font-bold tracking-normal">Bintang Tech</span>
-            </a>
-            
-            <nav class="hidden md:flex items-center space-x-6 text-sm text-[#8a8f98] font-medium">
-              <a href="#workflow" class="hover:text-white transition-colors">Sistem</a>
-              <a href="#templates" class="hover:text-white transition-colors">Templates</a>
-              <a href="#pricing" class="hover:text-white transition-colors">Pricing</a>
-              <a href="#faq" class="hover:text-white transition-colors">Docs & FAQ</a>
+      <!-- --- STICKY NAVBAR (Pure Linear Experience adapted for Bintang Tech) --- -->
+      <header
+        id="linear-navbar"
+        class="sticky top-0 z-50 h-[56px] bg-[#08090A]/80 backdrop-blur-md border-b border-white/[0.06] transition-colors"
+      >
+        <div class="max-w-[1120px] h-full mx-auto px-6 flex items-center justify-between relative">
+          <!-- Logo & Brand -->
+          <button
+            id="nav-brand"
+            type="button"
+            class="flex items-center gap-2.5 text-[#F7F8F8] hover:opacity-90 transition-opacity"
+          >
+            <div class="w-4 h-4 rounded-full bg-gradient-to-tr from-[#5E6AD2] to-indigo-400 flex items-center justify-center shadow-sm">
+              <span class="w-1.5 h-1.5 rounded-full bg-white"></span>
+            </div>
+            <span class="font-semibold text-[14px] tracking-[-0.02em]">Bintang Tech</span>
+          </button>
+
+          <!-- Nav Items & Actions -->
+          <div class="flex items-center gap-1">
+            <nav class="flex items-center gap-1 mr-3">
+              <!-- Dropdown Trigger: Product -->
+              <div id="nav-dropdown-product-wrap" class="relative">
+                <button
+                  id="btn-nav-product"
+                  type="button"
+                  class="px-3 py-1.5 rounded-md text-[13px] transition-colors text-[#8A8F98] hover:text-[#F7F8F8]"
+                >
+                  Product
+                </button>
+              </div>
+
+              <!-- Dropdown Trigger: Resources -->
+              <div id="nav-dropdown-resources-wrap" class="relative">
+                <button
+                  id="btn-nav-resources"
+                  type="button"
+                  class="px-3 py-1.5 rounded-md text-[13px] transition-colors text-[#8A8F98] hover:text-[#F7F8F8]"
+                >
+                  Resources
+                </button>
+              </div>
+
+              <button
+                id="btn-nav-customers"
+                type="button"
+                class="btn-nav-link px-3 py-1.5 rounded-md text-[13px] transition-colors ${
+                  activeLandingTab === 'customers' ? 'text-[#F7F8F8] bg-white/[0.06]' : 'text-[#8A8F98] hover:text-[#F7F8F8]'
+                }"
+                data-tab="customers"
+              >
+                Customers
+              </button>
+
+              <button
+                id="btn-nav-pricing"
+                type="button"
+                class="btn-nav-link px-3 py-1.5 rounded-md text-[13px] transition-colors ${
+                  activeLandingTab === 'pricing' ? 'text-[#F7F8F8] bg-white/[0.06]' : 'text-[#8A8F98] hover:text-[#F7F8F8]'
+                }"
+                data-tab="pricing"
+              >
+                Pricing
+              </button>
+
+              <a
+                href="#admin"
+                class="px-3 py-1.5 rounded-md text-[13px] transition-colors text-[#8A8F98] hover:text-[#F7F8F8]"
+              >
+                Workspace
+              </a>
+
+              <button
+                id="btn-nav-contact"
+                type="button"
+                class="btn-nav-link px-3 py-1.5 rounded-md text-[13px] transition-colors ${
+                  activeLandingTab === 'contact' ? 'text-[#F7F8F8] bg-white/[0.06]' : 'text-[#8A8F98] hover:text-[#F7F8F8]'
+                }"
+                data-tab="contact"
+              >
+                Contact
+              </button>
             </nav>
+
+            <div class="h-3.5 w-[1px] bg-white/[0.1] mx-2"></div>
+
+            <div class="flex items-center gap-2 pl-1">
+              <button
+                id="btn-top-login"
+                type="button"
+                class="px-2.5 py-1.5 text-[13px] text-[#8A8F98] hover:text-[#F7F8F8] transition-colors"
+              >
+                Log in
+              </button>
+              <button
+                id="btn-top-signup"
+                type="button"
+                class="px-3 py-1 bg-[#F7F8F8] hover:bg-white text-[#08090A] font-medium text-[13px] rounded-md transition-colors shadow-sm"
+              >
+                Sign up
+              </button>
+            </div>
           </div>
 
-          <div class="flex items-center space-x-4">
-            <button id="btn-hero-login" type="button" class="text-sm text-[#8a8f98] hover:text-white transition-colors font-medium">
-              Log in
-            </button>
-            <button id="btn-hero-register" type="button" class="bg-white hover:bg-gray-100 text-black text-sm font-medium px-4 py-2 rounded-full transition-all shadow-sm">
-              Mulai Sewa Bot
-            </button>
+          <!-- MEGA MENU DROPDOWN: PRODUCT (from Patokan lines 280-366) -->
+          <div
+            id="mega-dropdown-product"
+            class="dropdown-menu-enter absolute top-[52px] right-[120px] bg-[#0F1012]/95 backdrop-blur-2xl border border-white/[0.09] rounded-xl shadow-[0_24px_48px_-12px_rgba(0,0,0,0.85)] overflow-hidden w-[680px] z-50"
+          >
+            <div>
+              <div class="grid grid-cols-12">
+                <!-- Left 2 Columns -->
+                <div class="col-span-8 p-6 grid grid-cols-2 gap-x-6 gap-y-6">
+                  <div class="group cursor-pointer p-2 -m-2 rounded-lg hover:bg-white/[0.04] transition-colors btn-goto-tab" data-tab="home">
+                    <div class="text-[13px] font-medium text-[#F7F8F8] mb-1">
+                      Intake & Channels
+                    </div>
+                    <p class="text-[12.5px] leading-[1.45] text-[#8A8F98] group-hover:text-[#B4B8C0] transition-colors">
+                      Bring customer requests in from WhatsApp Multi-Device and Telegram Bot
+                    </p>
+                  </div>
+
+                  <div class="group cursor-pointer p-2 -m-2 rounded-lg hover:bg-white/[0.04] transition-colors btn-goto-tab" data-tab="home">
+                    <div class="text-[13px] font-medium text-[#F7F8F8] mb-1">
+                      AI and automations
+                    </div>
+                    <p class="text-[12.5px] leading-[1.45] text-[#8A8F98] group-hover:text-[#B4B8C0] transition-colors">
+                      Agents that follow order from buyer conversation to QRIS settlement
+                    </p>
+                  </div>
+
+                  <div class="group cursor-pointer p-2 -m-2 rounded-lg hover:bg-white/[0.04] transition-colors btn-goto-tab" data-tab="home">
+                    <div class="text-[13px] font-medium text-[#F7F8F8] mb-1">
+                      Plan and monitor
+                    </div>
+                    <p class="text-[12.5px] leading-[1.45] text-[#8A8F98] group-hover:text-[#B4B8C0] transition-colors">
+                      Set digital product inventory and follow stock levels in real-time
+                    </p>
+                  </div>
+
+                  <div class="group cursor-pointer p-2 -m-2 rounded-lg hover:bg-white/[0.04] transition-colors btn-goto-tab" data-tab="home">
+                    <div class="text-[13px] font-medium text-[#F7F8F8] mb-1">
+                      Zero-click fulfillment
+                    </div>
+                    <p class="text-[12.5px] leading-[1.45] text-[#8A8F98] group-hover:text-[#B4B8C0] transition-colors">
+                      Deliver streaming accounts, licenses, and voucher codes instantly
+                    </p>
+                  </div>
+                </div>
+
+                <!-- Right Column -->
+                <div class="col-span-4 bg-[#0B0C0E]/70 border-l border-white/[0.06] p-6 flex flex-col justify-between space-y-3.5">
+                  <div class="text-[13px] font-medium text-[#F7F8F8] hover:text-white cursor-pointer btn-goto-tab" data-tab="customers">
+                    Integration directory
+                  </div>
+                  <div class="text-[13px] font-medium text-[#F7F8F8] hover:text-white cursor-pointer btn-goto-tab" data-tab="home">
+                    Tipzy QRIS Settlement
+                  </div>
+                  <div class="text-[13px] font-medium text-[#F7F8F8] hover:text-white cursor-pointer btn-goto-tab" data-tab="home">
+                    Smart Human Takeover
+                  </div>
+                  <div class="text-[13px] font-medium text-[#F7F8F8] hover:text-white cursor-pointer btn-goto-tab" data-tab="contact">
+                    System Security
+                  </div>
+                </div>
+              </div>
+
+              <!-- Bottom Banner -->
+              <div class="px-6 py-3 bg-[#0A0B0D] border-t border-white/[0.06] flex items-center justify-between text-[12.5px]">
+                <div>
+                  <span class="text-[#F7F8F8] font-medium mr-1.5">New:</span>
+                  <span class="text-[#8A8F98]">15-minute Smart Human Takeover for CS</span>
+                </div>
+                <button class="text-[#8A8F98] hover:text-[#F7F8F8] flex items-center gap-1 transition-colors btn-goto-tab" data-tab="home">
+                  Learn more <span class="text-[11px]">→</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- MEGA MENU DROPDOWN: RESOURCES (from Patokan lines 368-422) -->
+          <div
+            id="mega-dropdown-resources"
+            class="dropdown-menu-enter absolute top-[52px] right-[120px] bg-[#0F1012]/95 backdrop-blur-2xl border border-white/[0.09] rounded-xl shadow-[0_24px_48px_-12px_rgba(0,0,0,0.85)] overflow-hidden w-[640px] z-50"
+          >
+            <div class="grid grid-cols-12">
+              <div class="col-span-8 p-6 grid grid-cols-2 gap-x-6 gap-y-6">
+                <div class="group cursor-pointer p-2 -m-2 rounded-lg hover:bg-white/[0.04] transition-colors btn-goto-tab" data-tab="customers">
+                  <div class="text-[13px] font-medium text-[#F7F8F8] mb-1">
+                    About
+                  </div>
+                  <p class="text-[12.5px] leading-[1.45] text-[#8A8F98]">
+                    Meet the vision behind Bintang Tech Studio
+                  </p>
+                </div>
+
+                <div class="group cursor-pointer p-2 -m-2 rounded-lg hover:bg-white/[0.04] transition-colors btn-goto-tab" data-tab="contact">
+                  <div class="text-[13px] font-medium text-[#F7F8F8] mb-1">
+                    Docs & Guides
+                  </div>
+                  <p class="text-[12.5px] leading-[1.45] text-[#8A8F98]">
+                    Learn how to pair WhatsApp & Telegram bots
+                  </p>
+                </div>
+
+                <div class="group cursor-pointer p-2 -m-2 rounded-lg hover:bg-white/[0.04] transition-colors btn-goto-tab" data-tab="pricing">
+                  <div class="text-[13px] font-medium text-[#F7F8F8] mb-1">
+                    Templates
+                  </div>
+                  <p class="text-[12.5px] leading-[1.45] text-[#8A8F98]">
+                    Clone pre-built digital storefronts
+                  </p>
+                </div>
+
+                <div class="group cursor-pointer p-2 -m-2 rounded-lg hover:bg-white/[0.04] transition-colors btn-goto-tab" data-tab="contact">
+                  <div class="text-[13px] font-medium text-[#F7F8F8] mb-1">
+                    Developers
+                  </div>
+                  <p class="text-[12.5px] leading-[1.45] text-[#8A8F98]">
+                    Webhooks, Tipzy API, and Supabase RLS
+                  </p>
+                </div>
+              </div>
+
+              <div class="col-span-4 bg-[#0B0C0E]/70 border-l border-white/[0.06] p-6 flex flex-col justify-between space-y-3.5">
+                <a href="#webapp" class="text-[13px] font-medium text-[#F7F8F8] hover:text-white cursor-pointer">
+                  Customer WebApp
+                </a>
+                <a href="#admin" class="text-[13px] font-medium text-[#F7F8F8] hover:text-white cursor-pointer">
+                  Seller Dashboard
+                </a>
+                <a href="https://t.me/BintangDigitalDemoBot" target="_blank" class="text-[13px] font-medium text-[#F7F8F8] hover:text-white cursor-pointer">
+                  Telegram Bot Demo
+                </a>
+                <div class="text-[13px] font-medium text-emerald-400 hover:text-emerald-300 cursor-pointer">
+                  🟢 System Status
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </header>
 
-      <!-- HERO SECTION (Exact structure from LINEAR.txt lines 105-135) -->
-      <section class="relative pt-24 pb-20 overflow-hidden">
-        <div class="max-w-7xl mx-auto px-6">
-          <div class="text-center max-w-4xl mx-auto mb-14">
-            <div class="inline-flex items-center space-x-2 bg-[#16181d] border border-[#2b2d36] rounded-full px-3.5 py-1 text-xs text-[#8a8f98] mb-6 shadow-sm">
-              <span class="w-2 h-2 rounded-full bg-[#5e6ad2] animate-pulse"></span>
-              <span>Engine WhatsApp Multi-Device & Telegram Live Telah Beroperasi</span>
-              <a href="#templates" class="text-white hover:underline flex items-center space-x-1 ml-1"><span>Eksplor</span> <i class="fas fa-arrow-right text-[10px]"></i></a>
-            </div>
-            
-            <h1 class="text-5xl sm:text-7xl font-bold tracking-tight text-white mb-6 leading-[1.08]">
-              The product development & sales system for digital sellers
-            </h1>
+      <!-- --- DYNAMIC TAB VIEW TARGET --- -->
+      <main id="linear-tab-content">
+        ${renderTabContent()}
+      </main>
 
-            <p class="text-base sm:text-lg text-[#8a8f98] max-w-2xl mx-auto mb-10 leading-relaxed font-normal">
-              Otomasi penuh jualan produk digital. Sewa bot WhatsApp & Telegram tokomu sendiri—pembeli bayar via QRIS otomatis, akun dan lisensi terkirim instan tanpa intervensi manual.
-            </p>
-
-            <div class="flex items-center justify-center space-x-4">
-              <button id="btn-cta-start" type="button" class="bg-white hover:bg-gray-100 text-black text-sm font-medium px-6 py-3 rounded-full transition-all shadow-sm hover:scale-[1.02] active:scale-[0.98]">
-                Sewa Bot Sekarang
-              </button>
-              <a href="#pricing" class="bg-[#1c1c1c] hover:bg-[#262626] text-white text-sm font-medium px-6 py-3 rounded-full transition border border-[#2a2a2a]">
-                Lihat Paket Harga
-              </a>
-            </div>
-          </div>
-
-          <!-- APP UI PREVIEW (Exact match to LINEAR.txt lines 120-210) -->
-          <div class="relative max-w-6xl mx-auto rounded-xl border border-[#22232a] bg-[#121316] shadow-2xl overflow-hidden">
-            <!-- Mac Window Header -->
-            <div class="h-10 bg-[#16181d] border-b border-[#22232a] flex items-center justify-between px-4">
-              <div class="flex items-center space-x-2">
-                <div class="w-3 h-3 rounded-full bg-[#ff5f56]"></div>
-                <div class="w-3 h-3 rounded-full bg-[#ffbd2e]"></div>
-                <div class="w-3 h-3 rounded-full bg-[#27c93f]"></div>
-              </div>
-              <div class="flex items-center space-x-2 text-xs text-[#8a8f98]">
-                <span class="font-medium text-white">Bintang Tech Studio</span>
-                <span>/</span>
-                <span>BTS-8892 Live Multi-Channel Engine</span>
-              </div>
-              <div class="text-xs text-[#8a8f98] font-mono">100% Autopilot</div>
-            </div>
-
-            <!-- App Layout -->
-            <div class="grid grid-cols-12 min-h-[460px] text-xs">
-              <!-- Sidebar -->
-              <div class="col-span-12 md:col-span-3 border-r border-[#22232a] bg-[#0e0f12] p-4 text-[#8a8f98]">
-                <div class="flex items-center justify-between mb-6 px-2">
-                  <div class="flex items-center space-x-2 text-white font-medium">
-                    <div class="w-5 h-5 rounded bg-[#5e6ad2] flex items-center justify-center text-white text-[10px]">B</div>
-                    <span>Seller Studio</span>
-                  </div>
-                  <div class="flex items-center space-x-2">
-                    <i class="fas fa-search"></i>
-                    <i class="fas fa-sliders-h"></i>
-                  </div>
-                </div>
-
-                <div class="space-y-1 mb-6">
-                  <div class="flex items-center space-x-3 px-2 py-1.5 rounded bg-[#1c1e24] text-white">
-                    <i class="fas fa-bolt w-4 text-[#5e6ad2]"></i><span>Live Engine</span>
-                  </div>
-                  <div class="flex items-center space-x-3 px-2 py-1.5 rounded hover:bg-[#1c1e24] text-gray-300">
-                    <i class="fas fa-inbox w-4"></i><span>Orders</span> <span class="ml-auto bg-[#22232a] px-1.5 py-0.2 rounded text-[10px]">128</span>
-                  </div>
-                  <div class="flex items-center space-x-3 px-2 py-1.5 rounded hover:bg-[#1c1e24] text-gray-300">
-                    <i class="fas fa-check-circle w-4 text-emerald-400"></i><span>Fulfillment</span>
-                  </div>
-                </div>
-
-                <div class="text-[10px] font-semibold text-[#666970] uppercase tracking-wider px-2 mb-2">Connected Channels</div>
-                <div class="space-y-1.5 mb-6">
-                  <div class="flex items-center justify-between p-2 rounded bg-[#14151b] border border-[#22232a]">
-                    <div class="flex items-center space-x-2 text-gray-200">
-                      <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
-                      <span>WhatsApp Bot</span>
-                    </div>
-                    <span class="font-mono text-[10px] text-emerald-400">PAIRED</span>
-                  </div>
-                  <div class="flex items-center justify-between p-2 rounded bg-[#14151b] border border-[#22232a]">
-                    <div class="flex items-center space-x-2 text-gray-200">
-                      <span class="w-1.5 h-1.5 rounded-full bg-blue-400"></span>
-                      <span>Telegram Bot</span>
-                    </div>
-                    <span class="font-mono text-[10px] text-blue-400">ONLINE</span>
-                  </div>
-                </div>
-
-                <div class="text-[10px] font-semibold text-[#666970] uppercase tracking-wider px-2 mb-2">Payment Bridge</div>
-                <div class="p-2 rounded bg-[#14151b] border border-[#22232a] text-[#8a8f98]">
-                  <div class="text-white font-medium">Tipzy QRIS Gateway</div>
-                  <div class="text-[10px] text-[#666970] mt-0.5">Webhook HMAC Verified</div>
-                </div>
-              </div>
-
-              <!-- Main Detail Area -->
-              <div class="col-span-12 md:col-span-9 p-6 bg-[#121316] flex flex-col justify-between">
-                <div>
-                  <div class="flex items-center justify-between mb-4 border-b border-[#22232a] pb-4">
-                    <div class="flex items-center space-x-3">
-                      <span class="text-amber-400 font-mono font-medium">ORD-8921</span>
-                      <span class="text-white font-semibold text-sm">Spotify Premium 1 Bulan</span>
-                      <span class="bg-[#22232a] text-emerald-400 px-2 py-0.5 rounded text-[10px] font-mono">PAID & FULFILLED</span>
-                    </div>
-                    <div class="flex items-center space-x-3 text-[#8a8f98]">
-                      <span class="text-xs font-mono">&lt; 1.2s Delivery</span>
-                    </div>
-                  </div>
-
-                  <div class="space-y-3 mb-6">
-                    <div class="p-4 rounded-xl bg-[#0e0f12] border border-[#22232a] space-y-2">
-                      <div class="text-[#8a8f98] text-[11px] uppercase font-mono tracking-wider">Automated Delivery Payload</div>
-                      <div class="font-mono text-xs text-gray-200 bg-[#0a0a0c] p-3 rounded border border-[#1d1f27]">
-                        📧 Email: bintang.spot.wa99@gmail.com<br>
-                        🔑 Pass: SPOT-PREM-PASS-2026<br>
-                        📝 Catatan: Login langsung di aplikasi Spotify resmi.
-                      </div>
-                    </div>
-
-                    <div class="grid grid-cols-3 gap-3">
-                      <div class="p-3 rounded-lg bg-[#0e0f12] border border-[#22232a]">
-                        <span class="text-[#666970] block text-[10px] uppercase font-mono">Channel Source</span>
-                        <span class="text-white font-medium text-xs mt-0.5 block">WhatsApp (+62 857-9752-0135)</span>
-                      </div>
-                      <div class="p-3 rounded-lg bg-[#0e0f12] border border-[#22232a]">
-                        <span class="text-[#666970] block text-[10px] uppercase font-mono">Settlement Method</span>
-                        <span class="text-white font-medium text-xs mt-0.5 block">QRIS Real-Time (Rp 19.000)</span>
-                      </div>
-                      <div class="p-3 rounded-lg bg-[#0e0f12] border border-[#22232a]">
-                        <span class="text-[#666970] block text-[10px] uppercase font-mono">Stock Remaining</span>
-                        <span class="text-white font-medium text-xs mt-0.5 block">24 Units Available</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                <div class="border-t border-[#22232a] pt-4 flex items-center justify-between text-[#8a8f98]">
-                  <span>System status: <span class="text-emerald-400">All systems operational</span></span>
-                  <a href="#admin" class="text-white hover:underline flex items-center space-x-1">
-                    <span>Buka Seller Dashboard</span>
-                    <i class="fas fa-arrow-right text-[10px]"></i>
-                  </a>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- SYSTEM WORKFLOW (Voiceflow Structure) -->
-      <section id="workflow" class="py-24 border-t border-[#22232a] bg-[#0c0d10]">
-        <div class="max-w-7xl mx-auto px-6">
-          <div class="text-center max-w-3xl mx-auto mb-16">
-            <h2 class="text-3xl sm:text-5xl font-bold tracking-tight text-white mb-4">
-              Bagaimana Sistem Jualan Berjalan
-            </h2>
-            <p class="text-[#8a8f98] text-base sm:text-lg">
-              Tiga langkah dari pendaftaran sampai tokomu berjalan otomatis penuh.
-            </p>
-          </div>
-
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div class="bg-[#121316] border border-[#22232a] rounded-2xl p-6 flex flex-col justify-between card-hover">
-              <div>
-                <div class="w-10 h-10 rounded-xl bg-[#1c1e24] border border-[#2b2d36] text-white font-mono font-bold flex items-center justify-center mb-6 text-sm">
-                  01
-                </div>
-                <h3 class="text-lg font-semibold text-white mb-2">Pilih Template & Input Produk</h3>
-                <p class="text-sm text-[#8a8f98] leading-relaxed">
-                  Pilih template toko sesuai spesialisasi produkmu. Masukkan daftar produk dan stok akun, lisensi, atau kode voucher ke database via dashboard.
-                </p>
-              </div>
-            </div>
-
-            <div class="bg-[#121316] border border-[#22232a] rounded-2xl p-6 flex flex-col justify-between card-hover">
-              <div>
-                <div class="w-10 h-10 rounded-xl bg-[#1c1e24] border border-[#2b2d36] text-white font-mono font-bold flex items-center justify-center mb-6 text-sm">
-                  02
-                </div>
-                <h3 class="text-lg font-semibold text-white mb-2">Tautkan WhatsApp & Telegram</h3>
-                <p class="text-sm text-[#8a8f98] leading-relaxed">
-                  Cukup scan QR Code WhatsApp dari HP kamu atau masukkan token bot Telegram bisnismu. Engine multi-device langsung aktif mengambil alih interaksi chat.
-                </p>
-              </div>
-            </div>
-
-            <div class="bg-[#121316] border border-[#22232a] rounded-2xl p-6 flex flex-col justify-between card-hover">
-              <div>
-                <div class="w-10 h-10 rounded-xl bg-[#1c1e24] border border-[#2b2d36] text-white font-mono font-bold flex items-center justify-center mb-6 text-sm">
-                  03
-                </div>
-                <h3 class="text-lg font-semibold text-white mb-2">Cuan Masuk, Kredensial Terkirim</h3>
-                <p class="text-sm text-[#8a8f98] leading-relaxed">
-                  Pembeli checkout via QRIS. Begitu mutasi terkonfirmasi oleh gateway Tipzy, akun/lisensi langsung dikirim ke chat pembeli seketika.
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- TEMPLATES STORE (Exact styling from RAYCAST.txt lines 135-200) -->
-      <section id="templates" class="py-24 border-t border-[#22232a] bg-[#050507]">
-        <div class="max-w-7xl mx-auto px-6">
-          <div class="text-center max-w-2xl mx-auto mb-10">
-            <h2 class="text-3xl sm:text-5xl font-bold tracking-tight text-white mb-3">Store</h2>
-            <p class="text-zinc-400 text-base sm:text-lg mb-8 font-normal">
-              Browse and clone pre-built digital commerce templates for your bots and storefronts.
-            </p>
-
-            <!-- Search Bar from Raycast -->
-            <div class="glass-input rounded-2xl p-1.5 flex items-center shadow-2xl transition-all max-w-2xl mx-auto mb-8">
-              <span class="pl-3.5 pr-2 text-zinc-400"><i class="fa-solid fa-magnifying-glass"></i></span>
-              <input type="text" id="tpl-search-input" placeholder="Search templates..." class="w-full bg-transparent border-none text-white placeholder-zinc-500 focus:outline-none text-sm py-2">
-              <div class="flex items-center space-x-1 pr-2 text-xs text-zinc-400 font-mono">
-                <kbd class="bg-zinc-800/80 border border-zinc-700/60 px-2 py-1 rounded-md text-zinc-300">⌘</kbd>
-                <kbd class="bg-zinc-800/80 border border-zinc-700/60 px-2 py-1 rounded-md text-zinc-300">K</kbd>
-              </div>
-            </div>
-
-            <!-- Filter Pills from Raycast -->
-            <div class="flex flex-wrap items-center justify-center gap-2 mb-12">
-              ${[
-                { id: 'all', label: 'All Templates' },
-                { id: 'streaming', label: 'Streaming' },
-                { id: 'game', label: 'Gaming Vouchers' },
-                { id: 'software', label: 'Software License' },
-                { id: 'custom', label: 'Bespoke' },
-              ]
-                .map(
-                  (c) => `
-                <button type="button" 
-                        class="btn-tpl-filter px-3.5 py-1.5 rounded-lg text-xs font-medium transition-colors ${
-                          activeCategoryFilter === c.id
-                            ? 'bg-zinc-200 text-black font-semibold'
-                            : 'text-zinc-400 hover:text-white hover:bg-zinc-800/50'
-                        }"
-                        data-cat="${c.id}">
-                  ${c.label}
-                </button>
-              `,
-                )
-                .join('')}
-            </div>
-          </div>
-
-          <!-- Cards Grid (Exact Raycast Card structure) -->
-          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6" id="tpl-cards-grid">
-            ${renderTemplateCards()}
-          </div>
-        </div>
-      </section>
-
-      <!-- PRICING SECTION (Exact match to resend pricing.txt lines 70-200) -->
-      <section id="pricing" class="py-24 border-t border-[#1f1f1f] bg-[#0a0a0a]">
-        <div class="max-w-7xl mx-auto px-6">
-          <div class="text-center max-w-3xl mx-auto mb-16">
-            <h2 class="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-white mb-4">Pricing</h2>
-            <p class="text-[#888] text-base sm:text-lg mb-8">Start simple and scale as you grow. Sewa bulanan tetap tanpa potongan per transaksi.</p>
-            
-            <!-- Resend Pricing Switcher -->
-            <div class="inline-flex p-1 bg-[#141414] border border-[#262626] rounded-full text-xs sm:text-sm font-medium mb-10">
-              <button id="btn-billing-monthly" type="button" class="px-5 py-1.5 rounded-full transition ${
-                billingCycle === 'monthly' ? 'bg-[#262626] text-white shadow' : 'text-[#888] hover:text-white'
-              }">
-                Sewa Bulanan
-              </button>
-              <button id="btn-billing-yearly" type="button" class="px-5 py-1.5 rounded-full transition ${
-                billingCycle === 'yearly' ? 'bg-[#262626] text-white shadow' : 'text-[#888] hover:text-white'
-              }">
-                Tahunan (Hemat 20%)
-              </button>
-            </div>
-          </div>
-
-          <!-- 3 Pricing Cards (Exact Resend Card HTML Structure) -->
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-16">
-            
-            <!-- Card 1: Starter -->
-            <div class="bg-[#0f0f0f] border border-[#222] rounded-2xl p-6 flex flex-col justify-between hover:border-[#333] transition relative">
-              <div>
-                <h3 class="text-white font-semibold text-lg mb-2">Starter</h3>
-                <div class="flex items-baseline mb-4">
-                  <span class="text-4xl font-bold tracking-tight text-white" id="price-starter">
-                    ${billingCycle === 'monthly' ? 'Rp 49.000' : 'Rp 39.000'}
-                  </span>
-                  <span class="text-[#888] ml-1 text-sm">/ mo</span>
-                </div>
-                <div class="border-t border-[#222] pt-4 mb-6">
-                  <div class="text-white font-medium text-sm">Template Mudah & Praktis</div>
-                  <div class="text-[#666] text-xs mt-0.5">Setup instan tanpa repot</div>
-                </div>
-                <ul class="space-y-3 text-sm text-[#bbb] mb-8">
-                  <li class="flex items-center gap-3"><i class="fa-regular fa-circle-check text-white text-xs"></i> 1 Bot Telegram Toko Resmi</li>
-                  <li class="flex items-center gap-3"><i class="fa-regular fa-circle-check text-white text-xs"></i> Web Store Digital Minimal</li>
-                  <li class="flex items-center gap-3"><i class="fa-regular fa-circle-check text-white text-xs"></i> Maksimal 15 Produk Digital</li>
-                  <li class="flex items-center gap-3"><i class="fa-regular fa-circle-check text-white text-xs"></i> Tipzy QRIS Gateway Otomatis</li>
-                  <li class="flex items-center gap-3"><i class="fa-regular fa-circle-check text-white text-xs"></i> Auto-Fulfillment Akun/Voucher</li>
-                  <li class="flex items-center gap-3 text-[#555]"><i class="fa-regular fa-circle-xmark text-xs"></i> WhatsApp Multi-Device</li>
-                </ul>
-              </div>
-              <button type="button" class="btn-select-plan w-full py-2.5 rounded-full bg-[#1c1c1c] hover:bg-[#262626] text-white text-sm font-medium text-center transition border border-[#2a2a2a]" data-plan="starter">
-                Pilih Starter
-              </button>
-            </div>
-
-            <!-- Card 2: Pro (Featured) -->
-            <div class="bg-[#0f0f0f] border border-[#333] ring-1 ring-white/10 rounded-2xl p-6 flex flex-col justify-between hover:border-[#444] transition relative shadow-2xl">
-              <div class="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-0.5 rounded-full bg-white text-black font-mono text-[10px] font-bold tracking-wider uppercase">
-                POPULAR
-              </div>
-              <div>
-                <h3 class="text-white font-semibold text-lg mb-2">Pro Dual Bot</h3>
-                <div class="flex items-baseline mb-4">
-                  <span class="text-4xl font-bold tracking-tight text-white" id="price-pro">
-                    ${billingCycle === 'monthly' ? 'Rp 99.000' : 'Rp 79.000'}
-                  </span>
-                  <span class="text-[#888] ml-1 text-sm">/ mo</span>
-                </div>
-                <div class="border-t border-[#222] pt-4 mb-6">
-                  <div class="text-white font-medium text-sm">WhatsApp + Telegram Sekaligus</div>
-                  <div class="text-[#666] text-xs mt-0.5">Multi-Device QR Pairing Live</div>
-                </div>
-                <ul class="space-y-3 text-sm text-[#bbb] mb-8">
-                  <li class="flex items-center gap-3"><i class="fa-regular fa-circle-check text-white text-xs"></i> <b>WhatsApp Bot Multi-Device Live</b></li>
-                  <li class="flex items-center gap-3"><i class="fa-regular fa-circle-check text-white text-xs"></i> <b>Telegram Bot Toko 24 Jam</b></li>
-                  <li class="flex items-center gap-3"><i class="fa-regular fa-circle-check text-white text-xs"></i> <b>Smart Human Takeover (Mute saat CS)</b></li>
-                  <li class="flex items-center gap-3"><i class="fa-regular fa-circle-check text-white text-xs"></i> Unlimited Produk & Kategori</li>
-                  <li class="flex items-center gap-3"><i class="fa-regular fa-circle-check text-white text-xs"></i> Seller Dashboard Linear-Style</li>
-                  <li class="flex items-center gap-3"><i class="fa-regular fa-circle-check text-white text-xs"></i> Notifikasi Penjualan ke Telegram</li>
-                </ul>
-              </div>
-              <button type="button" class="btn-select-plan w-full py-2.5 rounded-full bg-white hover:bg-zinc-200 text-black text-sm font-medium text-center transition shadow-sm" data-plan="pro">
-                Sewa Paket Pro
-              </button>
-            </div>
-
-            <!-- Card 3: Enterprise -->
-            <div class="bg-[#0f0f0f] border border-[#222] rounded-2xl p-6 flex flex-col justify-between hover:border-[#333] transition relative">
-              <div>
-                <h3 class="text-white font-semibold text-lg mb-2">Enterprise</h3>
-                <div class="flex items-baseline mb-4">
-                  <span class="text-4xl font-bold tracking-tight text-white" id="price-enterprise">
-                    ${billingCycle === 'monthly' ? 'Rp 249.000' : 'Rp 199.000'}
-                  </span>
-                  <span class="text-[#888] ml-1 text-sm">/ mo</span>
-                </div>
-                <div class="border-t border-[#222] pt-4 mb-6">
-                  <div class="text-white font-medium text-sm">Full Custom & Berat</div>
-                  <div class="text-[#666] text-xs mt-0.5">Dedicated infrastructure</div>
-                </div>
-                <ul class="space-y-3 text-sm text-[#bbb] mb-8">
-                  <li class="flex items-center gap-3"><i class="fa-regular fa-circle-check text-white text-xs"></i> Semua Fitur Paket Pro</li>
-                  <li class="flex items-center gap-3"><i class="fa-regular fa-circle-check text-white text-xs"></i> Custom Domain (.com / .id)</li>
-                  <li class="flex items-center gap-3"><i class="fa-regular fa-circle-check text-white text-xs"></i> Multi-Admin Telegram (Tim CS)</li>
-                  <li class="flex items-center gap-3"><i class="fa-regular fa-circle-check text-white text-xs"></i> White-label (Hapus Watermark)</li>
-                  <li class="flex items-center gap-3"><i class="fa-regular fa-circle-check text-white text-xs"></i> Dedicated Server SLA 99.9%</li>
-                </ul>
-              </div>
-              <button type="button" class="btn-select-plan w-full py-2.5 rounded-full bg-[#1c1c1c] hover:bg-[#262626] text-white text-sm font-medium text-center transition border border-[#2a2a2a]" data-plan="enterprise">
-                Konsultasi Custom
-              </button>
-            </div>
-          </div>
-
-          <!-- RESEND ADD-ONS SECTION -->
-          <div class="max-w-3xl mx-auto bg-[#0f0f0f] border border-[#222] rounded-2xl p-6 sm:p-8">
-            <h3 class="text-white font-semibold text-lg mb-2">Add-ons</h3>
-            <p class="text-[#888] text-sm mb-6">Tambahkan kapasitas nomor atau modul khusus untuk tokomu.</p>
-
-            <div class="space-y-3" id="addons-checklist">
-              <label class="flex items-center justify-between p-4 rounded-xl bg-[#0a0a0a] border border-[#222] hover:border-[#333] transition cursor-pointer">
-                <div class="flex items-center space-x-3">
-                  <input type="checkbox" class="chk-addon w-4 h-4 rounded bg-[#1c1c1c] border-[#333] text-white focus:ring-0" data-id="extra_wa" data-price="30000">
-                  <div>
-                    <div class="text-white text-sm font-medium">Slot Nomor WhatsApp Cadangan</div>
-                    <div class="text-[#666] text-xs">Hubungkan nomor WhatsApp kedua untuk rotasi CS</div>
-                  </div>
-                </div>
-                <span class="font-mono text-xs text-white">+Rp 30.000 / mo</span>
-              </label>
-
-              <label class="flex items-center justify-between p-4 rounded-xl bg-[#0a0a0a] border border-[#222] hover:border-[#333] transition cursor-pointer">
-                <div class="flex items-center space-x-3">
-                  <input type="checkbox" class="chk-addon w-4 h-4 rounded bg-[#1c1c1c] border-[#333] text-white focus:ring-0" data-id="custom_domain" data-price="25000">
-                  <div>
-                    <div class="text-white text-sm font-medium">Custom Domain (.web.id / .com)</div>
-                    <div class="text-[#666] text-xs">Gunakan alamat website toko milikmu sendiri</div>
-                  </div>
-                </div>
-                <span class="font-mono text-xs text-white">+Rp 25.000 / mo</span>
-              </label>
-
-              <label class="flex items-center justify-between p-4 rounded-xl bg-[#0a0a0a] border border-[#222] hover:border-[#333] transition cursor-pointer">
-                <div class="flex items-center space-x-3">
-                  <input type="checkbox" class="chk-addon w-4 h-4 rounded bg-[#1c1c1c] border-[#333] text-white focus:ring-0" data-id="whitelabel" data-price="35000">
-                  <div>
-                    <div class="text-white text-sm font-medium">White-Label Penuh</div>
-                    <div class="text-[#666] text-xs">Hapus branding Bintang Tech di seluruh struk & chat</div>
-                  </div>
-                </div>
-                <span class="font-mono text-xs text-white">+Rp 35.000 / mo</span>
-              </label>
-            </div>
-
-            <div class="mt-8 pt-6 border-t border-[#222] flex items-center justify-between">
-              <div>
-                <span class="text-xs text-[#888] block">Estimasi Total</span>
-                <span class="text-xl font-bold text-white font-mono" id="lbl-total-estimate">Rp 99.000 / mo</span>
-              </div>
-              <button id="btn-addons-checkout" type="button" class="bg-white hover:bg-gray-100 text-black text-sm font-medium px-5 py-2.5 rounded-full transition shadow-sm">
-                Lanjut ke Registrasi
-              </button>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- FAQ SECTION -->
-      <section id="faq" class="py-24 border-t border-[#1f1f1f] bg-[#0c0d10]">
-        <div class="max-w-4xl mx-auto px-6">
-          <div class="text-center mb-16">
-            <h2 class="text-3xl sm:text-4xl font-bold tracking-tight text-white mb-3">Frequently Asked Questions</h2>
-            <p class="text-[#8a8f98] text-base">Pertanyaan umum seputar operasional bot Bintang Tech.</p>
-          </div>
-
-          <div class="space-y-4">
-            <div class="p-6 rounded-2xl bg-[#121316] border border-[#22232a] space-y-2">
-              <h4 class="font-semibold text-base text-white">Apakah saya harus bisa coding?</h4>
-              <p class="text-sm text-[#8a8f98] leading-relaxed">
-                Sama sekali tidak. Kamu cukup login ke dashboard seller atau lewat bot Telegram Admin untuk memasukkan nama produk, harga, dan stok akun/voucher kamu.
-              </p>
-            </div>
-
-            <div class="p-6 rounded-2xl bg-[#121316] border border-[#22232a] space-y-2">
-              <h4 class="font-semibold text-base text-white">Ke mana uang hasil penjualan masuk?</h4>
-              <p class="text-sm text-[#8a8f98] leading-relaxed">
-                Uang masuk langsung ke rekening bank atau e-wallet kamu sendiri melalui gateway QRIS resmi (Tipzy). Bintang Tech tidak memotong bagi hasil penjualanmu.
-              </p>
-            </div>
-
-            <div class="p-6 rounded-2xl bg-[#121316] border border-[#22232a] space-y-2">
-              <h4 class="font-semibold text-base text-white">Bagaimana jika ada pembeli yang butuh bantuan CS?</h4>
-              <p class="text-sm text-[#8a8f98] leading-relaxed">
-                Bot dilengkapi fitur <b>Smart Human Takeover</b>. Saat pembeli mengetik "BANTUAN" atau "CS", bot Telegram admin akan berbunyi dan memberikan link langsung ke chat pembeli di WhatsApp. Bot otomatis di-mute selama 15 menit agar kamu bisa membalas manual dengan bebas.
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- FOOTER (Exact from LINEAR.txt / RESEND.txt) -->
-      <footer class="border-t border-[#1f1f1f] bg-[#050507] py-12">
-        <div class="max-w-7xl mx-auto px-6 flex flex-col sm:flex-row items-center justify-between gap-6 text-sm text-[#8a8f98]">
-          <div class="flex items-center space-x-3">
-            <span class="text-white font-semibold">Bintang Tech</span>
-            <span>·</span>
-            <span>The product development system for digital commerce</span>
-          </div>
-          <div class="flex items-center space-x-6">
-            <a href="#admin" class="hover:text-white transition-colors">Seller Dashboard</a>
-            <a href="#webapp" class="hover:text-white transition-colors">Web Store</a>
-            <span class="text-[#555]">© 2026 Bintang Tech Studio</span>
-          </div>
-        </div>
-      </footer>
     </div>
   `;
 }
 
-function renderTemplateCards() {
-  const filtered = TEMPLATES_CATALOG.filter((t) => {
-    const matchCat = activeCategoryFilter === 'all' || t.category === activeCategoryFilter;
-    const matchSearch =
-      !searchQuery ||
-      t.name.toLowerCase().includes(searchQuery) ||
-      t.description.toLowerCase().includes(searchQuery);
-    return matchCat && matchSearch;
-  });
-
-  if (filtered.length === 0) {
-    return `
-      <div class="col-span-full p-12 text-center rounded-2xl bg-[#121215] border border-zinc-800/80">
-        <p class="text-sm text-zinc-400">Tidak ada template yang cocok.</p>
-        <button id="btn-reset-filter" class="mt-3 text-xs text-white font-medium hover:underline">Reset Filter</button>
-      </div>
-    `;
+function renderTabContent() {
+  switch (activeLandingTab) {
+    case 'customers':
+      return renderCustomersView();
+    case 'pricing':
+      return renderPricingView();
+    case 'contact':
+      return renderContactView();
+    default:
+      return renderHomeView();
   }
+}
 
-  // Exact Raycast Card Structure from RAYCAST.txt lines 167-200
-  return filtered
-    .map(
-      (t) => `
-    <div class="bg-[#121215] border border-zinc-800/80 rounded-2xl p-6 flex flex-col justify-between card-hover relative group">
-      <div>
-        <div class="w-12 h-12 bg-zinc-900 border border-zinc-800 rounded-2xl flex items-center justify-center mb-5 shadow-inner">
-          <span class="font-mono text-sm text-zinc-200 font-bold">${t.iconText}</span>
-        </div>
-        <div class="flex items-center justify-between mb-1.5">
-          <h4 class="text-lg font-semibold text-white">${escapeHtml(t.name)}</h4>
-          <span class="text-[10px] font-mono text-zinc-400 uppercase tracking-wider">${t.badge}</span>
-        </div>
-        <p class="text-zinc-400 text-sm leading-relaxed mb-6">${escapeHtml(t.description)}</p>
+// ==================== 1. HOME VIEW (from Patokan lines 433-573) ====================
+function renderHomeView() {
+  const headlineWords = [
+    "The",
+    "automated",
+    "commerce",
+    "system",
+    "for",
+    "digital",
+    "products",
+  ];
+
+  return `
+    <section class="max-w-[1120px] mx-auto px-6 pt-[128px] pb-24">
+      <!-- Staggered Blur-In Heading (Pure from Patokan lines 442-470) -->
+      <div class="max-w-[780px] mb-6">
+        <h1 class="text-[54px] sm:text-[60px] font-medium leading-[1.06] tracking-[-0.032em] text-[#F7F8F8]">
+          ${headlineWords
+            .map(
+              (word, idx) => `
+            <span
+              class="inline-block mr-[0.26em] opacity-0 animate-blur-in"
+              style="animation-delay: ${idx * 65}ms;"
+            >
+              ${word}
+            </span>
+          `,
+            )
+            .join('')}
+        </h1>
       </div>
 
-      <div>
-        <div class="flex items-center space-x-2.5 mb-5">
-          <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
-          <span class="text-xs text-zinc-300 font-medium">${t.author}</span>
-        </div>
-        <button type="button" class="btn-choose-template w-full bg-zinc-900 hover:bg-zinc-800 active:bg-zinc-950 border border-zinc-700/60 text-white font-medium py-2.5 px-4 rounded-xl text-sm transition-all shadow-sm" data-id="${t.id}" data-tier="${t.tier}">
-          Pilih Template
+      <!-- Subheading Row + New Dual Bot Pill (Pure from Patokan lines 472-499) -->
+      <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-14">
+        <p class="text-[16px] leading-[1.5] text-[#8A8F98] max-w-[440px]">
+          Purpose-built for automated digital commerce.
+          <br />
+          Designed for 24-hour WhatsApp & Telegram sales.
+        </p>
+
+        <button
+          type="button"
+          class="btn-goto-tab inline-flex items-center gap-2 text-[13px] group self-start sm:self-end"
+          data-tab="pricing"
+        >
+          <span class="px-1.5 py-0.5 rounded bg-white/[0.08] text-[#F7F8F8] font-medium text-[11px]">
+            New
+          </span>
+          <span class="text-[#D0D6E0] group-hover:text-white transition-colors">
+            Dual Bot 2.0
+          </span>
+          <span class="text-[#8A8F98] group-hover:translate-x-0.5 transition-transform">
+            →
+          </span>
         </button>
       </div>
-    </div>
-  `,
-    )
-    .join('');
+
+      <!-- App Interface Mockup Preview at Bottom of Hero (Pure from Patokan lines 501-572) -->
+      <div class="w-full rounded-t-xl bg-[#101114] border border-white/[0.08] shadow-[0_-20px_60px_-15px_rgba(255,255,255,0.03)] overflow-hidden">
+        <div class="grid grid-cols-12 min-h-[290px]">
+          <!-- Sidebar -->
+          <div class="col-span-12 sm:col-span-3 border-r border-white/[0.06] p-3.5 bg-[#0C0D0F]">
+            <div class="flex items-center justify-between mb-4 px-1.5">
+              <div class="flex items-center gap-2">
+                <div class="w-3.5 h-3.5 rounded-full bg-gradient-to-tr from-[#5E6AD2] to-indigo-400 flex items-center justify-center">
+                  <span class="w-1 h-1 rounded-full bg-white"></span>
+                </div>
+                <span class="text-[13px] font-medium text-[#F7F8F8]">
+                  Bintang Tech
+                </span>
+                <span class="text-[10px] text-[#8A8F98]">⌄</span>
+              </div>
+              <div class="flex items-center gap-2 text-[#8A8F98]">
+                <i class="fas fa-search text-xs cursor-pointer hover:text-white"></i>
+                <div class="w-5 h-5 rounded bg-white/[0.06] flex items-center justify-center text-white text-xs cursor-pointer">
+                  ✎
+                </div>
+              </div>
+            </div>
+
+            <div class="space-y-1 text-[12.5px]">
+              <div class="flex items-center gap-2.5 px-2 py-1.5 rounded text-[#8A8F98] hover:bg-white/[0.04] cursor-pointer">
+                <span class="text-[#5E6AD2]">((•))</span>
+                <span>Live Engine</span>
+              </div>
+              <div class="flex items-center justify-between px-2 py-1.5 rounded bg-white/[0.05] text-[#F7F8F8]">
+                <div class="flex items-center gap-2.5">
+                  <i class="fas fa-inbox text-[#8A8F98] text-xs"></i>
+                  <span>Orders</span>
+                </div>
+                <span class="text-[11px] text-[#8A8F98]">3</span>
+              </div>
+              <div class="flex items-center gap-2.5 px-2 py-1.5 rounded text-[#8A8F98] hover:bg-white/[0.04] cursor-pointer">
+                <i class="fas fa-cube text-[#8A8F98] text-xs"></i>
+                <span>Products</span>
+              </div>
+            </div>
+
+            <div class="mt-4 pt-3 border-t border-white/[0.06] px-2 text-[11px] text-[#64748b] space-y-1">
+              <div class="flex items-center justify-between text-emerald-400">
+                <span>WA Daemon</span>
+                <span class="font-mono text-[9px]">PAIRED</span>
+              </div>
+              <div class="flex items-center justify-between text-blue-400">
+                <span>Telegram Bot</span>
+                <span class="font-mono text-[9px]">ACTIVE</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Main Issue View -->
+          <div class="col-span-12 sm:col-span-9 bg-[#101114] flex flex-col justify-between">
+            <div>
+              <div class="h-11 border-b border-white/[0.06] px-5 flex items-center justify-between text-[12px]">
+                <div class="flex items-center gap-2.5">
+                  <span class="w-4 h-4 rounded bg-[#F2994A]/20 text-[#F2994A] flex items-center justify-center text-[10px]">
+                    ⚡
+                  </span>
+                  <span class="font-mono text-[#8A8F98]">BTS-8852</span>
+                  <span class="text-[#F7F8F8] font-medium">
+                    Automated Delivery: Spotify Premium 30 Days
+                  </span>
+                  <i class="fas fa-star text-[#F2C94C] text-xs ml-1"></i>
+                  <i class="fas fa-ellipsis-h text-[#8A8F98] text-xs ml-1 cursor-pointer"></i>
+                </div>
+                <div class="flex items-center gap-3 text-[#8A8F98]">
+                  <span class="font-mono text-[11px]">1 / 11</span>
+                </div>
+              </div>
+
+              <!-- Issue Content Payload -->
+              <div class="p-6 space-y-4">
+                <div class="p-3.5 rounded-lg bg-[#0c0d0f] border border-white/[0.06] text-xs font-mono text-gray-300">
+                  <span class="text-[#8A8F98] block text-[10px] uppercase tracking-wider mb-1 font-sans">Automated Delivery Payload</span>
+                  📧 Email: bintang.spot.wa99@gmail.com<br>
+                  🔑 Pass: SPOT-PREM-PASS-2026<br>
+                  📝 Catatan: Login langsung di aplikasi Spotify resmi. Garansi aktif 30 hari.
+                </div>
+
+                <div class="grid grid-cols-3 gap-3 text-xs">
+                  <div class="p-2.5 rounded bg-[#0c0d0f] border border-white/[0.06]">
+                    <span class="text-[#64748b] block text-[10px]">INCOMING JID</span>
+                    <span class="text-[#F7F8F8] font-mono">+62 857-9752-0135</span>
+                  </div>
+                  <div class="p-2.5 rounded bg-[#0c0d0f] border border-white/[0.06]">
+                    <span class="text-[#64748b] block text-[10px]">SETTLEMENT</span>
+                    <span class="text-[#F7F8F8] font-mono">Rp 19.000 QRIS</span>
+                  </div>
+                  <div class="p-2.5 rounded bg-[#0c0d0f] border border-white/[0.06]">
+                    <span class="text-[#64748b] block text-[10px]">STOCK POOL</span>
+                    <span class="text-emerald-400 font-mono">24 On-Hand</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="h-10 border-t border-white/[0.06] px-5 flex items-center justify-between text-[11px] text-[#8A8F98]">
+              <span>Latency: <span class="text-emerald-400 font-mono">&lt; 1.1s</span> Zero-Click Fulfillment</span>
+              <a href="#admin" class="text-[#F7F8F8] hover:underline flex items-center gap-1">
+                <span>Open Workspace</span>
+                <span>→</span>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  `;
+}
+
+// ==================== 2. CUSTOMERS VIEW (from Patokan lines 576-650) ====================
+function renderCustomersView() {
+  const tabs = ["Featured", "SaaS", "AI", "Fintech", "Consumer", "Hardware", "Health", "Enterprise"];
+
+  return `
+    <section class="max-w-[1120px] mx-auto px-6 pt-16 pb-24">
+      <h1 class="text-[48px] font-medium tracking-[-0.028em] text-[#F7F8F8] mb-5">
+        Customers
+      </h1>
+
+      <!-- Category Filter Tabs (from Patokan lines 590-612) -->
+      <div class="flex items-center gap-5 text-[14px] mb-12 border-b border-white/[0.06] pb-4 overflow-x-auto scrollbar-none">
+        ${tabs
+          .map(
+            (tab) => `
+          <button
+            type="button"
+            class="btn-customer-filter whitespace-nowrap transition-colors ${
+              customerFilter === tab ? 'text-[#F7F8F8] font-medium' : 'text-[#8A8F98] hover:text-[#F7F8F8]'
+            }"
+            data-tab="${tab}"
+          >
+            ${tab}
+          </button>
+        `,
+          )
+          .join('')}
+      </div>
+
+      <!-- 3 Customer Cards (from Patokan lines 615-680) -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <!-- Card 1: Ramp -->
+        <div class="group cursor-pointer">
+          <div class="aspect-[16/10] rounded-xl bg-[#0D0E10] border border-white/[0.08] mb-4 flex items-center justify-center relative overflow-hidden group-hover:border-white/[0.16] transition-colors">
+            <div class="flex items-center gap-1.5 text-[28px] font-semibold tracking-tight text-white">
+              <span>ramp</span>
+              <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none">
+                <path d="M4 18L18 4M18 4H9M18 4V13" stroke="currentColor" stroke-width="2.5" />
+              </svg>
+            </div>
+          </div>
+          <h3 class="text-[16px] font-medium text-[#F7F8F8] leading-[1.4] mb-3 pr-4">
+            The coding agent behind 75% of Ramp's merged PRs
+          </h3>
+          <div class="text-[13px] text-[#8A8F98] group-hover:text-[#F7F8F8] flex items-center gap-1 transition-colors">
+            Watch video <span>→</span>
+          </div>
+        </div>
+
+        <!-- Card 2: OpenAI -->
+        <div class="group cursor-pointer">
+          <div class="aspect-[16/10] rounded-xl bg-[#111318] border border-white/[0.08] mb-4 flex items-center justify-center relative overflow-hidden group-hover:border-white/[0.16] transition-colors">
+            <div
+              class="w-[84%] h-[78%] rounded-lg flex items-center justify-center relative overflow-hidden"
+              style="background: linear-gradient(135deg, #6B8AFD 0%, #3E54AC 45%, #8CA6DB 100%);"
+            >
+              <div
+                class="absolute inset-0 opacity-35"
+                style="background-image: radial-gradient(rgba(255,255,255,0.4) 1px, transparent 1px); background-size: 8px 8px;"
+              ></div>
+              <span class="text-white text-2xl font-bold tracking-tight relative z-10">OpenAI</span>
+            </div>
+          </div>
+          <h3 class="text-[16px] font-medium text-[#F7F8F8] leading-[1.4] mb-3 pr-4">
+            Why OpenAI chose Linear and scaled to 3,000 users
+          </h3>
+          <div class="text-[13px] text-[#8A8F98] group-hover:text-[#F7F8F8] flex items-center gap-1 transition-colors">
+            Read story <span>→</span>
+          </div>
+        </div>
+
+        <!-- Card 3: Coinbase -->
+        <div class="group cursor-pointer">
+          <div class="aspect-[16/10] rounded-xl bg-[#0D0E10] border border-white/[0.08] mb-4 flex items-center justify-center relative overflow-hidden group-hover:border-white/[0.16] transition-colors">
+            <div class="text-[26px] font-semibold tracking-tight text-[#0052FF]">
+              coinbase
+            </div>
+          </div>
+          <h3 class="text-[16px] font-medium text-[#F7F8F8] leading-[1.4] mb-3 pr-4">
+            Coinbase's bet on agent-first development
+          </h3>
+          <div class="text-[13px] text-[#8A8F98] group-hover:text-[#F7F8F8] flex items-center gap-1 transition-colors">
+            Watch video <span>→</span>
+          </div>
+        </div>
+      </div>
+    </section>
+  `;
+}
+
+// ==================== 3. PRICING VIEW ====================
+function renderPricingView() {
+  return `
+    <section class="max-w-[1120px] mx-auto px-6 pt-16 pb-24">
+      <div class="text-center max-w-3xl mx-auto mb-16">
+        <h1 class="text-[48px] font-medium tracking-[-0.028em] text-[#F7F8F8] mb-4">Pricing</h1>
+        <p class="text-[#8A8F98] text-[16px] mb-8">Start simple and scale as you grow. Sewa bulanan tanpa komisi penjualan.</p>
+        
+        <!-- Toggle -->
+        <div class="inline-flex p-1 bg-[#141414] border border-white/[0.08] rounded-full text-[13px] font-medium mb-10">
+          <button id="btn-price-monthly" type="button" class="px-5 py-1.5 rounded-full transition ${
+            !billingYearly ? 'bg-[#262626] text-white shadow' : 'text-[#8A8F98] hover:text-white'
+          }">
+            Sewa Bulanan
+          </button>
+          <button id="btn-price-yearly" type="button" class="px-5 py-1.5 rounded-full transition ${
+            billingYearly ? 'bg-[#262626] text-white shadow' : 'text-[#8A8F98] hover:text-white'
+          }">
+            Tahunan (Hemat 20%)
+          </button>
+        </div>
+      </div>
+
+      <!-- Pricing Grid -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-16">
+        <!-- Starter -->
+        <div class="bg-[#0D0E10] border border-white/[0.08] rounded-2xl p-7 flex flex-col justify-between hover:border-white/[0.16] transition relative">
+          <div>
+            <h3 class="text-white font-medium text-lg mb-2">Starter</h3>
+            <div class="flex items-baseline mb-4">
+              <span class="text-4xl font-bold tracking-tight text-white">
+                ${billingYearly ? 'Rp 39.000' : 'Rp 49.000'}
+              </span>
+              <span class="text-[#8A8F98] ml-1.5 text-xs font-mono">/ mo</span>
+            </div>
+            <div class="border-t border-white/[0.06] pt-4 mb-6 text-xs text-[#8A8F98]">
+              Template mudah & praktis untuk seller awal
+            </div>
+            <ul class="space-y-3 text-xs text-[#bbb] mb-8">
+              <li class="flex items-center gap-2.5"><i class="fa-regular fa-circle-check text-white text-xs"></i> 1 Bot Telegram Toko Resmi</li>
+              <li class="flex items-center gap-2.5"><i class="fa-regular fa-circle-check text-white text-xs"></i> Web Store Digital Minimal</li>
+              <li class="flex items-center gap-2.5"><i class="fa-regular fa-circle-check text-white text-xs"></i> Maksimal 15 Produk Digital</li>
+              <li class="flex items-center gap-2.5"><i class="fa-regular fa-circle-check text-white text-xs"></i> Tipzy QRIS Gateway Otomatis</li>
+              <li class="flex items-center gap-2.5"><i class="fa-regular fa-circle-check text-white text-xs"></i> Auto-Fulfillment Akun/Voucher</li>
+            </ul>
+          </div>
+          <button type="button" class="btn-signup-trigger w-full py-2.5 rounded-full bg-[#1c1c1c] hover:bg-[#262626] text-white text-xs font-medium border border-white/[0.08] transition">
+            Pilih Starter
+          </button>
+        </div>
+
+        <!-- Pro -->
+        <div class="bg-[#101114] border border-white/[0.18] rounded-2xl p-7 flex flex-col justify-between hover:border-white/[0.3] transition relative shadow-2xl">
+          <div class="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-0.5 rounded-full bg-white text-black font-mono text-[10px] font-bold tracking-wider uppercase">
+            POPULAR
+          </div>
+          <div>
+            <h3 class="text-white font-medium text-lg mb-2">Pro Dual Bot</h3>
+            <div class="flex items-baseline mb-4">
+              <span class="text-4xl font-bold tracking-tight text-white">
+                ${billingYearly ? 'Rp 79.000' : 'Rp 99.000'}
+              </span>
+              <span class="text-[#8A8F98] ml-1.5 text-xs font-mono">/ mo</span>
+            </div>
+            <div class="border-t border-white/[0.06] pt-4 mb-6 text-xs text-[#8A8F98]">
+              WhatsApp Multi-Device + Telegram Sekaligus
+            </div>
+            <ul class="space-y-3 text-xs text-white mb-8">
+              <li class="flex items-center gap-2.5"><i class="fa-regular fa-circle-check text-white text-xs"></i> <b>WhatsApp Bot Multi-Device Live</b></li>
+              <li class="flex items-center gap-2.5"><i class="fa-regular fa-circle-check text-white text-xs"></i> <b>Telegram Bot Toko 24 Jam</b></li>
+              <li class="flex items-center gap-2.5"><i class="fa-regular fa-circle-check text-white text-xs"></i> <b>Smart Human Takeover (Mute saat CS)</b></li>
+              <li class="flex items-center gap-2.5"><i class="fa-regular fa-circle-check text-white text-xs"></i> Unlimited Produk & Kategori</li>
+              <li class="flex items-center gap-2.5"><i class="fa-regular fa-circle-check text-white text-xs"></i> Seller Workspace Linear-Style</li>
+            </ul>
+          </div>
+          <button type="button" class="btn-signup-trigger w-full py-2.5 rounded-full bg-white hover:bg-zinc-200 text-black text-xs font-semibold transition">
+            Sewa Paket Pro
+          </button>
+        </div>
+
+        <!-- Enterprise -->
+        <div class="bg-[#0D0E10] border border-white/[0.08] rounded-2xl p-7 flex flex-col justify-between hover:border-white/[0.16] transition relative">
+          <div>
+            <h3 class="text-white font-medium text-lg mb-2">Enterprise</h3>
+            <div class="flex items-baseline mb-4">
+              <span class="text-4xl font-bold tracking-tight text-white">
+                ${billingYearly ? 'Rp 199.000' : 'Rp 249.000'}
+              </span>
+              <span class="text-[#8A8F98] ml-1.5 text-xs font-mono">/ mo</span>
+            </div>
+            <div class="border-t border-white/[0.06] pt-4 mb-6 text-xs text-[#8A8F98]">
+              Dedicated server & custom domain
+            </div>
+            <ul class="space-y-3 text-xs text-[#bbb] mb-8">
+              <li class="flex items-center gap-2.5"><i class="fa-regular fa-circle-check text-white text-xs"></i> Semua Fitur Paket Pro</li>
+              <li class="flex items-center gap-2.5"><i class="fa-regular fa-circle-check text-white text-xs"></i> Custom Domain (.com / .id)</li>
+              <li class="flex items-center gap-2.5"><i class="fa-regular fa-circle-check text-white text-xs"></i> Multi-Admin Telegram (Tim CS)</li>
+              <li class="flex items-center gap-2.5"><i class="fa-regular fa-circle-check text-white text-xs"></i> White-label (Hapus Watermark)</li>
+              <li class="flex items-center gap-2.5"><i class="fa-regular fa-circle-check text-white text-xs"></i> Dedicated Server SLA 99.9%</li>
+            </ul>
+          </div>
+          <button type="button" class="btn-signup-trigger w-full py-2.5 rounded-full bg-[#1c1c1c] hover:bg-[#262626] text-white text-xs font-medium border border-white/[0.08] transition">
+            Konsultasi Custom
+          </button>
+        </div>
+      </div>
+    </section>
+  `;
+}
+
+// ==================== 4. CONTACT & SITEMAP VIEW ====================
+function renderContactView() {
+  return `
+    <section class="max-w-[1120px] mx-auto px-6 pt-16 pb-24">
+      <h1 class="text-[48px] font-medium tracking-[-0.028em] text-[#F7F8F8] mb-4">Contact & Support</h1>
+      <p class="text-[#8A8F98] text-[16px] mb-12">Hubungi tim engineer dan support kami untuk kebutuhan integrasi bisnismu.</p>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-20">
+        <div class="p-6 rounded-2xl bg-[#0D0E10] border border-white/[0.08] flex items-center justify-between">
+          <div>
+            <h3 class="text-white font-medium text-base mb-1">Telegram Community & CS</h3>
+            <p class="text-xs text-[#8A8F98]">Tanya jawab teknis langsung dengan tim engineer Bintang Tech.</p>
+          </div>
+          <a href="https://t.me/BintangDigitalDemoBot" target="_blank" class="px-4 py-2 rounded-lg bg-white/[0.06] hover:bg-white/[0.12] text-xs text-white transition">
+            Join Telegram ↗
+          </a>
+        </div>
+
+        <div class="p-6 rounded-2xl bg-[#0D0E10] border border-white/[0.08] flex items-center justify-between">
+          <div>
+            <div class="flex items-center gap-2">
+              <h3 class="text-white font-medium text-base mb-1">System Status</h3>
+              <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+            </div>
+            <p class="text-xs text-[#8A8F98]">Semua gateway Tipzy, daemon WhatsApp, dan Supabase aktif normal.</p>
+          </div>
+          <span class="text-xs font-mono text-emerald-400">OPERATIONAL</span>
+        </div>
+      </div>
+
+      <!-- SITEMAP FOOTER -->
+      <div class="border-t border-white/[0.06] pt-12 grid grid-cols-2 md:grid-cols-4 gap-8 text-xs text-[#8A8F98]">
+        <div>
+          <div class="text-white font-medium mb-3">Product</div>
+          <ul class="space-y-2">
+            <li><a href="#admin" class="hover:text-white transition">Seller Workspace</a></li>
+            <li><span class="hover:text-white cursor-pointer btn-goto-tab" data-tab="home">WhatsApp Daemon</span></li>
+            <li><span class="hover:text-white cursor-pointer btn-goto-tab" data-tab="home">Telegram Bot</span></li>
+            <li><span class="hover:text-white cursor-pointer btn-goto-tab" data-tab="pricing">Pricing Plans</span></li>
+          </ul>
+        </div>
+        <div>
+          <div class="text-white font-medium mb-3">Company</div>
+          <ul class="space-y-2">
+            <li><span class="hover:text-white cursor-pointer btn-goto-tab" data-tab="customers">About Us</span></li>
+            <li><span class="hover:text-white cursor-pointer btn-goto-tab" data-tab="customers">Customers</span></li>
+            <li><span class="hover:text-white cursor-pointer btn-goto-tab" data-tab="contact">Careers</span></li>
+          </ul>
+        </div>
+        <div>
+          <div class="text-white font-medium mb-3">Resources</div>
+          <ul class="space-y-2">
+            <li><a href="#webapp" class="hover:text-white transition">Customer WebStore</a></li>
+            <li><span class="hover:text-white cursor-pointer btn-goto-tab" data-tab="contact">Documentation</span></li>
+            <li><span class="hover:text-white cursor-pointer btn-goto-tab" data-tab="contact">API Status</span></li>
+          </ul>
+        </div>
+        <div>
+          <div class="text-white font-medium mb-3">Connect</div>
+          <ul class="space-y-2">
+            <li><a href="https://t.me/BintangDigitalDemoBot" target="_blank" class="hover:text-white transition">Telegram</a></li>
+            <li><a href="https://wa.me/6285797520135" target="_blank" class="hover:text-white transition">WhatsApp</a></li>
+            <li><a href="#faq" class="hover:text-white transition">GitHub</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="mt-12 pt-6 border-t border-white/[0.04] text-[11px] text-[#64748b] flex justify-between items-center">
+        <span>© 2026 Bintang Tech Studio. The automated sales system for digital sellers.</span>
+        <span>Made with precision in Indonesia</span>
+      </div>
+    </section>
+  `;
 }
 
 export function initLandingEvents() {
-  const btnLogin = document.getElementById('btn-hero-login');
-  if (btnLogin) {
-    btnLogin.addEventListener('click', () => {
+  const refreshTab = () => {
+    const mainContainer = document.getElementById('linear-tab-content');
+    if (mainContainer) {
+      mainContainer.innerHTML = renderTabContent();
+      attachViewEvents();
+    }
+    // Update active highlight on navbar links
+    document.querySelectorAll('.btn-nav-link').forEach((btn) => {
+      const tab = btn.getAttribute('data-tab');
+      if (tab === activeLandingTab) {
+        btn.className = 'btn-nav-link px-3 py-1.5 rounded-md text-[13px] transition-colors text-[#F7F8F8] bg-white/[0.06]';
+      } else {
+        btn.className = 'btn-nav-link px-3 py-1.5 rounded-md text-[13px] transition-colors text-[#8A8F98] hover:text-[#F7F8F8]';
+      }
+    });
+    window.scrollTo({ top: 0, behavior: 'instant' });
+  };
+
+  // Nav brand click -> home
+  const brandBtn = document.getElementById('nav-brand');
+  if (brandBtn) {
+    brandBtn.addEventListener('click', () => {
+      activeLandingTab = 'home';
+      refreshTab();
+    });
+  }
+
+  // Top Nav Buttons
+  document.querySelectorAll('.btn-nav-link').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const targetTab = btn.getAttribute('data-tab');
+      if (targetTab) {
+        activeLandingTab = targetTab;
+        closeAllDropdowns();
+        refreshTab();
+      }
+    });
+  });
+
+  // Dropdowns (Product & Resources)
+  const productWrap = document.getElementById('nav-dropdown-product-wrap');
+  const productMenu = document.getElementById('mega-dropdown-product');
+  const resourcesWrap = document.getElementById('nav-dropdown-resources-wrap');
+  const resourcesMenu = document.getElementById('mega-dropdown-resources');
+  const navHeader = document.getElementById('linear-navbar');
+
+  const closeAllDropdowns = () => {
+    productMenu?.classList.remove('active');
+    resourcesMenu?.classList.remove('active');
+  };
+
+  if (productWrap && productMenu) {
+    productWrap.addEventListener('mouseenter', () => {
+      resourcesMenu?.classList.remove('active');
+      productMenu.classList.add('active');
+    });
+  }
+
+  if (resourcesWrap && resourcesMenu) {
+    resourcesWrap.addEventListener('mouseenter', () => {
+      productMenu?.classList.remove('active');
+      resourcesMenu.classList.add('active');
+    });
+  }
+
+  if (navHeader) {
+    navHeader.addEventListener('mouseleave', () => {
+      closeAllDropdowns();
+    });
+  }
+
+  // Auth Triggers
+  const topLogin = document.getElementById('btn-top-login');
+  if (topLogin) {
+    topLogin.addEventListener('click', () => {
       openAuthModal({ defaultTab: 'login' });
     });
   }
 
-  const btnRegister = document.getElementById('btn-hero-register');
-  if (btnRegister) {
-    btnRegister.addEventListener('click', () => {
+  const topSignup = document.getElementById('btn-top-signup');
+  if (topSignup) {
+    topSignup.addEventListener('click', () => {
       openAuthModal({ defaultTab: 'signup' });
     });
   }
 
-  const btnCtaStart = document.getElementById('btn-cta-start');
-  if (btnCtaStart) {
-    btnCtaStart.addEventListener('click', () => {
-      openAuthModal({ defaultTab: 'signup' });
+  attachViewEvents();
+}
+
+function attachViewEvents() {
+  // Tab shortcuts inside dropdowns & buttons
+  document.querySelectorAll('.btn-goto-tab').forEach((el) => {
+    el.addEventListener('click', () => {
+      const targetTab = el.getAttribute('data-tab');
+      if (targetTab) {
+        activeLandingTab = targetTab;
+        const mainContainer = document.getElementById('linear-tab-content');
+        if (mainContainer) {
+          mainContainer.innerHTML = renderTabContent();
+          attachViewEvents();
+        }
+        window.scrollTo({ top: 0, behavior: 'instant' });
+      }
     });
-  }
+  });
 
-  const btnAddonsCheckout = document.getElementById('btn-addons-checkout');
-  if (btnAddonsCheckout) {
-    btnAddonsCheckout.addEventListener('click', () => {
-      openAuthModal({ defaultTab: 'signup' });
+  // Customer filters
+  document.querySelectorAll('.btn-customer-filter').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      customerFilter = btn.getAttribute('data-tab') || 'Featured';
+      document.querySelectorAll('.btn-customer-filter').forEach((b) => {
+        b.className = 'btn-customer-filter whitespace-nowrap transition-colors text-[#8A8F98] hover:text-[#F7F8F8]';
+      });
+      btn.className = 'btn-customer-filter whitespace-nowrap transition-colors text-[#F7F8F8] font-medium';
     });
-  }
+  });
 
-  const btnMonthly = document.getElementById('btn-billing-monthly');
-  const btnYearly = document.getElementById('btn-billing-yearly');
-  const lblStarter = document.getElementById('price-starter');
-  const lblPro = document.getElementById('price-pro');
-  const lblEnterprise = document.getElementById('price-enterprise');
-
-  const updatePricingDisplay = () => {
-    if (lblStarter) lblStarter.textContent = billingCycle === 'monthly' ? 'Rp 49.000' : 'Rp 39.000';
-    if (lblPro) lblPro.textContent = billingCycle === 'monthly' ? 'Rp 99.000' : 'Rp 79.000';
-    if (lblEnterprise) lblEnterprise.textContent = billingCycle === 'monthly' ? 'Rp 249.000' : 'Rp 199.000';
-    updateAddonTotal();
-  };
-
+  // Pricing toggles
+  const btnMonthly = document.getElementById('btn-price-monthly');
+  const btnYearly = document.getElementById('btn-price-yearly');
   if (btnMonthly && btnYearly) {
     btnMonthly.addEventListener('click', () => {
-      billingCycle = 'monthly';
-      btnMonthly.className = 'px-5 py-1.5 rounded-full transition bg-[#262626] text-white shadow';
-      btnYearly.className = 'px-5 py-1.5 rounded-full transition text-[#888] hover:text-white';
-      updatePricingDisplay();
+      billingYearly = false;
+      const mainContainer = document.getElementById('linear-tab-content');
+      if (mainContainer) {
+        mainContainer.innerHTML = renderTabContent();
+        attachViewEvents();
+      }
     });
 
     btnYearly.addEventListener('click', () => {
-      billingCycle = 'yearly';
-      btnYearly.className = 'px-5 py-1.5 rounded-full transition bg-[#262626] text-white shadow';
-      btnMonthly.className = 'px-5 py-1.5 rounded-full transition text-[#888] hover:text-white';
-      updatePricingDisplay();
-    });
-  }
-
-  const updateAddonTotal = () => {
-    let basePrice = billingCycle === 'monthly' ? 99000 : 79000;
-    selectedAddons.forEach((cost) => {
-      basePrice += cost;
-    });
-    const lblEstimate = document.getElementById('lbl-total-estimate');
-    if (lblEstimate) {
-      lblEstimate.textContent = `${formatRupiah(basePrice)} / mo`;
-    }
-  };
-
-  document.querySelectorAll('.chk-addon').forEach((chk) => {
-    chk.addEventListener('change', (e) => {
-      const target = e.target;
-      const price = parseInt(target.getAttribute('data-price') || '0', 10);
-      if (target.checked) {
-        selectedAddons.add(price);
-      } else {
-        selectedAddons.delete(price);
+      billingYearly = true;
+      const mainContainer = document.getElementById('linear-tab-content');
+      if (mainContainer) {
+        mainContainer.innerHTML = renderTabContent();
+        attachViewEvents();
       }
-      updateAddonTotal();
-    });
-  });
-
-  const searchInput = document.getElementById('tpl-search-input');
-  const cardsGrid = document.getElementById('tpl-cards-grid');
-
-  const refreshCards = () => {
-    if (cardsGrid) {
-      cardsGrid.innerHTML = renderTemplateCards();
-      attachTemplateCardEvents();
-    }
-  };
-
-  if (searchInput) {
-    searchInput.addEventListener('input', (e) => {
-      searchQuery = (e.target.value || '').trim().toLowerCase();
-      refreshCards();
     });
   }
 
-  window.addEventListener('keydown', (e) => {
-    if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
-      e.preventDefault();
-      searchInput?.focus();
-    }
-  });
-
-  document.querySelectorAll('.btn-tpl-filter').forEach((btn) => {
-    btn.addEventListener('click', () => {
-      activeCategoryFilter = btn.getAttribute('data-cat') || 'all';
-      document.querySelectorAll('.btn-tpl-filter').forEach((b) => {
-        b.className = 'btn-tpl-filter px-3.5 py-1.5 rounded-lg text-xs font-medium transition-colors text-zinc-400 hover:text-white hover:bg-zinc-800/50';
-      });
-      btn.className = 'btn-tpl-filter px-3.5 py-1.5 rounded-lg text-xs font-medium transition-colors bg-zinc-200 text-black font-semibold';
-      refreshCards();
-    });
-  });
-
-  attachTemplateCardEvents();
-}
-
-function attachTemplateCardEvents() {
-  document.querySelectorAll('.btn-choose-template, .btn-select-plan').forEach((btn) => {
+  // Sign up buttons inside cards
+  document.querySelectorAll('.btn-signup-trigger, #btn-cta-start').forEach((btn) => {
     btn.addEventListener('click', () => {
       openAuthModal({ defaultTab: 'signup' });
     });
   });
-
-  const btnReset = document.getElementById('btn-reset-filter');
-  if (btnReset) {
-    btnReset.addEventListener('click', () => {
-      activeCategoryFilter = 'all';
-      searchQuery = '';
-      const searchInput = document.getElementById('tpl-search-input');
-      if (searchInput) searchInput.value = '';
-      document.querySelectorAll('.btn-tpl-filter').forEach((b) => {
-        const cat = b.getAttribute('data-cat');
-        if (cat === 'all') {
-          b.className = 'btn-tpl-filter px-3.5 py-1.5 rounded-lg text-xs font-medium transition-colors bg-zinc-200 text-black font-semibold';
-        } else {
-          b.className = 'btn-tpl-filter px-3.5 py-1.5 rounded-lg text-xs font-medium transition-colors text-zinc-400 hover:text-white hover:bg-zinc-800/50';
-        }
-      });
-      const cardsGrid = document.getElementById('tpl-cards-grid');
-      if (cardsGrid) {
-        cardsGrid.innerHTML = renderTemplateCards();
-        attachTemplateCardEvents();
-      }
-    });
-  }
 }
 
