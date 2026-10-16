@@ -107,11 +107,11 @@ function mountCurrentView() {
   // Update Page Title
   document.title = routeConfig.title;
 
-  // Mount Demo Navbar ONLY for external presentation views (landing, telegram, admin)
-  // Hide completely when inside Customer Storefront (webapp) for a pure, realistic store experience
+  // Mount Demo Navbar ONLY for internal simulation views (telegram, admin, telegram-admin)
+  // Hide completely on Landing Page and Customer WebApp for pure, authentic, high-end presentation
   const navContainer = document.getElementById('demo-navbar-container');
   if (navContainer) {
-    if (currentRoute === 'webapp') {
+    if (currentRoute === 'webapp' || currentRoute === 'landing') {
       navContainer.innerHTML = '';
       navContainer.style.display = 'none';
     } else {
