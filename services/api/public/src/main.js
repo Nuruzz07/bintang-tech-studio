@@ -90,7 +90,11 @@ function handleOAuthCallback() {
 
 function getActiveRoute() {
   const rawHash = window.location.hash.replace(/^#+/, '').trim().toLowerCase();
-  const routeKey = rawHash.split(/[#&]/)[0];
+  if (rawHash.startsWith('telegram-admin')) return 'telegram-admin';
+  if (rawHash.startsWith('admin')) return 'admin';
+  if (rawHash.startsWith('webapp')) return 'webapp';
+  if (rawHash.startsWith('telegram')) return 'telegram';
+  const routeKey = rawHash.split(/[#&?_\-\/]/)[0];
   if (ROUTES[routeKey]) return routeKey;
   return 'landing';
 }

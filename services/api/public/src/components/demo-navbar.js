@@ -1,56 +1,28 @@
-// Bintang Tech Studio — Unified Linear Studio Navbar
+// Bintang Tech Studio — Workspace Header Navigation
 import { store } from '../state/store.js';
 import { showToast } from '../utils/helpers.js';
 import { openAuthModal } from './auth-modal.js';
 
 export function renderDemoNavbar(currentView = 'admin') {
-  const views = [
-    { id: 'landing', label: 'Landing' },
-    { id: 'admin', label: 'Workspace' },
-    { id: 'webapp', label: 'Customer Store' },
-    { id: 'telegram', label: 'Telegram Bot' },
-    { id: 'telegram-admin', label: 'Telegram Admin' },
-  ];
-
   return `
     <header class="sticky top-0 z-50 h-[56px] bg-[#08090A]/80 backdrop-blur-md border-b border-white/[0.06] select-none text-[#F7F8F8]">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 h-full flex items-center justify-between gap-4">
         
-        <!-- Brand & Engine Indicator -->
-        <div class="flex items-center gap-3 shrink-0">
-          <a href="#landing" class="flex items-center gap-2.5 hover:opacity-90 transition-opacity">
+        <!-- Brand & Workspace Breadcrumb -->
+        <div class="flex items-center gap-2.5 shrink-0">
+          <a href="#landing" class="flex items-center gap-2.5 hover:opacity-90 transition-opacity" title="Kembali ke Landing Page">
             <div class="w-4 h-4 rounded-full bg-gradient-to-tr from-[#5E6AD2] to-indigo-400 flex items-center justify-center shadow-sm">
               <span class="w-1.5 h-1.5 rounded-full bg-white"></span>
             </div>
-            <span class="font-semibold text-[14px] tracking-[-0.02em] text-[#F7F8F8] hidden sm:inline">
+            <span class="font-semibold text-[14px] tracking-[-0.02em] text-[#F7F8F8]">
               Bintang Tech
             </span>
           </a>
-          <span class="h-3.5 w-[1px] bg-white/[0.1] hidden sm:inline"></span>
-          <div class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-mono bg-emerald-950/40 border border-emerald-500/20 text-emerald-400">
-            <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
-            <span>ENGINE LIVE</span>
-          </div>
+          <span class="text-[#33353F] mx-1">/</span>
+          <span class="text-[13px] text-[#8A8F98] font-medium">
+            Workspace
+          </span>
         </div>
-
-        <!-- Navigation Tabs (Clean Linear Style - No Slop) -->
-        <nav class="flex items-center gap-1 overflow-x-auto py-1 scrollbar-none" aria-label="Studio navigation">
-          ${views
-            .map((v) => {
-              const isActive = currentView === v.id;
-              return `
-              <a href="#${v.id}"
-                 class="px-3 py-1.5 rounded-md text-[13px] transition-colors whitespace-nowrap ${
-                   isActive
-                     ? 'text-[#F7F8F8] bg-white/[0.08] font-medium'
-                     : 'text-[#8A8F98] hover:text-[#F7F8F8]'
-                 }">
-                ${v.label}
-              </a>
-            `;
-            })
-            .join('')}
-        </nav>
 
         <!-- Actions: Auth & Reset Demo -->
         <div class="flex items-center gap-2 shrink-0">
@@ -63,7 +35,7 @@ export function renderDemoNavbar(currentView = 'admin') {
             if (authUser) {
               return `
                 <div class="flex items-center gap-2">
-                  <span class="text-[12px] font-mono text-[#8A8F98] hidden md:inline max-w-[130px] truncate" title="${authUser.email || ''}">
+                  <span class="text-[12px] font-mono text-[#8A8F98] hidden md:inline max-w-[150px] truncate" title="${authUser.email || ''}">
                     ${authUser.fullName || authUser.email || 'Seller'}
                   </span>
                   <button id="btn-logout-auth"

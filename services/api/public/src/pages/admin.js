@@ -14,6 +14,14 @@ let productCategoryFilter = 'Semua';
 export function renderAdminPage() {
   const settings = store.getSettings();
 
+  const hash = window.location.hash || '';
+  if (hash.includes('inventory')) adminActiveTab = 'inventory';
+  else if (hash.includes('products')) adminActiveTab = 'products';
+  else if (hash.includes('orders')) adminActiveTab = 'orders';
+  else if (hash.includes('customers')) adminActiveTab = 'customers';
+  else if (hash.includes('settings')) adminActiveTab = 'settings';
+  else if (hash === '#admin') adminActiveTab = 'overview';
+
   const tabs = [
     { id: 'overview', label: 'Overview' },
     { id: 'products', label: 'Products' },
@@ -339,20 +347,20 @@ function renderAdminProductsTab() {
   return `
     <div class="space-y-4">
       <!-- Search & Filters Bar -->
-      <div class="bg-white p-4 rounded-2xl border border-stone-200 flex flex-col sm:flex-row items-center justify-between gap-3">
+      <div class="bg-[#101114] p-4 rounded-xl border border-white/[0.08] flex flex-col sm:flex-row items-center justify-between gap-3 shadow-sm">
         <div class="flex items-center gap-2 w-full sm:w-auto flex-1">
           <div class="relative flex-1 max-w-sm">
-            <span class="absolute inset-y-0 left-3 flex items-center text-stone-400 pointer-events-none">
+            <span class="absolute inset-y-0 left-3 flex items-center text-[#8A8F98] pointer-events-none">
               ${ICONS.search}
             </span>
             <input id="admin-prod-search"
                    type="text"
                    placeholder="Cari produk di admin..."
                    value="${escapeHtml(productSearchTerm)}"
-                   class="w-full pl-9 pr-3 py-2 text-xs bg-stone-100 rounded-xl border border-transparent focus:bg-white focus:border-terracotta-500 focus:outline-none">
+                   class="w-full pl-9 pr-3 py-2 text-xs bg-[#0C0D0F] text-white rounded-lg border border-white/[0.08] focus:border-[#5E6AD2] focus:outline-none placeholder-[#555]">
           </div>
           <!-- Category Select -->
-          <select id="admin-prod-category-filter" class="px-3 py-2 text-xs bg-stone-100 rounded-xl border border-transparent focus:bg-white focus:outline-none font-semibold text-stone-700">
+          <select id="admin-prod-category-filter" class="px-3 py-2 text-xs bg-[#0C0D0F] text-white rounded-lg border border-white/[0.08] focus:border-[#5E6AD2] focus:outline-none font-medium">
             ${CATEGORIES.map(
               (cat) => `
               <option value="${cat}" ${productCategoryFilter === cat ? 'selected' : ''}>${cat}</option>
@@ -361,16 +369,16 @@ function renderAdminProductsTab() {
           </select>
         </div>
 
-        <div class="text-xs text-stone-500 font-mono">
-          Total: <b class="text-stone-900">${filtered.length}</b> produk
+        <div class="text-xs text-[#8A8F98] font-mono">
+          Total: <b class="text-white">${filtered.length}</b> produk
         </div>
       </div>
 
       <!-- Products Table -->
-      <div class="bg-white rounded-2xl border border-stone-200 overflow-hidden shadow-sm">
+      <div class="bg-[#101114] rounded-xl border border-white/[0.08] overflow-hidden shadow-sm">
         <div class="overflow-x-auto">
-          <table class="w-full text-left text-xs text-stone-600">
-            <thead class="bg-stone-50 font-mono uppercase text-[10px] text-stone-400 border-b border-stone-200">
+          <table class="w-full text-left text-xs text-[#8A8F98]">
+            <thead class="bg-[#0C0D0F] font-mono uppercase text-[10px] text-[#64748B] border-b border-white/[0.06]">
               <tr>
                 <th class="px-4 py-3">Produk</th>
                 <th class="px-4 py-3">Kategori & Tipe</th>
@@ -380,31 +388,31 @@ function renderAdminProductsTab() {
                 <th class="px-4 py-3 text-right">Aksi</th>
               </tr>
             </thead>
-            <tbody class="divide-y divide-stone-100">
+            <tbody class="divide-y divide-white/[0.04]">
               ${filtered
                 .map(
                   (p) => `
-                <tr class="hover:bg-stone-50/80 transition-colors">
+                <tr class="hover:bg-white/[0.02] transition-colors">
                   <td class="px-4 py-3">
-                    <div class="font-bold text-stone-900 text-sm">${escapeHtml(p.name)}</div>
-                    <div class="text-[11px] text-stone-400">${escapeHtml(p.duration || '-')}</div>
+                    <div class="font-medium text-white text-sm">${escapeHtml(p.name)}</div>
+                    <div class="text-[11px] text-[#8A8F98] font-mono">${escapeHtml(p.duration || '-')}</div>
                   </td>
                   <td class="px-4 py-3 font-mono">
-                    <span class="px-2 py-0.5 rounded text-[10px] bg-stone-100 text-stone-700">${p.category}</span>
-                    <span class="text-[10px] text-stone-400 ml-1">(${p.type})</span>
+                    <span class="px-2 py-0.5 rounded text-[10px] bg-white/[0.06] text-[#D0D6E0] border border-white/[0.06]">${p.category}</span>
+                    <span class="text-[10px] text-[#8A8F98] ml-1 font-sans">(${p.type})</span>
                   </td>
-                  <td class="px-4 py-3 font-mono font-bold text-stone-900">
+                  <td class="px-4 py-3 font-mono font-semibold text-white">
                     ${formatRupiah(p.price)}
                   </td>
                   <td class="px-4 py-3 font-mono">
-                    <span class="font-bold ${p.stock <= 5 ? 'text-amber-600' : 'text-stone-800'}">${p.stock}</span>
+                    <span class="font-semibold ${p.stock <= 5 ? 'text-amber-400' : 'text-emerald-400'}">${p.stock}</span>
                   </td>
                   <td class="px-4 py-3">
                     <button type="button"
-                            class="btn-toggle-active px-2.5 py-1 rounded-full text-[10px] font-bold font-mono transition-colors ${
+                            class="btn-toggle-active px-2.5 py-1 rounded-full text-[10px] font-mono font-medium transition-colors ${
                               p.active
-                                ? 'bg-emerald-100 text-emerald-800'
-                                : 'bg-stone-200 text-stone-600'
+                                ? 'bg-emerald-950/60 text-emerald-400 border border-emerald-500/30'
+                                : 'bg-white/[0.04] text-[#8A8F98] border border-white/[0.08]'
                             }"
                             data-id="${p.id}">
                       ${p.active ? 'ACTIVE' : 'INACTIVE'}
@@ -412,7 +420,7 @@ function renderAdminProductsTab() {
                   </td>
                   <td class="px-4 py-3 text-right">
                     <button type="button"
-                            class="btn-edit-product px-3 py-1 rounded-lg text-xs font-semibold bg-stone-100 hover:bg-stone-200 text-stone-800 transition-colors"
+                            class="btn-edit-product px-3 py-1 rounded-md text-xs font-medium bg-white/[0.06] hover:bg-white/[0.12] text-white border border-white/[0.08] transition-colors"
                             data-id="${p.id}">
                       Edit
                     </button>
@@ -435,17 +443,17 @@ function renderAdminInventoryTab() {
 
   return `
     <div class="space-y-4">
-      <div class="bg-white p-4 rounded-2xl border border-stone-200 flex items-center justify-between">
+      <div class="bg-[#101114] p-4 rounded-xl border border-white/[0.08] flex items-center justify-between shadow-sm">
         <div>
-          <h3 class="font-heading font-bold text-sm text-stone-900">Ringkasan Inventori Stok</h3>
-          <p class="text-xs text-stone-400">Pantau ketersediaan stok produk digital, unit dipesan, dan total terjual.</p>
+          <h3 class="font-semibold text-sm text-white">Ringkasan Inventori Stok</h3>
+          <p class="text-xs text-[#8A8F98]">Pantau ketersediaan stok produk digital, unit dipesan, dan total terjual.</p>
         </div>
       </div>
 
-      <div class="bg-white rounded-2xl border border-stone-200 overflow-hidden shadow-sm">
+      <div class="bg-[#101114] rounded-xl border border-white/[0.08] overflow-hidden shadow-sm">
         <div class="overflow-x-auto">
-          <table class="w-full text-left text-xs text-stone-600">
-            <thead class="bg-stone-50 font-mono uppercase text-[10px] text-stone-400 border-b border-stone-200">
+          <table class="w-full text-left text-xs text-[#8A8F98]">
+            <thead class="bg-[#0C0D0F] font-mono uppercase text-[10px] text-[#64748B] border-b border-white/[0.06]">
               <tr>
                 <th class="px-4 py-3">Produk</th>
                 <th class="px-4 py-3">Kategori</th>
@@ -456,20 +464,20 @@ function renderAdminInventoryTab() {
                 <th class="px-4 py-3 text-right">Update Stok</th>
               </tr>
             </thead>
-            <tbody class="divide-y divide-stone-100">
+            <tbody class="divide-y divide-white/[0.04]">
               ${inventory
                 .map(
                   (item) => `
-                <tr class="hover:bg-stone-50/80 transition-colors">
-                  <td class="px-4 py-3 font-bold text-stone-900">${escapeHtml(item.name)}</td>
-                  <td class="px-4 py-3 text-stone-400 font-mono text-[11px]">${item.category}</td>
-                  <td class="px-4 py-3 text-center font-mono font-bold text-stone-800">${item.stock}</td>
-                  <td class="px-4 py-3 text-center font-mono font-bold text-emerald-600">${item.available}</td>
-                  <td class="px-4 py-3 text-center font-mono text-amber-600">${item.reserved}</td>
-                  <td class="px-4 py-3 text-center font-mono font-bold text-purple-600">${item.sold}</td>
+                <tr class="hover:bg-white/[0.02] transition-colors">
+                  <td class="px-4 py-3 font-medium text-white">${escapeHtml(item.name)}</td>
+                  <td class="px-4 py-3 text-[#8A8F98] font-mono text-[11px]">${item.category}</td>
+                  <td class="px-4 py-3 text-center font-mono font-medium text-white">${item.stock}</td>
+                  <td class="px-4 py-3 text-center font-mono font-semibold text-emerald-400">${item.available}</td>
+                  <td class="px-4 py-3 text-center font-mono text-amber-400">${item.reserved}</td>
+                  <td class="px-4 py-3 text-center font-mono font-medium text-[#A5B4FC]">${item.sold}</td>
                   <td class="px-4 py-3 text-right">
                     <button type="button"
-                            class="btn-quick-stock px-2.5 py-1 rounded bg-stone-100 hover:bg-stone-200 text-stone-800 font-mono font-bold text-xs"
+                            class="btn-quick-stock px-2.5 py-1 rounded-md bg-white/[0.06] hover:bg-white/[0.12] text-white border border-white/[0.08] font-mono text-xs transition-colors"
                             data-id="${item.id}"
                             data-stock="${item.stock}">
                       + Ubah
@@ -493,17 +501,17 @@ function renderAdminOrdersTab() {
 
   return `
     <div class="space-y-4">
-      <div class="bg-white p-4 rounded-2xl border border-stone-200 flex items-center justify-between">
+      <div class="bg-[#101114] p-4 rounded-xl border border-white/[0.08] flex items-center justify-between shadow-sm">
         <div>
-          <h3 class="font-heading font-bold text-sm text-stone-900">Manajemen Transaksi (Orders)</h3>
-          <p class="text-xs text-stone-400">Total ${orders.length} pesanan terekam dalam sistem simulasi.</p>
+          <h3 class="font-semibold text-sm text-white">Manajemen Transaksi (Orders)</h3>
+          <p class="text-xs text-[#8A8F98]">Total ${orders.length} pesanan terekam dalam sistem.</p>
         </div>
       </div>
 
-      <div class="bg-white rounded-2xl border border-stone-200 overflow-hidden shadow-sm">
+      <div class="bg-[#101114] rounded-xl border border-white/[0.08] overflow-hidden shadow-sm">
         <div class="overflow-x-auto">
-          <table class="w-full text-left text-xs text-stone-600">
-            <thead class="bg-stone-50 font-mono uppercase text-[10px] text-stone-400 border-b border-stone-200">
+          <table class="w-full text-left text-xs text-[#8A8F98]">
+            <thead class="bg-[#0C0D0F] font-mono uppercase text-[10px] text-[#64748B] border-b border-white/[0.06]">
               <tr>
                 <th class="px-4 py-3">Order ID</th>
                 <th class="px-4 py-3">Customer</th>
@@ -515,36 +523,36 @@ function renderAdminOrdersTab() {
                 <th class="px-4 py-3 text-right">Detail</th>
               </tr>
             </thead>
-            <tbody class="divide-y divide-stone-100">
+            <tbody class="divide-y divide-white/[0.04]">
               ${orders
                 .map(
                   (o) => `
-                <tr class="hover:bg-stone-50/80 transition-colors">
-                  <td class="px-4 py-3 font-mono font-bold text-stone-900">${o.id}</td>
+                <tr class="hover:bg-white/[0.02] transition-colors">
+                  <td class="px-4 py-3 font-mono font-medium text-white">${o.id}</td>
                   <td class="px-4 py-3">
-                    <div class="font-bold text-stone-900">${escapeHtml(o.customer.name)}</div>
-                    <div class="text-[11px] text-stone-400 font-mono">${escapeHtml(o.customer.telegram)}</div>
+                    <div class="font-medium text-white">${escapeHtml(o.customer.name)}</div>
+                    <div class="text-[11px] text-[#8A8F98] font-mono">${escapeHtml(o.customer.telegram)}</div>
                   </td>
-                  <td class="px-4 py-3 font-medium text-stone-800">${escapeHtml(o.product.name)}</td>
-                  <td class="px-4 py-3 font-mono font-bold text-stone-900">${formatRupiah(o.total)}</td>
+                  <td class="px-4 py-3 font-medium text-[#D0D6E0]">${escapeHtml(o.product.name)}</td>
+                  <td class="px-4 py-3 font-mono font-semibold text-white">${formatRupiah(o.total)}</td>
                   <td class="px-4 py-3">
-                    <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold font-mono bg-emerald-50 text-emerald-800 border border-emerald-200">
+                    <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-mono bg-emerald-950/60 text-emerald-400 border border-emerald-500/30">
                       ${o.paymentStatus}
                     </span>
                   </td>
                   <td class="px-4 py-3">
-                    <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold font-mono ${
+                    <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-mono ${
                       o.fulfillmentStatus === 'FULFILLED'
-                        ? 'bg-emerald-100 text-emerald-800'
-                        : 'bg-amber-100 text-amber-800'
+                        ? 'bg-emerald-950/60 text-emerald-400 border border-emerald-500/30'
+                        : 'bg-amber-950/60 text-amber-400 border border-amber-500/30'
                     }">
                       ${o.fulfillmentStatus}
                     </span>
                   </td>
-                  <td class="px-4 py-3 text-[11px] text-stone-400 font-mono">${o.date}</td>
+                  <td class="px-4 py-3 text-[11px] text-[#8A8F98] font-mono">${o.date}</td>
                   <td class="px-4 py-3 text-right">
                     <button type="button"
-                            class="btn-admin-order-detail px-2.5 py-1 rounded bg-stone-100 hover:bg-stone-200 text-stone-800 font-semibold text-xs"
+                            class="btn-admin-order-detail px-2.5 py-1 rounded-md bg-white/[0.06] hover:bg-white/[0.12] text-white border border-white/[0.08] text-xs font-medium transition-colors"
                             data-id="${o.id}">
                       Akses
                     </button>
@@ -567,18 +575,18 @@ function renderAdminCustomersTab() {
 
   return `
     <div class="space-y-4">
-      <div class="bg-white p-4 rounded-2xl border border-stone-200 flex items-center justify-between">
+      <div class="bg-[#101114] p-4 rounded-xl border border-white/[0.08] flex items-center justify-between shadow-sm">
         <div>
-          <h3 class="font-heading font-bold text-sm text-stone-900">Data Pelanggan (Customers)</h3>
-          <p class="text-xs text-stone-400">Database kontak pelanggan yang pernah berbelanja di toko.</p>
+          <h3 class="font-semibold text-sm text-white">Data Pelanggan (Customers)</h3>
+          <p class="text-xs text-[#8A8F98]">Database kontak pelanggan yang pernah berbelanja di toko.</p>
         </div>
-        <span class="text-xs font-mono font-bold bg-stone-100 px-3 py-1 rounded-full">${customers.length} Pelanggan</span>
+        <span class="text-xs font-mono font-medium text-white bg-white/[0.06] border border-white/[0.08] px-3 py-1 rounded-full">${customers.length} Pelanggan</span>
       </div>
 
-      <div class="bg-white rounded-2xl border border-stone-200 overflow-hidden shadow-sm">
+      <div class="bg-[#101114] rounded-xl border border-white/[0.08] overflow-hidden shadow-sm">
         <div class="overflow-x-auto">
-          <table class="w-full text-left text-xs text-stone-600">
-            <thead class="bg-stone-50 font-mono uppercase text-[10px] text-stone-400 border-b border-stone-200">
+          <table class="w-full text-left text-xs text-[#8A8F98]">
+            <thead class="bg-[#0C0D0F] font-mono uppercase text-[10px] text-[#64748B] border-b border-white/[0.06]">
               <tr>
                 <th class="px-4 py-3">Customer</th>
                 <th class="px-4 py-3">Telegram</th>
@@ -588,17 +596,17 @@ function renderAdminCustomersTab() {
                 <th class="px-4 py-3">Order Terakhir</th>
               </tr>
             </thead>
-            <tbody class="divide-y divide-stone-100">
+            <tbody class="divide-y divide-white/[0.04]">
               ${customers
                 .map(
                   (c) => `
-                <tr class="hover:bg-stone-50/80 transition-colors">
-                  <td class="px-4 py-3 font-bold text-stone-900">${escapeHtml(c.name)}</td>
-                  <td class="px-4 py-3 font-mono text-sky-600 font-medium">${escapeHtml(c.telegram)}</td>
-                  <td class="px-4 py-3 text-stone-500">${escapeHtml(c.email)}</td>
-                  <td class="px-4 py-3 text-center font-mono font-bold text-stone-800">${c.ordersCount}</td>
-                  <td class="px-4 py-3 font-mono font-bold text-terracotta-600">${formatRupiah(c.totalSpending)}</td>
-                  <td class="px-4 py-3 text-[11px] text-stone-400 font-mono">${c.lastOrder}</td>
+                <tr class="hover:bg-white/[0.02] transition-colors">
+                  <td class="px-4 py-3 font-medium text-white">${escapeHtml(c.name)}</td>
+                  <td class="px-4 py-3 font-mono text-indigo-400 font-medium">${escapeHtml(c.telegram)}</td>
+                  <td class="px-4 py-3 text-[#8A8F98]">${escapeHtml(c.email)}</td>
+                  <td class="px-4 py-3 text-center font-mono font-medium text-white">${c.ordersCount}</td>
+                  <td class="px-4 py-3 font-mono font-semibold text-emerald-400">${formatRupiah(c.totalSpending)}</td>
+                  <td class="px-4 py-3 text-[11px] text-[#8A8F98] font-mono">${c.lastOrder}</td>
                 </tr>
               `,
                 )
@@ -617,52 +625,52 @@ function renderAdminSettingsTab() {
 
   return `
     <div class="max-w-3xl space-y-6">
-      <form id="admin-settings-form" class="bg-white p-6 rounded-2xl border border-stone-200 shadow-sm space-y-4 text-xs">
-        <div class="border-b border-stone-100 pb-3">
-          <h3 class="font-heading font-bold text-base text-stone-900">Pengaturan Toko Digital</h3>
-          <p class="text-stone-400">Konfigurasi toko Bintang Store.</p>
+      <form id="admin-settings-form" class="bg-[#101114] p-6 rounded-xl border border-white/[0.08] shadow-sm space-y-5 text-xs text-[#F7F8F8]">
+        <div class="border-b border-white/[0.06] pb-3">
+          <h3 class="font-semibold text-base text-white">Pengaturan Toko Digital</h3>
+          <p class="text-xs text-[#8A8F98]">Konfigurasi toko Bintang Store.</p>
         </div>
 
-        <div class="space-y-3">
+        <div class="space-y-4">
           <div>
-            <label class="block font-bold text-stone-700 mb-1">Nama Toko (Store Name)</label>
-            <input id="set-store-name" type="text" value="${escapeHtml(settings.storeName)}" class="w-full px-3 py-2 bg-stone-50 rounded-xl border border-stone-200 focus:bg-white focus:outline-none">
+            <label class="block font-medium text-[#D0D6E0] mb-1.5 text-xs">Nama Toko (Store Name)</label>
+            <input id="set-store-name" type="text" value="${escapeHtml(settings.storeName)}" class="w-full px-3.5 py-2.5 bg-[#0C0D0F] text-white rounded-lg border border-white/[0.08] focus:border-[#5E6AD2] focus:outline-none">
           </div>
           <div>
-            <label class="block font-bold text-stone-700 mb-1">Tagline</label>
-            <input id="set-tagline" type="text" value="${escapeHtml(settings.tagline)}" class="w-full px-3 py-2 bg-stone-50 rounded-xl border border-stone-200 focus:bg-white focus:outline-none">
+            <label class="block font-medium text-[#D0D6E0] mb-1.5 text-xs">Tagline</label>
+            <input id="set-tagline" type="text" value="${escapeHtml(settings.tagline)}" class="w-full px-3.5 py-2.5 bg-[#0C0D0F] text-white rounded-lg border border-white/[0.08] focus:border-[#5E6AD2] focus:outline-none">
           </div>
           <div>
-            <label class="block font-bold text-stone-700 mb-1">Deskripsi Singkat</label>
-            <textarea id="set-description" rows="2" class="w-full px-3 py-2 bg-stone-50 rounded-xl border border-stone-200 focus:bg-white focus:outline-none">${escapeHtml(settings.storeDescription)}</textarea>
+            <label class="block font-medium text-[#D0D6E0] mb-1.5 text-xs">Deskripsi Singkat</label>
+            <textarea id="set-description" rows="2" class="w-full px-3.5 py-2.5 bg-[#0C0D0F] text-white rounded-lg border border-white/[0.08] focus:border-[#5E6AD2] focus:outline-none">${escapeHtml(settings.storeDescription)}</textarea>
           </div>
           <div class="grid grid-cols-2 gap-3">
             <div>
-              <label class="block font-bold text-stone-700 mb-1">Aksen Warna Utama</label>
-              <input id="set-accent" type="text" value="${escapeHtml(settings.primaryAccent)}" class="w-full px-3 py-2 font-mono bg-stone-50 rounded-xl border border-stone-200 focus:bg-white focus:outline-none">
+              <label class="block font-medium text-[#D0D6E0] mb-1.5 text-xs">Aksen Warna Utama</label>
+              <input id="set-accent" type="text" value="${escapeHtml(settings.primaryAccent)}" class="w-full px-3.5 py-2.5 font-mono bg-[#0C0D0F] text-white rounded-lg border border-white/[0.08] focus:border-[#5E6AD2] focus:outline-none">
             </div>
             <div>
-              <label class="block font-bold text-stone-700 mb-1">Username Bot Telegram</label>
-              <input id="set-bot" type="text" value="${escapeHtml(settings.telegramBotUsername)}" class="w-full px-3 py-2 font-mono bg-stone-50 rounded-xl border border-stone-200 focus:bg-white focus:outline-none">
+              <label class="block font-medium text-[#D0D6E0] mb-1.5 text-xs">Username Bot Telegram</label>
+              <input id="set-bot" type="text" value="${escapeHtml(settings.telegramBotUsername)}" class="w-full px-3.5 py-2.5 font-mono bg-[#0C0D0F] text-white rounded-lg border border-white/[0.08] focus:border-[#5E6AD2] focus:outline-none">
             </div>
           </div>
           <div class="grid grid-cols-2 gap-3 pt-2">
-            <div class="p-3 rounded-xl bg-stone-50 border border-stone-200 space-y-1">
-              <span class="text-stone-400 block font-mono text-[10px] uppercase">Status Payment Gateway</span>
-              <span class="font-bold text-emerald-600">${settings.paymentGatewayStatus}</span>
+            <div class="p-3.5 rounded-lg bg-[#0C0D0F] border border-white/[0.06] space-y-1">
+              <span class="text-[#8A8F98] block font-mono text-[10px] uppercase tracking-wider">Status Payment Gateway</span>
+              <span class="font-mono text-emerald-400 font-medium">${settings.paymentGatewayStatus}</span>
             </div>
-            <div class="p-3 rounded-xl bg-stone-50 border border-stone-200 space-y-1">
-              <span class="text-stone-400 block font-mono text-[10px] uppercase">Status WebApp</span>
-              <span class="font-bold text-emerald-600">${settings.webAppStatus}</span>
+            <div class="p-3.5 rounded-lg bg-[#0C0D0F] border border-white/[0.06] space-y-1">
+              <span class="text-[#8A8F98] block font-mono text-[10px] uppercase tracking-wider">Status WebApp</span>
+              <span class="font-mono text-emerald-400 font-medium">${settings.webAppStatus}</span>
             </div>
           </div>
         </div>
 
-        <div class="pt-3 border-t border-stone-100 flex justify-between items-center">
-          <button type="submit" class="px-5 py-2.5 rounded-xl text-xs font-bold bg-terracotta-500 hover:bg-terracotta-600 text-white shadow transition-all">
+        <div class="pt-4 border-t border-white/[0.06] flex justify-between items-center">
+          <button type="submit" class="px-4 py-2 rounded-lg text-xs font-semibold bg-white hover:bg-zinc-200 text-black shadow-sm transition-all">
             Simpan Pengaturan
           </button>
-          <button id="btn-settings-reset" type="button" class="text-xs text-red-600 hover:underline">
+          <button id="btn-settings-reset" type="button" class="text-xs text-red-400 hover:text-red-300 font-medium hover:underline">
             Reset Data Demo ke Default
           </button>
         </div>
@@ -879,23 +887,23 @@ function updateTabHighlight() {
 // Modal: Tambah Produk
 function openAddProductModal(onSuccess) {
   const content = `
-    <form id="form-add-product" class="space-y-4 text-xs">
+    <form id="form-add-product" class="space-y-4 text-xs text-[#F7F8F8]">
       <div>
-        <label class="block font-bold text-stone-700 mb-1">Nama Produk</label>
-        <input id="add-prod-name" type="text" required placeholder="Contoh: Canva Pro" class="w-full px-3 py-2 bg-stone-50 rounded-xl border border-stone-200 focus:bg-white focus:outline-none">
+        <label class="block font-medium text-[#D0D6E0] mb-1.5">Nama Produk</label>
+        <input id="add-prod-name" type="text" required placeholder="Contoh: Canva Pro" class="w-full px-3.5 py-2.5 bg-[#0C0D0F] text-white rounded-lg border border-white/[0.08] focus:border-[#5E6AD2] focus:outline-none placeholder-[#555]">
       </div>
-      <div class="grid grid-cols-2 gap-2">
+      <div class="grid grid-cols-2 gap-3">
         <div>
-          <label class="block font-bold text-stone-700 mb-1">Kategori</label>
-          <select id="add-prod-cat" class="w-full px-3 py-2 bg-stone-50 rounded-xl border border-stone-200 focus:bg-white focus:outline-none">
+          <label class="block font-medium text-[#D0D6E0] mb-1.5">Kategori</label>
+          <select id="add-prod-cat" class="w-full px-3.5 py-2.5 bg-[#0C0D0F] text-white rounded-lg border border-white/[0.08] focus:border-[#5E6AD2] focus:outline-none">
             ${CATEGORIES.filter((c) => c !== 'Semua')
               .map((c) => `<option value="${c}">${c}</option>`)
               .join('')}
           </select>
         </div>
         <div>
-          <label class="block font-bold text-stone-700 mb-1">Tipe Produk</label>
-          <select id="add-prod-type" class="w-full px-3 py-2 bg-stone-50 rounded-xl border border-stone-200 focus:bg-white focus:outline-none">
+          <label class="block font-medium text-[#D0D6E0] mb-1.5">Tipe Produk</label>
+          <select id="add-prod-type" class="w-full px-3.5 py-2.5 bg-[#0C0D0F] text-white rounded-lg border border-white/[0.08] focus:border-[#5E6AD2] focus:outline-none">
             <option value="account">Akun (Email & Password)</option>
             <option value="code">Kode Voucher</option>
             <option value="link">Link Cloud Drive</option>
@@ -903,21 +911,21 @@ function openAddProductModal(onSuccess) {
           </select>
         </div>
       </div>
-      <div class="grid grid-cols-2 gap-2">
+      <div class="grid grid-cols-2 gap-3">
         <div>
-          <label class="block font-bold text-stone-700 mb-1">Harga (Rp)</label>
-          <input id="add-prod-price" type="number" required min="1000" step="1000" value="20000" class="w-full px-3 py-2 bg-stone-50 rounded-xl border border-stone-200 focus:bg-white focus:outline-none font-mono">
+          <label class="block font-medium text-[#D0D6E0] mb-1.5">Harga (Rp)</label>
+          <input id="add-prod-price" type="number" required min="1000" step="1000" value="20000" class="w-full px-3.5 py-2.5 bg-[#0C0D0F] text-white rounded-lg border border-white/[0.08] focus:border-[#5E6AD2] focus:outline-none font-mono">
         </div>
         <div>
-          <label class="block font-bold text-stone-700 mb-1">Stok Awal</label>
-          <input id="add-prod-stock" type="number" required min="1" value="10" class="w-full px-3 py-2 bg-stone-50 rounded-xl border border-stone-200 focus:bg-white focus:outline-none font-mono">
+          <label class="block font-medium text-[#D0D6E0] mb-1.5">Stok Awal</label>
+          <input id="add-prod-stock" type="number" required min="1" value="10" class="w-full px-3.5 py-2.5 bg-[#0C0D0F] text-white rounded-lg border border-white/[0.08] focus:border-[#5E6AD2] focus:outline-none font-mono">
         </div>
       </div>
       <div>
-        <label class="block font-bold text-stone-700 mb-1">Deskripsi Produk</label>
-        <textarea id="add-prod-desc" rows="2" required placeholder="Deskripsi fitur..." class="w-full px-3 py-2 bg-stone-50 rounded-xl border border-stone-200 focus:bg-white focus:outline-none"></textarea>
+        <label class="block font-medium text-[#D0D6E0] mb-1.5">Deskripsi Produk</label>
+        <textarea id="add-prod-desc" rows="2" required placeholder="Deskripsi fitur..." class="w-full px-3.5 py-2.5 bg-[#0C0D0F] text-white rounded-lg border border-white/[0.08] focus:border-[#5E6AD2] focus:outline-none placeholder-[#555]"></textarea>
       </div>
-      <button type="submit" class="w-full py-2.5 rounded-xl text-xs font-bold bg-terracotta-500 hover:bg-terracotta-600 text-white shadow transition-all">
+      <button type="submit" class="w-full py-2.5 rounded-lg text-xs font-semibold bg-white hover:bg-zinc-200 text-black shadow-sm transition-all">
         Simpan Produk Baru
       </button>
     </form>
@@ -927,6 +935,7 @@ function openAddProductModal(onSuccess) {
     title: 'Tambah Produk Digital',
     content: content,
     maxWidth: 'max-w-md',
+    theme: 'dark',
     onOpen: (modalEl) => {
       const form = modalEl.querySelector('#form-add-product');
       if (form) {
@@ -963,26 +972,26 @@ function openAddProductModal(onSuccess) {
 // Modal: Edit Produk
 function openEditProductModal(product, onSuccess) {
   const content = `
-    <form id="form-edit-product" class="space-y-4 text-xs">
+    <form id="form-edit-product" class="space-y-4 text-xs text-[#F7F8F8]">
       <div>
-        <label class="block font-bold text-stone-700 mb-1">Nama Produk</label>
-        <input id="edit-prod-name" type="text" required value="${escapeHtml(product.name)}" class="w-full px-3 py-2 bg-stone-50 rounded-xl border border-stone-200 focus:bg-white focus:outline-none">
+        <label class="block font-medium text-[#D0D6E0] mb-1.5">Nama Produk</label>
+        <input id="edit-prod-name" type="text" required value="${escapeHtml(product.name)}" class="w-full px-3.5 py-2.5 bg-[#0C0D0F] text-white rounded-lg border border-white/[0.08] focus:border-[#5E6AD2] focus:outline-none">
       </div>
-      <div class="grid grid-cols-2 gap-2">
+      <div class="grid grid-cols-2 gap-3">
         <div>
-          <label class="block font-bold text-stone-700 mb-1">Harga (Rp)</label>
-          <input id="edit-prod-price" type="number" required min="1000" step="1000" value="${product.price}" class="w-full px-3 py-2 bg-stone-50 rounded-xl border border-stone-200 focus:bg-white focus:outline-none font-mono">
+          <label class="block font-medium text-[#D0D6E0] mb-1.5">Harga (Rp)</label>
+          <input id="edit-prod-price" type="number" required min="1000" step="1000" value="${product.price}" class="w-full px-3.5 py-2.5 bg-[#0C0D0F] text-white rounded-lg border border-white/[0.08] focus:border-[#5E6AD2] focus:outline-none font-mono">
         </div>
         <div>
-          <label class="block font-bold text-stone-700 mb-1">Stok Tersedia</label>
-          <input id="edit-prod-stock" type="number" required min="0" value="${product.stock}" class="w-full px-3 py-2 bg-stone-50 rounded-xl border border-stone-200 focus:bg-white focus:outline-none font-mono">
+          <label class="block font-medium text-[#D0D6E0] mb-1.5">Stok Tersedia</label>
+          <input id="edit-prod-stock" type="number" required min="0" value="${product.stock}" class="w-full px-3.5 py-2.5 bg-[#0C0D0F] text-white rounded-lg border border-white/[0.08] focus:border-[#5E6AD2] focus:outline-none font-mono">
         </div>
       </div>
       <div>
-        <label class="block font-bold text-stone-700 mb-1">Deskripsi Produk</label>
-        <textarea id="edit-prod-desc" rows="3" class="w-full px-3 py-2 bg-stone-50 rounded-xl border border-stone-200 focus:bg-white focus:outline-none">${escapeHtml(product.description)}</textarea>
+        <label class="block font-medium text-[#D0D6E0] mb-1.5">Deskripsi Produk</label>
+        <textarea id="edit-prod-desc" rows="3" class="w-full px-3.5 py-2.5 bg-[#0C0D0F] text-white rounded-lg border border-white/[0.08] focus:border-[#5E6AD2] focus:outline-none">${escapeHtml(product.description)}</textarea>
       </div>
-      <button type="submit" class="w-full py-2.5 rounded-xl text-xs font-bold bg-terracotta-500 hover:bg-terracotta-600 text-white shadow transition-all">
+      <button type="submit" class="w-full py-2.5 rounded-lg text-xs font-semibold bg-white hover:bg-zinc-200 text-black shadow-sm transition-all">
         Simpan Perubahan
       </button>
     </form>

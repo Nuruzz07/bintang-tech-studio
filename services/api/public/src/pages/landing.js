@@ -7,7 +7,8 @@ import { formatRupiah } from '../utils/currency.js';
 import { escapeHtml } from '../utils/helpers.js';
 import { openAuthModal } from '../components/auth-modal.js';
 
-let activeLandingTab = 'home'; // 'home' | 'customers' | 'pricing' | 'contact'
+let activeLandingTab = 'home'; // 'home' | 'features' | 'customers' | 'pricing' | 'contact'
+let activeFeatureChannel = 'miniapp'; // 'miniapp' | 'telegram_bot' | 'telegram_admin' | 'whatsapp'
 let customerFilter = 'Featured';
 let billingYearly = true;
 
@@ -55,6 +56,19 @@ const CUSTOMER_STORIES = [
 ];
 
 export function renderLandingPage() {
+  const hash = window.location.hash || '';
+  if (hash.includes('features') || hash.includes('channels') || hash.includes('bot')) {
+    activeLandingTab = 'features';
+  } else if (hash.includes('customers')) {
+    activeLandingTab = 'customers';
+  } else if (hash.includes('pricing')) {
+    activeLandingTab = 'pricing';
+  } else if (hash.includes('contact')) {
+    activeLandingTab = 'contact';
+  } else if (hash === '#landing' || hash === '' || hash === '#') {
+    activeLandingTab = 'home';
+  }
+
   return `
     <div class="min-h-screen bg-[#08090A] text-[#F7F8F8] font-sans antialiased selection:bg-[#5E6AD2]/30 overflow-x-hidden relative">
       
@@ -106,6 +120,17 @@ export function renderLandingPage() {
                   Resources
                 </button>
               </div>
+
+              <button
+                id="btn-nav-features"
+                type="button"
+                class="btn-nav-link px-3 py-1.5 rounded-md text-[13px] transition-colors ${
+                  activeLandingTab === 'features' ? 'text-[#F7F8F8] bg-white/[0.06]' : 'text-[#8A8F98] hover:text-[#F7F8F8]'
+                }"
+                data-tab="features"
+              >
+                Features
+              </button>
 
               <button
                 id="btn-nav-customers"
@@ -177,7 +202,7 @@ export function renderLandingPage() {
               <div class="grid grid-cols-12">
                 <!-- Left 2 Columns -->
                 <div class="col-span-8 p-6 grid grid-cols-2 gap-x-6 gap-y-6">
-                  <div class="group cursor-pointer p-2 -m-2 rounded-lg hover:bg-white/[0.04] transition-colors btn-goto-tab" data-tab="home">
+                  <div class="group cursor-pointer p-2 -m-2 rounded-lg hover:bg-white/[0.04] transition-colors btn-goto-tab" data-tab="features">
                     <div class="text-[13px] font-medium text-[#F7F8F8] mb-1">
                       Intake & Channels
                     </div>
@@ -186,7 +211,7 @@ export function renderLandingPage() {
                     </p>
                   </div>
 
-                  <div class="group cursor-pointer p-2 -m-2 rounded-lg hover:bg-white/[0.04] transition-colors btn-goto-tab" data-tab="home">
+                  <div class="group cursor-pointer p-2 -m-2 rounded-lg hover:bg-white/[0.04] transition-colors btn-goto-tab" data-tab="features">
                     <div class="text-[13px] font-medium text-[#F7F8F8] mb-1">
                       AI and automations
                     </div>
@@ -195,7 +220,7 @@ export function renderLandingPage() {
                     </p>
                   </div>
 
-                  <div class="group cursor-pointer p-2 -m-2 rounded-lg hover:bg-white/[0.04] transition-colors btn-goto-tab" data-tab="home">
+                  <div class="group cursor-pointer p-2 -m-2 rounded-lg hover:bg-white/[0.04] transition-colors btn-goto-tab" data-tab="features">
                     <div class="text-[13px] font-medium text-[#F7F8F8] mb-1">
                       Plan and monitor
                     </div>
@@ -204,7 +229,7 @@ export function renderLandingPage() {
                     </p>
                   </div>
 
-                  <div class="group cursor-pointer p-2 -m-2 rounded-lg hover:bg-white/[0.04] transition-colors btn-goto-tab" data-tab="home">
+                  <div class="group cursor-pointer p-2 -m-2 rounded-lg hover:bg-white/[0.04] transition-colors btn-goto-tab" data-tab="features">
                     <div class="text-[13px] font-medium text-[#F7F8F8] mb-1">
                       Zero-click fulfillment
                     </div>
@@ -216,13 +241,13 @@ export function renderLandingPage() {
 
                 <!-- Right Column -->
                 <div class="col-span-4 bg-[#0B0C0E]/70 border-l border-white/[0.06] p-6 flex flex-col justify-between space-y-3.5">
-                  <div class="text-[13px] font-medium text-[#F7F8F8] hover:text-white cursor-pointer btn-goto-tab" data-tab="customers">
+                  <div class="text-[13px] font-medium text-[#F7F8F8] hover:text-white cursor-pointer btn-goto-tab" data-tab="features">
                     Integration directory
                   </div>
-                  <div class="text-[13px] font-medium text-[#F7F8F8] hover:text-white cursor-pointer btn-goto-tab" data-tab="home">
+                  <div class="text-[13px] font-medium text-[#F7F8F8] hover:text-white cursor-pointer btn-goto-tab" data-tab="features">
                     Tipzy QRIS Settlement
                   </div>
-                  <div class="text-[13px] font-medium text-[#F7F8F8] hover:text-white cursor-pointer btn-goto-tab" data-tab="home">
+                  <div class="text-[13px] font-medium text-[#F7F8F8] hover:text-white cursor-pointer btn-goto-tab" data-tab="features">
                     Smart Human Takeover
                   </div>
                   <div class="text-[13px] font-medium text-[#F7F8F8] hover:text-white cursor-pointer btn-goto-tab" data-tab="contact">
@@ -237,7 +262,7 @@ export function renderLandingPage() {
                   <span class="text-[#F7F8F8] font-medium mr-1.5">New:</span>
                   <span class="text-[#8A8F98]">15-minute Smart Human Takeover for CS</span>
                 </div>
-                <button class="text-[#8A8F98] hover:text-[#F7F8F8] flex items-center gap-1 transition-colors btn-goto-tab" data-tab="home">
+                <button class="text-[#8A8F98] hover:text-[#F7F8F8] flex items-center gap-1 transition-colors btn-goto-tab" data-tab="features">
                   Learn more <span class="text-[11px]">→</span>
                 </button>
               </div>
@@ -318,6 +343,8 @@ export function renderLandingPage() {
 
 function renderTabContent() {
   switch (activeLandingTab) {
+    case 'features':
+      return renderFeaturesView();
     case 'customers':
       return renderCustomersView();
     case 'pricing':
@@ -326,6 +353,237 @@ function renderTabContent() {
       return renderContactView();
     default:
       return renderHomeView();
+  }
+}
+
+// ==================== FEATURES / CHANNELS SHOWCASE VIEW ====================
+function renderFeaturesView() {
+  const channels = [
+    { id: 'miniapp', label: 'Telegram Mini App (Store)' },
+    { id: 'telegram_bot', label: 'Telegram Bot Toko' },
+    { id: 'telegram_admin', label: 'Telegram Admin Assistant' },
+    { id: 'whatsapp', label: 'WhatsApp Multi-Device' },
+  ];
+
+  return `
+    <section class="max-w-[1120px] mx-auto px-6 pt-16 pb-24">
+      <div class="max-w-3xl mx-auto text-center mb-10">
+        <h1 class="text-[44px] sm:text-[50px] font-medium tracking-[-0.03em] text-[#F7F8F8] mb-4 leading-tight">
+          Omnichannel Autonomous Channels
+        </h1>
+        <p class="text-[#8A8F98] text-[15px] sm:text-[16px] max-w-2xl mx-auto leading-relaxed">
+          Simulasi interaktif channel transaksi toko digital. Pilih channel di bawah untuk melihat bagaimana pembeli dan admin berinteraksi secara otomatis.
+        </p>
+
+        <!-- Channel Filter Tabs -->
+        <div class="flex flex-wrap items-center justify-center gap-2 mt-8">
+          ${channels
+            .map(
+              (ch) => `
+            <button
+              type="button"
+              class="btn-channel-select px-4 py-2 rounded-full text-[13px] font-medium transition-all ${
+                activeFeatureChannel === ch.id
+                  ? 'bg-white text-black font-semibold shadow-sm'
+                  : 'bg-[#101114] text-[#8A8F98] hover:text-white border border-white/[0.08]'
+              }"
+              data-channel="${ch.id}"
+            >
+              ${ch.label}
+            </button>
+          `,
+            )
+            .join('')}
+        </div>
+      </div>
+
+      <!-- Active Channel View -->
+      <div class="max-w-4xl mx-auto bg-[#101114] border border-white/[0.08] rounded-2xl shadow-2xl overflow-hidden p-6 sm:p-8">
+        ${renderActiveChannelContent()}
+      </div>
+
+      <!-- 3 Key Features Bento Cards -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto mt-8">
+        <div class="p-6 rounded-xl bg-[#0D0E10] border border-white/[0.08] space-y-2.5">
+          <div class="w-8 h-8 rounded-lg bg-white/[0.06] flex items-center justify-center text-white text-xs font-mono font-bold">
+            ⚡
+          </div>
+          <h3 class="font-medium text-sm text-white">Zero-Click Fulfillment</h3>
+          <p class="text-xs text-[#8A8F98] leading-relaxed">
+            Kredensial akun, kode voucher, dan lisensi software langsung terkirim dalam &lt; 1.1 detik setelah pembayaran QRIS diverifikasi.
+          </p>
+        </div>
+
+        <div class="p-6 rounded-xl bg-[#0D0E10] border border-white/[0.08] space-y-2.5">
+          <div class="w-8 h-8 rounded-lg bg-white/[0.06] flex items-center justify-center text-white text-xs font-mono font-bold">
+            🛡️
+          </div>
+          <h3 class="font-medium text-sm text-white">Smart Human Takeover</h3>
+          <p class="text-xs text-[#8A8F98] leading-relaxed">
+            Saat pembeli minta bantuan CS, bot otomatis di-mute 15 menit dan sistem langsung mengirimkan link direct chat ke Telegram admin.
+          </p>
+        </div>
+
+        <div class="p-6 rounded-xl bg-[#0D0E10] border border-white/[0.08] space-y-2.5">
+          <div class="w-8 h-8 rounded-lg bg-white/[0.06] flex items-center justify-center text-white text-xs font-mono font-bold">
+            📊
+          </div>
+          <h3 class="font-medium text-sm text-white">Real-Time Stock Pool</h3>
+          <p class="text-xs text-[#8A8F98] leading-relaxed">
+            Stok 36 produk terpusat dan sinkron secara real-time. Tidak ada risiko double-order atau over-selling antar channel.
+          </p>
+        </div>
+      </div>
+    </section>
+  `;
+}
+
+function renderActiveChannelContent() {
+  switch (activeFeatureChannel) {
+    case 'telegram_bot':
+      return `
+        <div class="space-y-6">
+          <div class="flex items-center justify-between border-b border-white/[0.06] pb-4">
+            <div>
+              <h2 class="text-white font-medium text-base">Telegram Store Bot (@BintangDigitalDemoBot)</h2>
+              <p class="text-xs text-[#8A8F98]">Bot toko resmi 24 jam dengan tombol inline katalog dan auto-fulfillment.</p>
+            </div>
+            <a href="https://t.me/BintangDigitalDemoBot" target="_blank" class="px-3 py-1.5 rounded-lg bg-white/[0.06] hover:bg-white/[0.12] text-xs font-medium text-white transition flex items-center gap-1.5">
+              <span>Buka Bot Asli</span>
+              <span>↗</span>
+            </a>
+          </div>
+
+          <!-- Chat Simulator -->
+          <div class="max-w-lg mx-auto bg-[#0C0D0F] border border-white/[0.08] rounded-2xl p-5 space-y-4">
+            <div class="p-3.5 rounded-xl bg-[#16181D] border border-white/[0.06] text-xs space-y-2">
+              <div class="font-medium text-[#A5B4FC]">🤖 Bintang Store Bot</div>
+              <p class="text-gray-300">Selamat datang di Bintang Store! Toko produk digital otomatis 24 jam dengan garansi penuh.</p>
+              <div class="grid grid-cols-2 gap-2 pt-1">
+                <button type="button" class="btn-channel-select p-2 rounded bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.06] text-white text-[11px] font-mono text-center" data-channel="miniapp">
+                  🛍️ Buka WebApp Toko
+                </button>
+                <button type="button" class="p-2 rounded bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.06] text-white text-[11px] font-mono text-center">
+                  📦 Cek Status Pesanan
+                </button>
+              </div>
+            </div>
+
+            <div class="p-3.5 rounded-xl bg-[#16181D] border border-white/[0.06] text-xs space-y-1.5 font-mono text-gray-300">
+              <span class="text-[#8A8F98] text-[10px] block uppercase tracking-wider font-sans">Contoh Pesan Instan Pembeli</span>
+              <div>Pembeli: "Mau beli Spotify 1 Bulan"</div>
+              <div class="text-emerald-400">Bot: "Invoice QRIS Rp 19.000 dibuat. Menunggu pembayaran..."</div>
+              <div class="text-[#A5B4FC]">Bot: "Pembayaran terkonfirmasi! Kredensial akun dikirimkan."</div>
+            </div>
+          </div>
+        </div>
+      `;
+
+    case 'telegram_admin':
+      return `
+        <div class="space-y-6">
+          <div class="flex items-center justify-between border-b border-white/[0.06] pb-4">
+            <div>
+              <h2 class="text-white font-medium text-base">Telegram Admin Assistant</h2>
+              <p class="text-xs text-[#8A8F98]">Asisten kontrol toko via command Telegram untuk cek stok, sales, dan pesanan.</p>
+            </div>
+            <a href="#telegram-admin" class="px-3 py-1.5 rounded-lg bg-white/[0.06] hover:bg-white/[0.12] text-xs font-medium text-white transition flex items-center gap-1.5">
+              <span>Buka Full Simulator</span>
+              <span>↗</span>
+            </a>
+          </div>
+
+          <div class="max-w-lg mx-auto bg-[#0C0D0F] border border-white/[0.08] rounded-2xl p-5 space-y-4">
+            <div class="p-3.5 rounded-xl bg-[#16181D] border border-white/[0.06] text-xs space-y-2">
+              <div class="font-medium text-purple-300">⚡ Store Admin Bot</div>
+              <p class="text-gray-300">Gunakan perintah berikut untuk memantau tokomu kapan saja:</p>
+              <div class="space-y-1 font-mono text-[11px] text-[#A5B4FC]">
+                <div><b class="text-amber-300">/stok</b> — Cek stok live seluruh produk</div>
+                <div><b class="text-amber-300">/sales</b> — Ringkasan omset & pesanan hari ini</div>
+                <div><b class="text-amber-300">/order BS-10231</b> — Detail mutasi dan kredensial</div>
+              </div>
+            </div>
+
+            <div class="p-3.5 rounded-xl bg-[#16181D] border border-white/[0.06] text-xs font-mono text-gray-300 space-y-1">
+              <span class="text-[#8A8F98] text-[10px] block uppercase tracking-wider font-sans">Live Query Result</span>
+              <div>/stok</div>
+              <div class="text-emerald-400">✓ Semua stok aman: 36 produk aktif, total 180 unit tersedia.</div>
+            </div>
+          </div>
+        </div>
+      `;
+
+    case 'whatsapp':
+      return `
+        <div class="space-y-6">
+          <div class="flex items-center justify-between border-b border-white/[0.06] pb-4">
+            <div>
+              <h2 class="text-white font-medium text-base">WhatsApp Multi-Device Bot (+62 857-9752-0135)</h2>
+              <p class="text-xs text-[#8A8F98]">Engine Baileys tanpa browser, auto-decrement stok, dan 15-menit smart muting untuk CS.</p>
+            </div>
+            <span class="px-3 py-1 rounded-full text-xs font-mono bg-emerald-950/60 text-emerald-400 border border-emerald-500/30">
+              CONNECTED
+            </span>
+          </div>
+
+          <div class="max-w-lg mx-auto bg-[#0C0D0F] border border-white/[0.08] rounded-2xl p-5 space-y-4">
+            <div class="p-3.5 rounded-xl bg-[#16181D] border border-white/[0.06] text-xs space-y-2">
+              <div class="font-medium text-emerald-400">📱 WhatsApp Business Engine</div>
+              <p class="text-gray-300">Pelanggan cukup chat WhatsApp toko untuk melihat menu produk, menerima QRIS otomatis, dan mendapatkan akun tanpa campur tangan admin.</p>
+            </div>
+
+            <div class="p-3.5 rounded-xl bg-[#16181D] border border-white/[0.06] text-xs font-mono text-gray-300 space-y-2">
+              <div class="text-[#8A8F98] text-[10px] uppercase tracking-wider font-sans">Simulasi Chat Pembeli</div>
+              <div>💬 Pembeli: "Menu"</div>
+              <div class="p-2.5 rounded bg-[#0C0D0F] border border-white/[0.06] text-[11px] leading-relaxed">
+                🤖 Bot: Halo! Selamat datang di Bintang Store.<br>
+                Ketik nomor pilihan:<br>
+                [1] Katalog Produk<br>
+                [2] Cara Pembayaran<br>
+                [3] Bantuan CS
+              </div>
+              <div class="text-xs text-[#8A8F98]">Saat pembeli ketik [3], bot Telegram admin berbunyi dan bot otomatis di-mute 15 menit agar obrolan CS kamu tidak ditimpa bot.</div>
+            </div>
+          </div>
+        </div>
+      `;
+
+    default: // 'miniapp'
+      return `
+        <div class="space-y-6">
+          <div class="flex items-center justify-between border-b border-white/[0.06] pb-4">
+            <div>
+              <h2 class="text-white font-medium text-base">Telegram Mini App (Customer WebApp)</h2>
+              <p class="text-xs text-[#8A8F98]">Toko digital modern yang dibuka langsung di dalam Telegram tanpa instalasi aplikasi luar.</p>
+            </div>
+            <a href="#webapp" class="px-3 py-1.5 rounded-lg bg-white/[0.06] hover:bg-white/[0.12] text-xs font-medium text-white transition flex items-center gap-1.5">
+              <span>Buka Layar Penuh</span>
+              <span>↗</span>
+            </a>
+          </div>
+
+          <!-- Smartphone Telegram Frame Container -->
+          <div class="max-w-md mx-auto rounded-3xl border border-white/[0.12] bg-[#08090A] shadow-2xl overflow-hidden">
+            <!-- Telegram App Window Header -->
+            <div class="bg-[#17212B] px-4 py-3 border-b border-white/[0.06] flex items-center justify-between text-xs text-white select-none">
+              <div class="flex items-center gap-2">
+                <span class="text-[#8A8F98] text-sm">‹</span>
+                <span class="font-medium text-white">Bintang Store</span>
+                <span class="text-[10px] text-[#8A8F98]">bot</span>
+              </div>
+              <div class="flex items-center gap-3 text-[#8A8F98]">
+                <span>•••</span>
+                <span class="text-sm">✕</span>
+              </div>
+            </div>
+
+            <!-- Live WebApp Iframe Embedded -->
+            <div class="h-[520px] w-full overflow-hidden bg-[#08090A]">
+              <iframe src="/#webapp" class="w-full h-full border-none" title="Telegram Mini App Storefront"></iframe>
+            </div>
+          </div>
+        </div>
+      `;
   }
 }
 
@@ -889,6 +1147,21 @@ function attachViewEvents() {
         b.className = 'btn-customer-filter whitespace-nowrap transition-colors text-[#8A8F98] hover:text-[#F7F8F8]';
       });
       btn.className = 'btn-customer-filter whitespace-nowrap transition-colors text-[#F7F8F8] font-medium';
+    });
+  });
+
+  // Feature channel filters
+  document.querySelectorAll('.btn-channel-select').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const ch = btn.getAttribute('data-channel');
+      if (ch) {
+        activeFeatureChannel = ch;
+        const mainContainer = document.getElementById('linear-tab-content');
+        if (mainContainer) {
+          mainContainer.innerHTML = renderTabContent();
+          attachViewEvents();
+        }
+      }
     });
   });
 
