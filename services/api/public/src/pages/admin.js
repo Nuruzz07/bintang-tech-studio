@@ -24,25 +24,25 @@ export function renderAdminPage() {
   ];
 
   return `
-    <div class="view-container bg-[#08090b] min-h-screen text-[#f8fafc] pb-16 font-sans selection:bg-terracotta-500 selection:text-white">
+    <div class="view-container bg-[#0a0a0c] min-h-screen text-[#f7f8f8] pb-16 font-sans selection:bg-[#5e6ad2] selection:text-white">
       
-      <!-- ADMIN HEADER & METRICS SUMMARY (Linear Obsidian Workspace) -->
-      <header class="bg-[#0e1015]/90 backdrop-blur-md border-b border-[#22242c] sticky top-10 z-30 shadow-sm">
+      <!-- ADMIN HEADER & METRICS SUMMARY (Linear Workspace Style) -->
+      <header class="bg-[#0a0a0c]/80 backdrop-blur-md border-b border-[#22232a] sticky top-10 z-30 shadow-sm">
         <div class="max-w-7xl mx-auto px-4 sm:px-6">
           <div class="h-14 flex items-center justify-between gap-4">
             <!-- Left Branding -->
             <div class="flex items-center gap-3">
-              <span class="w-8 h-8 rounded-xl bg-gradient-to-br from-terracotta-500 to-orange-600 p-1 flex items-center justify-center shrink-0 shadow-sm shadow-terracotta-500/20">
-                ${BRAND_LOGO_SVG}
+              <span class="w-7 h-7 rounded-lg bg-[#5e6ad2] p-1 flex items-center justify-center shrink-0 shadow-sm text-white font-bold text-xs">
+                L
               </span>
               <div>
                 <div class="flex items-center gap-2">
-                  <h1 class="font-heading font-extrabold text-sm sm:text-base text-white">Seller Control Center</h1>
-                  <span class="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
-                    Live Engine
+                  <h1 class="font-bold text-sm sm:text-base text-white">Linear Seller Workspace</h1>
+                  <span class="px-2 py-0.5 rounded-full text-[10px] font-mono bg-[#16181d] text-emerald-400 border border-[#22232a]">
+                    Engine Live
                   </span>
                 </div>
-                <p class="text-[11px] text-[#94a3b8] hidden sm:block">${escapeHtml(settings.storeName)} · Sistem Digital Autopilot</p>
+                <p class="text-[11px] text-[#8a8f98] hidden sm:block">${escapeHtml(settings.storeName)} · Automated Sales System</p>
               </div>
             </div>
 
@@ -50,8 +50,8 @@ export function renderAdminPage() {
             <div class="flex items-center gap-2">
               <button id="btn-admin-add-product"
                       type="button"
-                      class="px-3.5 py-1.5 rounded-xl text-xs font-bold bg-gradient-to-r from-terracotta-500 to-orange-500 hover:from-terracotta-600 hover:to-orange-600 text-white shadow-sm transition-all hover:scale-[1.02] active:scale-[0.98] flex items-center gap-1.5">
-                ${ICONS.plus}
+                      class="px-3.5 py-1.5 rounded-full text-xs font-medium bg-white hover:bg-gray-100 text-black shadow-sm transition-all flex items-center gap-1.5">
+                <i class="fas fa-plus text-[10px]"></i>
                 <span>Tambah Produk</span>
               </button>
             </div>
@@ -64,10 +64,10 @@ export function renderAdminPage() {
                 const isActive = adminActiveTab === t.id;
                 return `
                 <button type="button"
-                        class="btn-admin-tab flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-all ${
+                        class="btn-admin-tab flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap transition-all ${
                           isActive
-                            ? 'bg-[#22242c] text-white shadow-sm ring-1 ring-white/10'
-                            : 'text-[#94a3b8] hover:text-white hover:bg-[#14161e]'
+                            ? 'bg-[#1c1e24] text-white shadow-sm ring-1 ring-white/10'
+                            : 'text-[#8a8f98] hover:text-white hover:bg-[#14151b]'
                         }"
                         data-tab="${t.id}">
                   <span>${t.icon}</span>

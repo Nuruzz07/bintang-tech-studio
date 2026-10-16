@@ -16,54 +16,50 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@500;600;700;800;900&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap"
       rel="stylesheet"
     />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
 
     <!-- Tailwind Play CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
       tailwind.config = {
+        darkMode: 'class',
         theme: {
           extend: {
             colors: {
-              ivory: {
-                50: '#FDFBF7',
-                100: '#FAF7F2',
-                200: '#F3ECE2',
-                300: '#E7DDCE',
+              linear: {
+                bg: '#0a0a0c',
+                card: '#121316',
+                border: '#22232a',
+                borderHover: '#33353f',
+                muted: '#8a8f98',
+                subtext: '#666970',
+                purple: '#5e6ad2',
+                purpleHover: '#717cd8',
               },
-              obsidian: {
-                950: '#080A0D',
-                900: '#0E1117',
-                800: '#181D26',
-                700: '#232936',
-                600: '#384255',
-                500: '#55627A',
+              ray: {
+                dark: '#050507',
+                card: '#121215',
+                border: '#27272a',
+                hover: '#18181c',
+                text: '#a1a1aa',
+                light: '#fafafa',
               },
-              terracotta: {
-                50: '#FDF6F2',
-                100: '#FAEBE2',
-                400: '#DE7249',
-                500: '#C85A32',
-                600: '#B04B26',
-                700: '#8E3A1D',
-              },
-              gold: {
-                400: '#F59E0B',
-                500: '#D99B26',
-                600: '#B47E18',
-              },
-              emerald: {
-                400: '#34D399',
-                500: '#10B981',
-                600: '#059669',
+              resend: {
+                bg: '#0a0a0a',
+                card: '#0f0f0f',
+                border: '#222222',
+                borderHover: '#333333',
+                muted: '#888888',
+                btn: '#1c1c1c',
+                btnHover: '#262626',
               },
             },
             fontFamily: {
-              heading: ['"Plus Jakarta Sans"', 'sans-serif'],
-              sans: ['Inter', 'sans-serif'],
-              mono: ['"JetBrains Mono"', 'monospace'],
+              sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
+              mono: ['JetBrains Mono', 'SFMono-Regular', 'Menlo', 'Monaco', 'Consolas', 'monospace'],
             },
           },
         },

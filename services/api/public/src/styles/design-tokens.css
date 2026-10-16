@@ -1,21 +1,21 @@
 /* Bintang Tech Studio — Design Tokens */
 :root {
-  /* Colors */
-  --color-bg-base: #08090b;
-  --color-bg-subtle: #0d0f13;
-  --color-bg-card: #121419;
-  --color-bg-card-hover: #171a22;
-  --color-bg-glass: rgba(18, 20, 25, 0.75);
+  /* Colors (Exact match to Linear, Raycast, Resend) */
+  --color-bg-base: #0a0a0c;
+  --color-bg-subtle: #0e0f12;
+  --color-bg-card: #121316;
+  --color-bg-card-hover: #17181d;
+  --color-bg-glass: rgba(18, 19, 22, 0.75);
 
-  --color-border-subtle: #1c1f26;
-  --color-border-default: #252932;
-  --color-border-highlight: rgba(255, 255, 255, 0.12);
-  --color-border-active: rgba(249, 115, 22, 0.4);
+  --color-border-subtle: #1c1d22;
+  --color-border-default: #22232a;
+  --color-border-highlight: rgba(255, 255, 255, 0.1);
+  --color-border-active: #5e6ad2;
 
-  --color-accent-terracotta: #e05d38;
-  --color-accent-glow: #f97316;
-  --color-accent-amber: #f59e0b;
-  --color-accent-subtle: rgba(224, 93, 56, 0.12);
+  --color-accent-purple: #5e6ad2;
+  --color-accent-purple-hover: #717cd8;
+  --color-text-muted: #8a8f98;
+  --color-text-sub: #666970;
 
   --color-ivory-50: #fdfbf7;
   --color-ivory-100: #0e1014;
