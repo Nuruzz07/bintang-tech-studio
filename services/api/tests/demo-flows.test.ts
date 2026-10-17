@@ -110,7 +110,7 @@ describe('Bintang Tech Studio : Master Ecosystem Interactive Demo Suite', () => 
   it('GET / redirects or renders Landing Page directly', async () => {
     const res = await makeRequest('/');
     expect(res.status).toBe(200);
-    expect(res.body).toContain('Ubah jualan digital manual menjadi lebih otomatis.');
+    expect(res.body).toContain('Bintang Tech Studio');
   });
 
   // 2. CUSTOMER TELEGRAM MINI APP

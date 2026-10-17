@@ -148,7 +148,7 @@ export async function handleAuthSignUp(
 
 export async function handleAuthVerifyOtp(
   req: ParsedRequest,
-  _deps: ApiDependencies,
+  deps: ApiDependencies,
 ): Promise<{ status: number; body: ApiResponse<Record<string, unknown>> }> {
   const body = await req.getBody<{
     email?: string;
@@ -190,6 +190,63 @@ export async function handleAuthVerifyOtp(
       throw new BadRequestError(msg);
     }
 
+    const userObj = data['user'] as Record<string, unknown> | undefined;
+    const userId = userObj?.['id'] as string | undefined;
+    let storeInfo: Record<string, unknown> | null = null;
+
+    if (deps.storeRepo && userId) {
+      try {
+        const existingStores = await deps.storeRepo.findByOwnerUserId(userId);
+        const existingStore = existingStores[0];
+        if (existingStore) {
+          const s = existingStore;
+          storeInfo = {
+            id: s.id,
+            name: s.name,
+            slug: s.slug,
+            status: s.status,
+            currency: s.currency,
+          };
+        } else {
+          const userMeta = (userObj?.['user_metadata'] || {}) as Record<string, unknown>;
+          const storeName =
+            (userMeta['store_name'] as string) ||
+            (userMeta['full_name'] ? `${userMeta['full_name']} Store` : 'Toko Digital');
+          const slugBase =
+            storeName
+              .toLowerCase()
+              .replace(/[^a-z0-9]+/g, '-')
+              .replace(/^-|-$/g, '') || 'store';
+          const slug = `${slugBase}-${userId.slice(0, 6)}`;
+          const newStore = await deps.storeRepo.create({
+            ownerUserId: userId,
+            name: storeName,
+            slug,
+            templateVersionId: null,
+            status: 'ACTIVE',
+            currency: 'IDR',
+            settings: {
+              storeName,
+              tagline: 'Produk digital, langsung beres.',
+              telegramBotUsername: '@BintangDigitalDemoBot',
+            },
+          });
+          storeInfo = {
+            id: newStore.id,
+            name: newStore.name,
+            slug: newStore.slug,
+            status: newStore.status,
+            currency: newStore.currency,
+          };
+        }
+      } catch (storeErr) {
+        deps.logger.warn('Failed to resolve or provision tenant store upon OTP verification', {
+          userId,
+          error: storeErr instanceof Error ? storeErr.message : String(storeErr),
+        });
+      }
+    }
+
     return {
       status: 200,
       body: {
@@ -198,6 +255,7 @@ export async function handleAuthVerifyOtp(
           accessToken: data['access_token'],
           refreshToken: data['refresh_token'],
           user: data['user'],
+          store: storeInfo,
           message: 'Akun berhasil diverifikasi dan aktif! Selamat datang di Bintang Tech Studio.',
         },
       },
@@ -212,7 +270,7 @@ export async function handleAuthVerifyOtp(
 
 export async function handleAuthLogin(
   req: ParsedRequest,
-  _deps: ApiDependencies,
+  deps: ApiDependencies,
 ): Promise<{ status: number; body: ApiResponse<Record<string, unknown>> }> {
   const body = await req.getBody<{
     email?: string;
@@ -251,6 +309,63 @@ export async function handleAuthLogin(
       throw new UnauthorizedError(msg);
     }
 
+    const userObj = data['user'] as Record<string, unknown> | undefined;
+    const userId = userObj?.['id'] as string | undefined;
+    let storeInfo: Record<string, unknown> | null = null;
+
+    if (deps.storeRepo && userId) {
+      try {
+        const existingStores = await deps.storeRepo.findByOwnerUserId(userId);
+        const existingStore = existingStores[0];
+        if (existingStore) {
+          const s = existingStore;
+          storeInfo = {
+            id: s.id,
+            name: s.name,
+            slug: s.slug,
+            status: s.status,
+            currency: s.currency,
+          };
+        } else {
+          const userMeta = (userObj?.['user_metadata'] || {}) as Record<string, unknown>;
+          const storeName =
+            (userMeta['store_name'] as string) ||
+            (userMeta['full_name'] ? `${userMeta['full_name']} Store` : 'Toko Digital');
+          const slugBase =
+            storeName
+              .toLowerCase()
+              .replace(/[^a-z0-9]+/g, '-')
+              .replace(/^-|-$/g, '') || 'store';
+          const slug = `${slugBase}-${userId.slice(0, 6)}`;
+          const newStore = await deps.storeRepo.create({
+            ownerUserId: userId,
+            name: storeName,
+            slug,
+            templateVersionId: null,
+            status: 'ACTIVE',
+            currency: 'IDR',
+            settings: {
+              storeName,
+              tagline: 'Produk digital, langsung beres.',
+              telegramBotUsername: '@BintangDigitalDemoBot',
+            },
+          });
+          storeInfo = {
+            id: newStore.id,
+            name: newStore.name,
+            slug: newStore.slug,
+            status: newStore.status,
+            currency: newStore.currency,
+          };
+        }
+      } catch (storeErr) {
+        deps.logger.warn('Failed to resolve or provision tenant store upon login', {
+          userId,
+          error: storeErr instanceof Error ? storeErr.message : String(storeErr),
+        });
+      }
+    }
+
     return {
       status: 200,
       body: {
@@ -259,6 +374,7 @@ export async function handleAuthLogin(
           accessToken: data['access_token'],
           refreshToken: data['refresh_token'],
           user: data['user'],
+          store: storeInfo,
         },
       },
     };

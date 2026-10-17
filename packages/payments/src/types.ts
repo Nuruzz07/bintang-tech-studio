@@ -238,6 +238,8 @@ export interface WebhookProcessingResult {
   readonly provider: string;
   readonly processingStatus: PaymentEventProcessingStatus;
   readonly paymentIntentId: string | null;
+  readonly orderId?: string | undefined;
+  readonly storeId?: string | undefined;
   readonly previousStatus?: PaymentIntentStatus | undefined;
   readonly currentStatus?: PaymentIntentStatus | undefined;
   readonly isDuplicate: boolean;

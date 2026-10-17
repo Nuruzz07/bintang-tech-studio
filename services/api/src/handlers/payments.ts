@@ -277,6 +277,41 @@ export async function handleProcessPaymentWebhook(
     signature,
   });
 
+  // Auto-Fulfillment Trigger: When payment settles successfully, automatically fulfill digital items
+  if (
+    deps.fulfillmentService &&
+    result.processingStatus === 'PROCESSED' &&
+    result.currentStatus === 'SUCCEEDED' &&
+    result.orderId &&
+    result.storeId
+  ) {
+    try {
+      const systemContext = {
+        storeId: result.storeId,
+        userId: `system:auto-fulfillment:${result.storeId}`,
+        membershipId: `sys_ful_${result.storeId}`,
+        role: 'STORE_ADMIN' as const,
+      };
+      const fulfillment = await deps.fulfillmentService.createFulfillment(
+        { type: 'SELLER', context: systemContext },
+        { orderId: result.orderId, strategy: 'DIGITAL_AUTO' },
+      );
+      await deps.fulfillmentService.executeFulfillment(
+        { type: 'SELLER', context: systemContext },
+        { fulfillmentId: fulfillment.id },
+      );
+      deps.logger.info('Auto-fulfillment executed successfully for order', {
+        orderId: result.orderId,
+        fulfillmentId: fulfillment.id,
+      });
+    } catch (fulfillErr) {
+      deps.logger.warn('Auto-fulfillment execution failed or already fulfilled', {
+        orderId: result.orderId,
+        error: fulfillErr instanceof Error ? fulfillErr.message : String(fulfillErr),
+      });
+    }
+  }
+
   return {
     status: 200,
     body: {

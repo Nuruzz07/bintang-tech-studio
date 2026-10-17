@@ -14,6 +14,13 @@ let productCategoryFilter = 'Semua';
 export function renderAdminPage() {
   const settings = store.getSettings();
 
+  let authUser = null;
+  try {
+    authUser = JSON.parse(localStorage.getItem('bts_auth_user') || 'null');
+  } catch {}
+  const activeStoreName = authUser?.store?.name || authUser?.storeName || 'Bintang Store';
+  const activeStoreSlug = authUser?.store?.slug || 'bintang-store';
+
   const hash = window.location.hash || '';
   if (hash.includes('inventory')) adminActiveTab = 'inventory';
   else if (hash.includes('products')) adminActiveTab = 'products';
@@ -45,9 +52,9 @@ export function renderAdminPage() {
               </div>
               <div>
                 <div class="flex items-center gap-2">
-                  <h1 class="font-semibold text-sm sm:text-base text-[#F7F8F8] tracking-tight">Seller Workspace</h1>
+                  <h1 class="font-semibold text-sm sm:text-base text-[#F7F8F8] tracking-tight">${activeStoreName} Workspace</h1>
                   <span class="px-2 py-0.5 rounded-full text-[10px] font-mono bg-white/[0.04] text-[#A1A1AA] border border-white/[0.08]">
-                    Bintang Store · 36 Produk
+                    ${activeStoreSlug} · 36 Produk
                   </span>
                 </div>
                 <p class="text-[12px] text-[#8A8F98] hidden sm:block">Automated Multi-Channel Sales System (WhatsApp & Telegram)</p>

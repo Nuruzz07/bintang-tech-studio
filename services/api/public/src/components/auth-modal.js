@@ -236,9 +236,10 @@ export function openAuthModal({ defaultTab = 'login', onSuccess = null } = {}) {
           const data = await res.json();
           if (res.ok && data.data?.success) {
             showToast('Login berhasil! Selamat datang kembali.', 'success');
-            localStorage.setItem('bts_auth_user', JSON.stringify(data.data.user || { email }));
+            const userData = { ...(data.data.user || { email }), store: data.data.store };
+            localStorage.setItem('bts_auth_user', JSON.stringify(userData));
             closeModal();
-            if (onSuccess) onSuccess(data.data.user);
+            if (onSuccess) onSuccess(userData);
             else window.location.hash = '#admin';
             return;
           } else {
@@ -315,12 +316,13 @@ export function openAuthModal({ defaultTab = 'login', onSuccess = null } = {}) {
           const data = await res.json();
           if (res.ok && data.data?.success) {
             showToast('Akun berhasil diverifikasi! Selamat datang.', 'success');
-            localStorage.setItem(
-              'bts_auth_user',
-              JSON.stringify(data.data.user || { email: pendingEmail }),
-            );
+            const userData = {
+              ...(data.data.user || { email: pendingEmail }),
+              store: data.data.store,
+            };
+            localStorage.setItem('bts_auth_user', JSON.stringify(userData));
             closeModal();
-            if (onSuccess) onSuccess(data.data.user);
+            if (onSuccess) onSuccess(userData);
             else window.location.hash = '#admin';
             return;
           } else {

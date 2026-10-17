@@ -319,7 +319,7 @@ describe('HTTP API Gateway Payment & Fulfillment Flow', () => {
     await serverInstance.stop();
   });
 
-  it('completes the entire customer payment journey: Order -> Payment Attempt -> Webhook Settlement -> PAID order', async () => {
+  it('completes customer payment journey with automatic fulfillment on webhook settlement', async () => {
     // 1. Create Order via HTTP
     const createOrderRes = await fetch(`${baseUrl}/api/v1/stores/${storeId}/orders`, {
       method: 'POST',
@@ -417,7 +417,13 @@ describe('HTTP API Gateway Payment & Fulfillment Flow', () => {
     };
     const orderCaller = { type: 'SELLER' as const, context: systemContext };
     const orderAfterPayment = await orderService.getOrderById(orderCaller, orderId);
-    expect(orderAfterPayment.status).toBe('PAID');
+    expect(orderAfterPayment.status).toBe('FULFILLED');
+    const automaticallyCreated = await fulfillmentService.listFulfillments(
+      { type: 'SELLER', context: systemContext },
+      { orderId },
+    );
+    expect(automaticallyCreated).toHaveLength(1);
+    expect(automaticallyCreated[0]?.status).toBe('FULFILLED');
 
     // 5. Duplicate Webhook Replay is Idempotent
     const replayRes = await fetch(`${baseUrl}/api/v1/webhooks/payments/MOCK_PAYMENT`, {
@@ -615,23 +621,8 @@ describe('HTTP API Gateway Payment & Fulfillment Flow', () => {
       }),
     });
 
-    // 4. Seller Fulfills Order
-    const sellerContext = {
-      storeId,
-      userId: 'user_owner_01',
-      membershipId: 'mem_owner_01',
-      role: 'STORE_OWNER',
-    };
-    const fulfillment = await fulfillmentService.createFulfillment(
-      { type: 'SELLER', context: sellerContext },
-      { orderId, strategy: 'DIGITAL_AUTO' },
-    );
-    await fulfillmentService.executeFulfillment(
-      { type: 'SELLER', context: sellerContext },
-      { fulfillmentId: fulfillment.id },
-    );
-
-    // 5. Query Fulfillment via API as Seller
+    // 4. Webhook settlement above already auto-fulfilled the order.
+    // Query the fulfilled items via API as Seller.
     // Create seller session token
     const sellerToken = 'token_seller_fulfill_test';
     const sessionRepo = {

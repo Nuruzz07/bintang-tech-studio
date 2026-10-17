@@ -27,45 +27,45 @@ export async function showPaymentSimulation({ order, onCompleted = null }) {
   const content = `
     <div id="payment-modal-body" class="flex flex-col items-center text-center">
       <!-- QRIS Brand Header -->
-      <div class="w-full bg-[#0D1117] rounded-xl p-3 text-white flex items-center justify-between mb-3.5 border border-stone-800">
+      <div class="w-full bg-[#101114] rounded-xl p-3 text-white flex items-center justify-between mb-3.5 border border-white/[0.08]">
         <div class="flex items-center gap-2">
           <span class="font-heading font-black tracking-wider text-[11px] bg-red-600 px-2 py-0.5 rounded text-white shadow-sm">QRIS</span>
-          <span class="text-xs text-stone-300 font-medium">Pembayaran Digital Instan</span>
+          <span class="text-xs text-[#E6E8EB] font-medium">Pembayaran Digital Instan</span>
         </div>
-        <span class="text-[10px] font-mono text-stone-400">GPN / Bank Indonesia</span>
+        <span class="text-[10px] font-mono text-[#8A8F98]">GPN / Bank Indonesia</span>
       </div>
 
       <!-- Merchant & Amount Info -->
-      <div class="w-full bg-stone-50 rounded-2xl p-3.5 border border-stone-200/90 mb-3.5 text-left space-y-1.5 shadow-sm">
-        <div class="flex justify-between items-center text-xs text-stone-500">
+      <div class="w-full bg-[#0C0D0E] rounded-2xl p-3.5 border border-white/[0.08] mb-3.5 text-left space-y-1.5 shadow-sm">
+        <div class="flex justify-between items-center text-xs text-[#8A8F98]">
           <span>Merchant Resmi</span>
-          <span class="font-bold text-stone-900 flex items-center gap-1.5">
+          <span class="font-bold text-[#F7F8F8] flex items-center gap-1.5">
             <span class="w-4 h-4 inline-block">${BRAND_LOGO_SVG}</span>
             <span>Bintang Store</span>
           </span>
         </div>
-        <div class="flex justify-between items-center text-xs text-stone-500">
+        <div class="flex justify-between items-center text-xs text-[#8A8F98]">
           <span>ID Pesanan</span>
-          <span class="font-mono font-semibold text-stone-900">${order.id}</span>
+          <span class="font-mono font-semibold text-[#F7F8F8]">${order.id}</span>
         </div>
-        <div class="flex justify-between items-center text-xs text-stone-500">
+        <div class="flex justify-between items-center text-xs text-[#8A8F98]">
           <span>No. Referensi</span>
-          <span class="font-mono text-[11px] text-stone-600">${txData.refCode}</span>
+          <span class="font-mono text-[11px] text-[#A1A1AA]">${txData.refCode}</span>
         </div>
         ${
           txData.paymentUrl
             ? `
         <div class="pt-1.5 pb-0.5">
-          <a href="${txData.paymentUrl}" target="_blank" rel="noopener noreferrer" class="w-full inline-flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl bg-[#D95338] text-white text-xs font-bold shadow-xs hover:bg-[#c2452c] transition">
+          <a href="${txData.paymentUrl}" target="_blank" rel="noopener noreferrer" class="w-full inline-flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl bg-[#5E6AD2] hover:bg-[#5E6AD2]/90 text-white text-xs font-bold shadow-xs transition">
             <span>🔗 Buka Tagihan Tipzy QRIS (Live)</span>
           </a>
         </div>
         `
             : ''
         }
-        <div class="flex justify-between items-center text-xs text-stone-500 pt-2 border-t border-stone-200">
+        <div class="flex justify-between items-center text-xs text-[#8A8F98] pt-2 border-t border-white/[0.08]">
           <span class="font-medium">Total Pembayaran</span>
-          <span class="font-heading font-extrabold text-base text-terracotta-600">${formatRupiah(order.total)}</span>
+          <span class="font-heading font-extrabold text-base text-[#F7F8F8]">${formatRupiah(order.total)}</span>
         </div>
       </div>
 
@@ -139,39 +139,39 @@ export async function showPaymentSimulation({ order, onCompleted = null }) {
 
       <!-- Real-time Live Status Monitoring Badge -->
       <div class="mb-3 flex items-center justify-center gap-2">
-        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-mono font-medium bg-amber-50 text-amber-700 border border-amber-200 shadow-xs">
-          <span class="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></span>
+        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-mono font-medium bg-amber-500/10 text-amber-300 border border-amber-500/20 shadow-xs">
+          <span class="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>
           <span id="payment-status-badge">Menunggu Pembayaran (Auto-detect Aktif)</span>
         </span>
       </div>
 
       <!-- Expiry Countdown -->
-      <div class="text-xs text-stone-500 mb-3.5 flex items-center justify-center gap-1.5 font-mono">
+      <div class="text-xs text-[#8A8F98] mb-3.5 flex items-center justify-center gap-1.5 font-mono">
         ${ICONS.clock}
         <span>Selesaikan pembayaran dalam:</span>
-        <span id="qris-timer" class="font-bold text-stone-900 bg-stone-100 px-2 py-0.5 rounded">15:00</span>
+        <span id="qris-timer" class="font-bold text-[#F7F8F8] bg-white/[0.06] px-2 py-0.5 rounded border border-white/[0.08]">15:00</span>
       </div>
 
       <!-- Action Verification Button -->
       <div class="w-full flex flex-col gap-2">
         <button id="btn-verify-payment"
                 type="button"
-                class="w-full py-3 px-4 rounded-xl font-heading font-bold text-sm bg-emerald-600 hover:bg-emerald-700 active:scale-98 text-white shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2">
+                class="w-full py-3 px-4 rounded-xl font-heading font-bold text-sm bg-[#5E6AD2] hover:bg-[#5E6AD2]/90 active:scale-98 text-white shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2">
           ${ICONS.check}
           <span>Saya Sudah Membayar (Cek Otomatis)</span>
         </button>
 
         <!-- Hidden Helper Hint for testing / latency -->
-        <div id="payment-pending-hint" class="hidden text-center py-1 bg-stone-50 rounded-xl p-2.5 border border-stone-200">
-          <p class="text-[11px] text-stone-500 mb-1 leading-relaxed">
+        <div id="payment-pending-hint" class="hidden text-center py-1 bg-[#101114] rounded-xl p-2.5 border border-white/[0.08]">
+          <p class="text-[11px] text-[#8A8F98] mb-1 leading-relaxed">
             Mutasi belum terdeteksi dari bank. Jika baru saja transfer, tunggu 2-4 detik sistem akan mendeteksi otomatis.
           </p>
-          <button type="button" id="btn-force-demo-complete" class="text-[11px] text-terracotta-600 hover:text-terracotta-700 font-semibold underline">
+          <button type="button" id="btn-force-demo-complete" class="text-[11px] text-[#5E6AD2] hover:underline font-semibold">
             Simulasikan Bayar Berhasil (Mode Testing)
           </button>
         </div>
 
-        <p class="text-[11px] text-stone-400 leading-tight">
+        <p class="text-[11px] text-[#8A8F98] leading-tight">
           Buka aplikasi m-Banking (BCA, Mandiri, BRI, BNI) atau E-Wallet (GoPay, OVO, DANA, ShopeePay), lalu scan QR di atas.
         </p>
       </div>
@@ -182,6 +182,7 @@ export async function showPaymentSimulation({ order, onCompleted = null }) {
     title: 'Pembayaran QRIS — Bintang Store',
     content: content,
     maxWidth: 'max-w-md',
+    theme: 'dark',
     onOpen: (modalEl) => {
       let isCompleted = false;
       let isChecking = false;
@@ -197,11 +198,11 @@ export async function showPaymentSimulation({ order, onCompleted = null }) {
         if (modalBody) {
           modalBody.innerHTML = `
             <div class="py-12 flex flex-col items-center justify-center space-y-4">
-              <div class="w-16 h-16 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center animate-bounce shadow-sm">
+              <div class="w-16 h-16 rounded-full bg-emerald-500/10 text-emerald-400 flex items-center justify-center animate-bounce shadow-sm border border-emerald-500/20">
                 <svg class="w-9 h-9" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
               </div>
-              <div class="font-heading font-black text-xl text-stone-900">Pembayaran Berhasil!</div>
-              <p class="text-xs text-stone-500 font-sans">Mutasi QRIS terverifikasi. Menyiapkan lisensi & kredensial otomatis...</p>
+              <div class="font-heading font-black text-xl text-[#F7F8F8]">Pembayaran Berhasil!</div>
+              <p class="text-xs text-[#8A8F98] font-sans">Mutasi QRIS terverifikasi. Menyiapkan lisensi & kredensial otomatis...</p>
             </div>
           `;
         }
@@ -417,13 +418,13 @@ function showFulfillmentResult(order, onCompleted = null) {
   const successContent = `
     <div class="flex flex-col items-center text-center space-y-4">
       <!-- Success Icon -->
-      <div class="w-16 h-16 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center text-2xl shadow-sm border border-emerald-200">
+      <div class="w-16 h-16 rounded-full bg-emerald-500/10 text-emerald-400 flex items-center justify-center text-2xl shadow-sm border border-emerald-500/20">
         <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
       </div>
 
       <div>
-        <h3 class="font-heading font-extrabold text-lg text-stone-900">Pembayaran Berhasil!</h3>
-        <p class="text-xs text-stone-500 mt-0.5">Produk digital Anda telah terkirim secara otomatis.</p>
+        <h3 class="font-heading font-extrabold text-lg text-[#F7F8F8]">Pembayaran Berhasil!</h3>
+        <p class="text-xs text-[#8A8F98] mt-0.5">Produk digital Anda telah terkirim secara otomatis.</p>
       </div>
 
       <!-- Credential Block -->
@@ -432,8 +433,8 @@ function showFulfillmentResult(order, onCompleted = null) {
       </div>
 
       <!-- Note / Instructions -->
-      <div class="w-full bg-stone-50 rounded-xl p-3 text-left border border-stone-200 text-xs text-stone-600 leading-relaxed">
-        <span class="font-bold text-stone-900 block mb-0.5">Panduan Penggunaan:</span>
+      <div class="w-full bg-[#101114] rounded-xl p-3 text-left border border-white/[0.08] text-xs text-[#8A8F98] leading-relaxed">
+        <span class="font-bold text-[#F7F8F8] block mb-0.5">Panduan Penggunaan:</span>
         ${f.note || 'Akses produk digital aktif seketika. Hubungi layanan pelanggan Bintang Store jika membutuhkan bantuan aktivasi.'}
       </div>
 
@@ -441,7 +442,7 @@ function showFulfillmentResult(order, onCompleted = null) {
       <div class="w-full pt-1">
         <button id="btn-done-payment"
                 type="button"
-                class="w-full py-3 px-4 rounded-xl font-heading font-bold text-sm bg-stone-900 hover:bg-stone-800 text-white shadow-md transition-colors">
+                class="w-full py-3 px-4 rounded-xl font-heading font-bold text-sm bg-[#5E6AD2] hover:bg-[#5E6AD2]/90 text-white shadow-md transition-colors">
           Lihat di Pesanan Saya
         </button>
       </div>
@@ -452,6 +453,7 @@ function showFulfillmentResult(order, onCompleted = null) {
     title: 'Pesanan Selesai — Bintang Store',
     content: successContent,
     maxWidth: 'max-w-md',
+    theme: 'dark',
     onOpen: (modalEl) => {
       // Copy event listener
       modalEl.querySelectorAll('.btn-copy-cred').forEach((btn) => {

@@ -303,6 +303,15 @@ export function createApiServer(options: ApiServerOptions = {}): ApiServerInstan
       }
 
       // 7. Interactive Bintang Store WebApp (Mounted Live Storefront & Mini App)
+      if (
+        !demoEnabled &&
+        (parsed.pathname === '/' ||
+          parsed.pathname.startsWith('/demo') ||
+          parsed.pathname.startsWith('/api/v1/demo'))
+      ) {
+        throw new NotFoundError(`Endpoint not found: ${parsed.method} ${parsed.pathname}`);
+      }
+
       if (parsed.method === 'GET' || parsed.method === 'HEAD') {
         const publicDir = resolve('C:/BOT_WEB/Bintang-Tech-Project/services/api/public');
         const normalizedPath = parsed.pathname.toLowerCase();

@@ -50,3 +50,4 @@ tmp/
 temp/
 scratch/
 supabase/.temp/
+*.zip
