@@ -152,7 +152,9 @@ export function renderProductCard(product, options = { showAddToCart: true }) {
         <div>
           <!-- Product Name (Comfortable 2-line wrap without clipping) -->
           <h3 class="font-heading font-bold text-xs sm:text-sm ${
-            isDark ? 'text-white group-hover:text-terracotta-400' : 'text-stone-900 group-hover:text-terracotta-600'
+            isDark
+              ? 'text-white group-hover:text-terracotta-400'
+              : 'text-stone-900 group-hover:text-terracotta-600'
           } transition-colors line-clamp-2 leading-snug min-h-[2rem] sm:min-h-[2.4rem]">
             ${escapeHtml(product.name)}
           </h3>

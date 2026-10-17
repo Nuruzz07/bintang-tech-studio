@@ -21,8 +21,9 @@ const CUSTOMER_STORIES = [
     id: 'story_ramp',
     category: 'streaming',
     tag: 'STREAMING MERCHANT',
-    title: 'The coding agent behind 75% of Ramp\'s merged PRs',
-    subtitle: 'Toko digital streaming mengotomasi 100% verifikasi mutasi QRIS dan serah-terima akun privat tanpa jeda.',
+    title: "The coding agent behind 75% of Ramp's merged PRs",
+    subtitle:
+      'Toko digital streaming mengotomasi 100% verifikasi mutasi QRIS dan serah-terima akun privat tanpa jeda.',
     metric: '1.1s',
     metricLabel: 'Average delivery latency',
     ctaText: 'Read story →',
@@ -34,7 +35,8 @@ const CUSTOMER_STORIES = [
     category: 'gaming',
     tag: 'GAMING VOUCHERS',
     title: 'Why Top-Up stores chose Bintang Tech and scaled to 3,000+ buyers',
-    subtitle: 'Pengiriman serial voucher MLBB & Free Fire otomatis dengan validasi User ID & Server ID secara real-time.',
+    subtitle:
+      'Pengiriman serial voucher MLBB & Free Fire otomatis dengan validasi User ID & Server ID secara real-time.',
     metric: '99.9%',
     metricLabel: 'Settlement reliability',
     ctaText: 'Read story →',
@@ -46,7 +48,8 @@ const CUSTOMER_STORIES = [
     category: 'software',
     tag: 'SOFTWARE LICENSES',
     title: 'Zero-touch digital delivery for retail software licenses and cloud keys',
-    subtitle: 'Sistem single-use pool mengisolasi serial key Windows 11 & Office agar tidak tumpang tindih antar pembeli.',
+    subtitle:
+      'Sistem single-use pool mengisolasi serial key Windows 11 & Office agar tidak tumpang tindih antar pembeli.',
     metric: '0',
     metricLabel: 'Manual chat required',
     ctaText: 'Read story →',
@@ -125,7 +128,9 @@ export function renderLandingPage() {
                 id="btn-nav-features"
                 type="button"
                 class="btn-nav-link px-3 py-1.5 rounded-md text-[13px] transition-colors ${
-                  activeLandingTab === 'features' ? 'text-[#F7F8F8] bg-white/[0.06]' : 'text-[#8A8F98] hover:text-[#F7F8F8]'
+                  activeLandingTab === 'features'
+                    ? 'text-[#F7F8F8] bg-white/[0.06]'
+                    : 'text-[#8A8F98] hover:text-[#F7F8F8]'
                 }"
                 data-tab="features"
               >
@@ -136,7 +141,9 @@ export function renderLandingPage() {
                 id="btn-nav-customers"
                 type="button"
                 class="btn-nav-link px-3 py-1.5 rounded-md text-[13px] transition-colors ${
-                  activeLandingTab === 'customers' ? 'text-[#F7F8F8] bg-white/[0.06]' : 'text-[#8A8F98] hover:text-[#F7F8F8]'
+                  activeLandingTab === 'customers'
+                    ? 'text-[#F7F8F8] bg-white/[0.06]'
+                    : 'text-[#8A8F98] hover:text-[#F7F8F8]'
                 }"
                 data-tab="customers"
               >
@@ -147,7 +154,9 @@ export function renderLandingPage() {
                 id="btn-nav-pricing"
                 type="button"
                 class="btn-nav-link px-3 py-1.5 rounded-md text-[13px] transition-colors ${
-                  activeLandingTab === 'pricing' ? 'text-[#F7F8F8] bg-white/[0.06]' : 'text-[#8A8F98] hover:text-[#F7F8F8]'
+                  activeLandingTab === 'pricing'
+                    ? 'text-[#F7F8F8] bg-white/[0.06]'
+                    : 'text-[#8A8F98] hover:text-[#F7F8F8]'
                 }"
                 data-tab="pricing"
               >
@@ -165,7 +174,9 @@ export function renderLandingPage() {
                 id="btn-nav-contact"
                 type="button"
                 class="btn-nav-link px-3 py-1.5 rounded-md text-[13px] transition-colors ${
-                  activeLandingTab === 'contact' ? 'text-[#F7F8F8] bg-white/[0.06]' : 'text-[#8A8F98] hover:text-[#F7F8F8]'
+                  activeLandingTab === 'contact'
+                    ? 'text-[#F7F8F8] bg-white/[0.06]'
+                    : 'text-[#8A8F98] hover:text-[#F7F8F8]'
                 }"
                 data-tab="contact"
               >
@@ -589,15 +600,7 @@ function renderActiveChannelContent() {
 
 // ==================== 1. HOME VIEW (from Patokan lines 433-573) ====================
 function renderHomeView() {
-  const headlineWords = [
-    "The",
-    "automated",
-    "commerce",
-    "system",
-    "for",
-    "digital",
-    "products",
-  ];
+  const headlineWords = ['The', 'automated', 'commerce', 'system', 'for', 'digital', 'products'];
 
   return `
     <section class="max-w-[1120px] mx-auto px-6 pt-[128px] pb-24">
@@ -759,7 +762,16 @@ function renderHomeView() {
 
 // ==================== 2. CUSTOMERS VIEW (from Patokan lines 576-650) ====================
 function renderCustomersView() {
-  const tabs = ["Featured", "SaaS", "AI", "Fintech", "Consumer", "Hardware", "Health", "Enterprise"];
+  const tabs = [
+    'Featured',
+    'SaaS',
+    'AI',
+    'Fintech',
+    'Consumer',
+    'Hardware',
+    'Health',
+    'Enterprise',
+  ];
 
   return `
     <section class="max-w-[1120px] mx-auto px-6 pt-16 pb-24">
@@ -775,7 +787,9 @@ function renderCustomersView() {
           <button
             type="button"
             class="btn-customer-filter whitespace-nowrap transition-colors ${
-              customerFilter === tab ? 'text-[#F7F8F8] font-medium' : 'text-[#8A8F98] hover:text-[#F7F8F8]'
+              customerFilter === tab
+                ? 'text-[#F7F8F8] font-medium'
+                : 'text-[#8A8F98] hover:text-[#F7F8F8]'
             }"
             data-tab="${tab}"
           >
@@ -1043,9 +1057,11 @@ export function initLandingEvents() {
     document.querySelectorAll('.btn-nav-link').forEach((btn) => {
       const tab = btn.getAttribute('data-tab');
       if (tab === activeLandingTab) {
-        btn.className = 'btn-nav-link px-3 py-1.5 rounded-md text-[13px] transition-colors text-[#F7F8F8] bg-white/[0.06]';
+        btn.className =
+          'btn-nav-link px-3 py-1.5 rounded-md text-[13px] transition-colors text-[#F7F8F8] bg-white/[0.06]';
       } else {
-        btn.className = 'btn-nav-link px-3 py-1.5 rounded-md text-[13px] transition-colors text-[#8A8F98] hover:text-[#F7F8F8]';
+        btn.className =
+          'btn-nav-link px-3 py-1.5 rounded-md text-[13px] transition-colors text-[#8A8F98] hover:text-[#F7F8F8]';
       }
     });
     window.scrollTo({ top: 0, behavior: 'instant' });
@@ -1144,9 +1160,11 @@ function attachViewEvents() {
     btn.addEventListener('click', () => {
       customerFilter = btn.getAttribute('data-tab') || 'Featured';
       document.querySelectorAll('.btn-customer-filter').forEach((b) => {
-        b.className = 'btn-customer-filter whitespace-nowrap transition-colors text-[#8A8F98] hover:text-[#F7F8F8]';
+        b.className =
+          'btn-customer-filter whitespace-nowrap transition-colors text-[#8A8F98] hover:text-[#F7F8F8]';
       });
-      btn.className = 'btn-customer-filter whitespace-nowrap transition-colors text-[#F7F8F8] font-medium';
+      btn.className =
+        'btn-customer-filter whitespace-nowrap transition-colors text-[#F7F8F8] font-medium';
     });
   });
 
@@ -1195,4 +1213,3 @@ function attachViewEvents() {
     });
   });
 }
-

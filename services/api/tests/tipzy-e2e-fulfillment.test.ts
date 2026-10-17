@@ -90,7 +90,11 @@ class TestStoreRepository implements StoreRepository {
   async updateOwner(id: string, newOwnerUserId: string): Promise<Store> {
     const existing = this.stores.get(id);
     if (!existing) throw new Error('Store not found');
-    const updated: Store = { ...existing, ownerUserId: newOwnerUserId, updatedAt: new Date().toISOString() };
+    const updated: Store = {
+      ...existing,
+      ownerUserId: newOwnerUserId,
+      updatedAt: new Date().toISOString(),
+    };
     this.stores.set(id, updated);
     return updated;
   }
@@ -349,7 +353,10 @@ describe('E2E Tipzy QRIS & Multi-Tenant Onboarding Suite', () => {
     });
 
     expect(res.status).toBe(200);
-    const body = (await res.json()) as { success: boolean; data: { providerReference: string; status: string; paymentUrl: string | null } };
+    const body = (await res.json()) as {
+      success: boolean;
+      data: { providerReference: string; status: string; paymentUrl: string | null };
+    };
     expect(body.success).toBe(true);
     expect(body.data.providerReference).toMatch(/^SIM-/);
     expect(body.data.status).toBe('PENDING');

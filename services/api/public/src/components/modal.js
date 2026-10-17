@@ -30,7 +30,9 @@ export function openModal({
       ${
         title || showClose
           ? `<div class="px-5 py-4 ${
-              isDark ? 'border-b border-white/[0.06] bg-[#0C0D0F]/60' : 'border-b border-stone-100 bg-stone-50/50'
+              isDark
+                ? 'border-b border-white/[0.06] bg-[#0C0D0F]/60'
+                : 'border-b border-stone-100 bg-stone-50/50'
             } flex items-center justify-between shrink-0">
               <h3 class="font-heading font-bold ${isDark ? 'text-white' : 'text-stone-900'} text-base">${title}</h3>
               ${

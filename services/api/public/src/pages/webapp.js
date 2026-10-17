@@ -71,15 +71,21 @@ export function renderWebAppPage() {
 
           <!-- Middle: Template Switcher -->
           <div class="inline-flex items-center gap-1 p-0.5 rounded-full ${
-            isDark ? 'bg-white/[0.04] border border-white/[0.08]' : 'bg-stone-100 border border-stone-200'
+            isDark
+              ? 'bg-white/[0.04] border border-white/[0.08]'
+              : 'bg-stone-100 border border-stone-200'
           } text-[11px] font-mono">
             <button id="btn-switch-tpl-dark" type="button" class="px-2.5 py-0.5 rounded-full transition-colors ${
-              isDark ? 'bg-white text-black font-semibold shadow-xs' : 'text-stone-500 hover:text-stone-900'
+              isDark
+                ? 'bg-white text-black font-semibold shadow-xs'
+                : 'text-stone-500 hover:text-stone-900'
             }">
               Dark
             </button>
             <button id="btn-switch-tpl-ivory" type="button" class="px-2.5 py-0.5 rounded-full transition-colors ${
-              !isDark ? 'bg-stone-900 text-white font-semibold shadow-xs' : 'text-[#8A8F98] hover:text-white'
+              !isDark
+                ? 'bg-stone-900 text-white font-semibold shadow-xs'
+                : 'text-[#8A8F98] hover:text-white'
             }">
               Ivory
             </button>
@@ -125,7 +131,9 @@ export function renderWebAppPage() {
             ${
               currentSearchTerm
                 ? `<button id="btn-clear-search" class="absolute inset-y-0 right-2 flex items-center ${
-                    isDark ? 'text-zinc-400 hover:text-white' : 'text-stone-400 hover:text-stone-700'
+                    isDark
+                      ? 'text-zinc-400 hover:text-white'
+                      : 'text-stone-400 hover:text-stone-700'
                   } cursor-pointer">
                     <span class="w-3.5 h-3.5 flex items-center justify-center">${ICONS.close}</span>
                    </button>`
@@ -275,7 +283,9 @@ function renderHomeTab() {
       } rounded-2xl p-3.5 sm:p-4 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div class="flex items-center gap-3">
           <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl ${
-            isDark ? 'bg-amber-400/10 text-amber-300 border border-amber-400/20' : 'bg-amber-500/10 text-amber-600 border border-amber-500/20'
+            isDark
+              ? 'bg-amber-400/10 text-amber-300 border border-amber-400/20'
+              : 'bg-amber-500/10 text-amber-600 border border-amber-500/20'
           } flex items-center justify-center shrink-0">
             ${ICONS.voucher}
           </div>
@@ -283,7 +293,9 @@ function renderHomeTab() {
             <div class="flex items-center gap-2">
               <span class="font-bold text-xs sm:text-sm ${isDark ? 'text-white' : 'text-stone-900'}">Voucher Promo Aktif:</span>
               <code class="font-mono font-bold text-xs ${
-                isDark ? 'bg-[#16181D] text-amber-300 border border-white/[0.08]' : 'bg-amber-100 text-amber-900 border border-amber-300'
+                isDark
+                  ? 'bg-[#16181D] text-amber-300 border border-white/[0.08]'
+                  : 'bg-amber-100 text-amber-900 border border-amber-300'
               } px-2 py-0.5 rounded">BINTANG10</code>
             </div>
             <p class="text-[11px] sm:text-xs ${isDark ? 'text-[#8A8F98]' : 'text-stone-500'} mt-0.5">Diskon 10% untuk semua produk digital. Berlaku di halaman checkout.</p>
@@ -412,7 +424,9 @@ function renderHomeTab() {
 
       <!-- TRUST & GUARANTEE SECTION -->
       <section class="rounded-2xl ${
-        isDark ? 'bg-[#101114] border-white/[0.08] text-white' : 'bg-white border-stone-200/90 text-stone-900'
+        isDark
+          ? 'bg-[#101114] border-white/[0.08] text-white'
+          : 'bg-white border-stone-200/90 text-stone-900'
       } border p-4 sm:p-5 shadow-sm space-y-3 sm:space-y-4">
         <h3 class="font-bold text-xs uppercase tracking-wider ${isDark ? 'text-[#8A8F98]' : 'text-stone-400'} text-center font-mono">
           Layanan Bintang Store

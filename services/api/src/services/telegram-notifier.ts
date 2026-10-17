@@ -13,7 +13,10 @@ export function getTelegramConfig(): TelegramNotificationConfig {
   };
 }
 
-export async function sendTelegramPhoto(photoBase64OrUrl: string, caption?: string): Promise<boolean> {
+export async function sendTelegramPhoto(
+  photoBase64OrUrl: string,
+  caption?: string,
+): Promise<boolean> {
   const { botToken, chatId } = getTelegramConfig();
   if (!botToken || !chatId) {
     return false;
@@ -21,7 +24,7 @@ export async function sendTelegramPhoto(photoBase64OrUrl: string, caption?: stri
 
   try {
     const url = `https://api.telegram.org/bot${botToken}/sendPhoto`;
-    
+
     // If it's a base64 data url, convert to FormData or send directly
     if (photoBase64OrUrl.startsWith('data:image/')) {
       const base64Data = photoBase64OrUrl.split(',')[1];

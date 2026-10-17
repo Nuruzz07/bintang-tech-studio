@@ -175,7 +175,8 @@ export class WhatsAppBotDaemon {
       let format: 'account' | 'key' | 'link' | 'code' = 'account';
       if (p.categorySlug === 'software') format = 'key';
       else if (p.categorySlug === 'gaming') format = 'code';
-      else if (p.categorySlug === 'design' && p.name.toLowerCase().includes('canva')) format = 'link';
+      else if (p.categorySlug === 'design' && p.name.toLowerCase().includes('canva'))
+        format = 'link';
 
       const email = `${p.id.replace('prod_', '')}.vip@bintang.store`;
       const password = `BTS-VIP-${p.monogram}-2026`;
@@ -211,7 +212,9 @@ export class WhatsAppBotDaemon {
     }
     const cleanNumber = phoneNumber.replace(/[^0-9]/g, '');
     if (cleanNumber.length < 10) {
-      throw new Error('Nomor telepon tidak valid. Gunakan format internasional (contoh: 628123456789).');
+      throw new Error(
+        'Nomor telepon tidak valid. Gunakan format internasional (contoh: 628123456789).',
+      );
     }
 
     try {
@@ -261,7 +264,9 @@ export class WhatsAppBotDaemon {
           } catch {
             this.status.qrDataUrl = null;
           }
-          console.log('[WhatsAppDaemon] 📱 QR Code baru siap dipindai. Buka di web: http://127.0.0.1:3000/api/v1/whatsapp/qr');
+          console.log(
+            '[WhatsAppDaemon] 📱 QR Code baru siap dipindai. Buka di web: http://127.0.0.1:3000/api/v1/whatsapp/qr',
+          );
 
           // Send QR image directly to Telegram Bot
           if (this.status.qrDataUrl) {
@@ -283,7 +288,9 @@ export class WhatsAppBotDaemon {
           this.status.pairingCode = null;
           this.status.connectedJid = this.sock?.user?.id ?? 'CONNECTED';
           this.status.lastConnectedAt = new Date().toISOString();
-          console.log(`[WhatsAppDaemon] ✅ WhatsApp Bot TERHUBUNG! Akun: ${this.sock?.user?.id ?? 'Active'}`);
+          console.log(
+            `[WhatsAppDaemon] ✅ WhatsApp Bot TERHUBUNG! Akun: ${this.sock?.user?.id ?? 'Active'}`,
+          );
 
           void sendTelegramMessage(
             `✅ <b>WHATSAPP BOT TERHUBUNG & AKTIF!</b>\n\nNomor/JID: <code>${this.sock?.user?.id ?? 'Active'}</code>\nBot siap melayani chat & pesanan otomatis pembeli! 🎉`,
@@ -291,12 +298,15 @@ export class WhatsAppBotDaemon {
         }
 
         if (connection === 'close') {
-          const statusCode = (lastDisconnect?.error as { output?: { statusCode?: number } })?.output?.statusCode;
+          const statusCode = (lastDisconnect?.error as { output?: { statusCode?: number } })?.output
+            ?.statusCode;
           const shouldReconnect = statusCode !== DisconnectReason.loggedOut;
           this.status.state = 'DISCONNECTED';
           this.status.lastError = lastDisconnect?.error?.message ?? 'Koneksi terputus';
 
-          console.warn(`[WhatsAppDaemon] ⚠️ WhatsApp terputus (${statusCode}). Reconnecting: ${shouldReconnect}`);
+          console.warn(
+            `[WhatsAppDaemon] ⚠️ WhatsApp terputus (${statusCode}). Reconnecting: ${shouldReconnect}`,
+          );
 
           if (shouldReconnect) {
             setTimeout(() => {
@@ -335,10 +345,15 @@ export class WhatsAppBotDaemon {
             const cleanText = text.trim().toLowerCase();
             if (cleanText === 'unmute' || cleanText === 'bot' || cleanText === 'menu') {
               this.mutedUsers.delete(jid);
-              await this.sendMessage(jid, '🤖 *Bot otomatis Bintang Store kembali aktif!*\nSilakan ketik *MENU* untuk melihat layanan.');
+              await this.sendMessage(
+                jid,
+                '🤖 *Bot otomatis Bintang Store kembali aktif!*\nSilakan ketik *MENU* untuk melihat layanan.',
+              );
             } else {
               // Ignore automated responses while seller is chatting
-              console.log(`[WhatsAppDaemon] 🤫 Muted: mengabaikan balasan otomatis untuk ${jid} (Human Takeover aktif)`);
+              console.log(
+                `[WhatsAppDaemon] 🤫 Muted: mengabaikan balasan otomatis untuk ${jid} (Human Takeover aktif)`,
+              );
               continue;
             }
           }
@@ -354,7 +369,11 @@ export class WhatsAppBotDaemon {
     }
   }
 
-  private async handleIncomingMessage(jid: string, rawText: string, senderName: string): Promise<void> {
+  private async handleIncomingMessage(
+    jid: string,
+    rawText: string,
+    senderName: string,
+  ): Promise<void> {
     const text = rawText.toLowerCase();
 
     // 1. Menu & Greetings
@@ -446,7 +465,10 @@ export class WhatsAppBotDaemon {
         await this.checkOrderStatus(jid, orderId);
         return;
       } else {
-        await this.sendMessage(jid, 'ℹ️ Format cek status:\nKetik: *STATUS <NOMOR_ORDER>*\nContoh: *STATUS ORD-WA-123456*');
+        await this.sendMessage(
+          jid,
+          'ℹ️ Format cek status:\nKetik: *STATUS <NOMOR_ORDER>*\nContoh: *STATUS ORD-WA-123456*',
+        );
         return;
       }
     }
@@ -514,11 +536,18 @@ export class WhatsAppBotDaemon {
     await this.sendMessage(jid, text);
   }
 
-  private async initiatePurchase(jid: string, productNum: number, buyerName: string): Promise<void> {
+  private async initiatePurchase(
+    jid: string,
+    productNum: number,
+    buyerName: string,
+  ): Promise<void> {
     const catalog = this.getProductsList();
     const item = catalog.find((p) => p.num === productNum);
     if (!item) {
-      await this.sendMessage(jid, '⚠️ Nomor produk tidak ditemukan. Ketik *1* untuk melihat katalog.');
+      await this.sendMessage(
+        jid,
+        '⚠️ Nomor produk tidak ditemukan. Ketik *1* untuk melihat katalog.',
+      );
       return;
     }
 
@@ -575,7 +604,10 @@ export class WhatsAppBotDaemon {
         const resObj = rawRes?.['result'] as Record<string, unknown> | undefined;
         qrString = (resObj?.['qr_string'] as string) || '';
       } catch (err) {
-        console.warn('[WhatsAppDaemon] Tipzy live bridge notice, falling back to simulated invoice:', err);
+        console.warn(
+          '[WhatsAppDaemon] Tipzy live bridge notice, falling back to simulated invoice:',
+          err,
+        );
       }
     }
 
@@ -691,17 +723,11 @@ export class WhatsAppBotDaemon {
         `🔑 *Password:* \`${item.password}\`\n` +
         `📝 *Catatan:* ${item.note}`;
     } else if (item.format === 'key') {
-      credentialText =
-        `🔐 *Serial Key:* \`${item.licenseKey}\`\n` +
-        `📝 *Petunjuk:* ${item.note}`;
+      credentialText = `🔐 *Serial Key:* \`${item.licenseKey}\`\n` + `📝 *Petunjuk:* ${item.note}`;
     } else if (item.format === 'link') {
-      credentialText =
-        `🔗 *Link Akses:* ${item.link}\n` +
-        `📝 *Petunjuk:* ${item.note}`;
+      credentialText = `🔗 *Link Akses:* ${item.link}\n` + `📝 *Petunjuk:* ${item.note}`;
     } else {
-      credentialText =
-        `🎟️ *Kode Voucher:* \`${item.code}\`\n` +
-        `📝 *Petunjuk:* ${item.note}`;
+      credentialText = `🎟️ *Kode Voucher:* \`${item.code}\`\n` + `📝 *Petunjuk:* ${item.note}`;
     }
 
     const message =
